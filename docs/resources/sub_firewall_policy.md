@@ -11,7 +11,7 @@ This represents a Firewall Sub-Policy, which is used to group related Firewall I
 
 ## Examples
 
-- [sub_ipv4_fw_policy/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/policies/sub_ipv4_fw_policy/main.tf): Creates a sub-IPv4 firewall policy.
+- [sub_ipv4_fw_policy/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/policies/sub_ipv4_fw_policy/main.tf): Creates a sub-IPv4 firewall policy.
 
 This demonstrates the minimal configuration for the `smc_sub_ipv4_fw_policy` resource, used to build hierarchical firewall policy designs.
 

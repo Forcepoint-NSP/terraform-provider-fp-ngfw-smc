@@ -11,7 +11,7 @@ This represents a Static NetLink, which is a type of NetLink used for routing in
 
 ## Examples
 
-- [Netlink Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/network_elements/netlink/main.tf)
+- [Netlink Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/network_elements/netlink/main.tf)
 
 Defines a Netlink, which controls WAN redundancy and failover.
 

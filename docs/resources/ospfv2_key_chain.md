@@ -11,7 +11,7 @@ This represents the OSPFv2 Key Chain element used as Message Digest authenticati
 
 ## Examples
 
-- [OSPFv2 Key Chain Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/engines/dynamic_routing/OSPFv2/ospfv2_key_chain/main.tf)
+- [OSPFv2 Key Chain Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/OSPFv2/ospfv2_key_chain/main.tf)
 
 Defines a chain of authentication keys for OSPFv2 interface security.
 

@@ -11,7 +11,7 @@ This represents a Community Access List, which is used to define a list of commu
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/engines/dynamic_routing/BGP/community_access_list) for an example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/BGP/community_access_list) for an example
 
 This example creates a Community Access List to specify accepted or denied BGP communities.
 

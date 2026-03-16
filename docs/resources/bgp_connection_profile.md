@@ -11,7 +11,7 @@ This represents the BGP Connection Profile for Dynamic Routing Firewall function
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/engines/dynamic_routing/BGP/bgp_peering) for an example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/BGP/bgp_peering) for an example
 
 This example creates a BGP connection profile with session and authentication settings.
 

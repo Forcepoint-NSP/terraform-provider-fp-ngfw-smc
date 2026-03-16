@@ -11,7 +11,7 @@ This represents the definition of a Location, which keeps a list of Network Elem
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/engines/location) for a minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/location) for a minimal example
 
 This example creates a location object for use in policies or element assignments.
 

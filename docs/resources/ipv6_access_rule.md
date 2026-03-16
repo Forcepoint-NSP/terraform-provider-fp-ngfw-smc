@@ -11,7 +11,7 @@ This represents an IPv6 Access Rule. It defines how one type of IPv6 connection 
 
 ## Examples
 
-- [fw_template_policy/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/policies/fw_template_policy/main.tf): Multiple IPv6 access rules in a policy template.
+- [fw_template_policy/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/policies/fw_template_policy/main.tf): Multiple IPv6 access rules in a policy template.
 
 This snippet demonstrates several `smc_fw_ipv6_access_rule` usages for allow/deny/automatic access rules in an IPv6-enabled policy.
 

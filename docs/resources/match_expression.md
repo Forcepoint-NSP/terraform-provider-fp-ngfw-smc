@@ -11,7 +11,7 @@ This element represents the Rule Source/Destination/Service Match expression, wh
 
 ## Examples
 
-- [fw_policy_with_match_expression/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/policies/fw_policy_with_match_expression/main.tf): Builds a match expression referencing multiple resources in a firewall policy.
+- [fw_policy_with_match_expression/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/policies/fw_policy_with_match_expression/main.tf): Builds a match expression referencing multiple resources in a firewall policy.
 
 This snippet shows an `smc_match_expression` referencing a host and a network, for use in access rules for refined traffic matching.
 

@@ -11,7 +11,7 @@ This represents an Internal User. It contains user details such as display name,
 
 ## Examples
 
-- [fw_policy_with_match_expression/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/policies/fw_policy_with_match_expression/main.tf): Adds a test internal SMC user account for authentication testing in policies.
+- [fw_policy_with_match_expression/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/policies/fw_policy_with_match_expression/main.tf): Adds a test internal SMC user account for authentication testing in policies.
 
 This snippet defines an `smc_internal_user` resource representing a local user with a password for test login/auth policy scenarios.
 

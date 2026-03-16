@@ -11,7 +11,7 @@ This represents an external endpoint for VPN connections, supporting both tunnel
 
 ## Examples
 
-- [SD-WAN External Endpoint Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/sdwan/external_gateway/main.tf)
+- [SD-WAN External Endpoint Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/sdwan/external_gateway/main.tf)
 
 Defines an SMC External Endpoint for SD-WAN scenarios, typically to represent the far end of a VPN or GRE/IPsec connection managed by an external gateway.
 

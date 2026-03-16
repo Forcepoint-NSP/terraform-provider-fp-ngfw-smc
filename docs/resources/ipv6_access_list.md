@@ -11,7 +11,7 @@ This represents an IPv6 Access List, which is used to define a list of IPv6 addr
 
 ## Examples
 
-- [ipv6_access_list/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/engines/dynamic_routing/ipv6_access_list/main.tf): Lists IPv6 permit/deny entries for access lists.
+- [ipv6_access_list/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/ipv6_access_list/main.tf): Lists IPv6 permit/deny entries for access lists.
 
 This snippet demonstrates how to configure IPv6 access lists, using both permit and deny entries.
 

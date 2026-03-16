@@ -11,7 +11,7 @@ This represents a Routing Node in the Security Management Client, which is used 
 
 ## Examples
 
-- [getting_started/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/engines/routing_node): Declares a routing node for a firewall engine.
+- [getting_started/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/routing_node): Declares a routing node for a firewall engine.
 
 This snippet shows use of the `smc_routing_node` resource to define the routing structure for a firewall cluster, referencing interfaces and routes.
 

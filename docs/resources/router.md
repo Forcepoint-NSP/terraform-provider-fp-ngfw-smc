@@ -11,7 +11,7 @@ This represents a Router, which is a Network Element representing a physical rou
 
 ## Examples
 
-- [getting_started/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/getting_started/main.tf): Basic router creation for a test network and single firewall setup.
+- [getting_started/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/getting_started/main.tf): Basic router creation for a test network and single firewall setup.
 
 This snippet demonstrates fundamental usage of the `smc_router` resource, defining a router with a static IP address and a name. It is used to route traffic within a test lab topology.
 
