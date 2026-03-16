@@ -1,7 +1,7 @@
 # Getting Started
 
 This is an example demonstrating how to start using the provider on a
-simple example with a single firewall. See [here](https://registry.terraform.io/providers/forcepoint/fp-ngfw-smc/latest/docs)
+simple example with a single firewall. See [here](https://registry.terraform.io/providers/forcepoint-nsp/fp-ngfw-smc/latest/docs)
 
 Pre-requisites:
 - git installed

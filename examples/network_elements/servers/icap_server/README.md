@@ -11,7 +11,7 @@ terraform apply -auto-approve
 │   on main.tf line 1, in resource "smc_icap" "icap":
 │    1: resource "smc_icap" "icap" {
 │
-│ The provider forcepoint/fp-ngfw-smc does not support resource type "smc_icap".
+│ The provider forcepoint-nsp/fp-ngfw-smc does not support resource type "smc_icap".
 ╵
 make: *** [Makefile:17: apply] Error 1
 

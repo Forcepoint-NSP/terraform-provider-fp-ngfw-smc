@@ -32,4 +32,4 @@ Extended community access lists like this are used to:
 
 For instance, you may permit specific routes with certain community tags to be accepted from, or advertised to, a peer.
 
-For more detail on supported parameters, see the [provider documentation](https://registry.terraform.io/providers/forcepoint/fp-ngfw-smc/latest/docs/resources/extended_community_access_list).
+For more detail on supported parameters, see the [provider documentation](https://registry.terraform.io/providers/forcepoint-nsp/fp-ngfw-smc/latest/docs/resources/extended_community_access_list).
