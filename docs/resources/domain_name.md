@@ -11,7 +11,7 @@ This represents a Domain Name, which is used to manage domain names and their as
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/network_elements/domain_name) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/network_elements/domain_name) for a complete minimal example
 
 This example creates a Domain Name object recognized within SMC.
 

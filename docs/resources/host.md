@@ -11,7 +11,7 @@ This represents a Host, which is a Network Element that represents any single de
 
 ## Examples
 
-- [fw_policy_with_match_expression/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/policies/fw_policy_with_match_expression/main.tf): Defines a single host object for use in firewall policy.
+- [fw_policy_with_match_expression/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/policies/fw_policy_with_match_expression/main.tf): Defines a single host object for use in firewall policy.
 
 This snippet demonstrates the creation of an `smc_host` resource and its use in a policy with networks and match expressions.
 

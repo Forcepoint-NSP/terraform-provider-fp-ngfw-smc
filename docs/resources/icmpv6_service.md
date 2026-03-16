@@ -11,7 +11,7 @@ This represents an ICMP service for IPv6.
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/services/icmp_service) for a minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/services/icmp_service) for a minimal example
 
 This example creates an ICMPv6 service object in SMC.
 

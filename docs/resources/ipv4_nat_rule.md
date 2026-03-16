@@ -11,7 +11,7 @@ This represents an IPv4 NAT (Network Address Translation) Rule. It defines how o
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/policies/fw_ipv4_nat_rules) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/policies/fw_ipv4_nat_rules) for a complete minimal example
 
 This example creates an IPv4 NAT rule in an SMC firewall policy.
 

@@ -11,7 +11,7 @@ This represents an IP-proto Service Group, which is used to group a list of IP-p
 
 ## Examples
 
-- [IP Service Group Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/services/ip-proto_service/main.tf)
+- [IP Service Group Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/services/ip-proto_service/main.tf)
 
 Groups multiple IP services for easier policy and rules management.
 

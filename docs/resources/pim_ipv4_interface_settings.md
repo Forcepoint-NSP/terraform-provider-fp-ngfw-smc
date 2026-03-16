@@ -11,7 +11,7 @@ This represents the PIM IPv4 Interface Settings for Dynamic Routing Firewall fun
 
 ## Examples
 
-- [PIM IPv4 Interface Settings Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/engines/dynamic_routing/PIM/pim_ipv4_interface_settings/main.tf)
+- [PIM IPv4 Interface Settings Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/PIM/pim_ipv4_interface_settings/main.tf)
 
 Defines PIM-specific multicast settings for a given interface.
 

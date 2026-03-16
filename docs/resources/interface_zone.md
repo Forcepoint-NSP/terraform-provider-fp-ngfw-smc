@@ -11,7 +11,7 @@ This represents a Zone, which is used to group together network interfaces of Fi
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/network_elements/interface_zone) for a minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/network_elements/interface_zone) for a minimal example
 
 This example creates an interface zone in SMC.
 

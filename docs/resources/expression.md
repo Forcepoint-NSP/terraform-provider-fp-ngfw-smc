@@ -11,7 +11,7 @@ This represents an Expression, which is used to define complex sets of network e
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/network_elements/expression) for an example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/network_elements/expression) for an example
 
 This example shows how to define a logical expression of network elements in SMC.
 

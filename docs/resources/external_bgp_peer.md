@@ -11,7 +11,7 @@ This represents the External BGP Peer for Dynamic Routing Firewall functionality
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/engines/dynamic_routing/BGP/external_bgp_peers) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/BGP/external_bgp_peers) for a complete minimal example
 
 This example creates an external BGP peer object which references an Autonomous System.
 

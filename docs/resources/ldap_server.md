@@ -11,7 +11,7 @@ This represents a LDAP Server, which is used to configure access to any LDAP ser
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/network_elements/servers/ldap_server) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/network_elements/servers/ldap_server) for a complete minimal example
 
 This example creates an LDAP server object in SMC.
 

@@ -11,7 +11,7 @@ This represents an internal endpoint for VPN connections, supporting both tunnel
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/sdwan/policy_based_vpn/central_gateway_node/main.tf) for a minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/sdwan/policy_based_vpn/central_gateway_node/main.tf) for a minimal example
 
 This example creates an internal endpoint (used for VPN or routing) tied to a single firewall.
 

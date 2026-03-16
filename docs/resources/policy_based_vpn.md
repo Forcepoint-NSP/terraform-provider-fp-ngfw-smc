@@ -11,7 +11,7 @@ This represents a Policy Based Virtual Private Network (VPN), which is used to e
 
 ## Examples
 
-- [fw_policy_vpn example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/policies/fw_policy_vpn/main.tf): Demonstrates configuring a firewall policy with VPN rules using the SMC provider.
+- [fw_policy_vpn example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/policies/fw_policy_vpn/main.tf): Demonstrates configuring a firewall policy with VPN rules using the SMC provider.
 
 ```hcl
 resource "smc_vpn_profile" "tf_keepalive_vpn_profile" {

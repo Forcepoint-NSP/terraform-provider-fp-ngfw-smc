@@ -11,7 +11,7 @@ This represents an ICMP Service Group, which is used to group a list of ICMP Ser
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/services/icmp_service) for a minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/services/icmp_service) for a minimal example
 
 This example creates a group of ICMP and ICMPv6 service objects in SMC.
 

@@ -11,7 +11,7 @@ This represents a TACACS Server, which is an external authentication server that
 
 ## Examples
 
-- [TACACS Server Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/network_elements/servers/tacacs_server/main.tf)
+- [TACACS Server Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/network_elements/servers/tacacs_server/main.tf)
 
 Defines a TACACS server for authentication services.
 
