@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     smc = {
-      source  = "forcepoint/fp-ngfw-smc"
+      source  = "forcepoint-nsp/fp-ngfw-smc"
       version = "0.0.1"
     }
   }

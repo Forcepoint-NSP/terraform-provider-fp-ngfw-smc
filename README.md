@@ -1,12 +1,12 @@
 # SMC Terraform Provider - fp-ngfw-smc
 
-- Website: https://registry.terraform.io/providers/forcepoint/fp-ngfw-smc
+- Website: https://registry.terraform.io/providers/forcepoint-nsp/fp-ngfw-smc
 - Mailing list: [Google Groups](http://groups.google.com/group/terraform-tool)
 
 ## Which provider version to use ?
 
 Please refer to the official documentation:
-https://registry.terraform.io/providers/forcepoint/fp-ngfw-smc/latest/docs
+https://registry.terraform.io/providers/forcepoint-nsp/fp-ngfw-smc/latest/docs
 
 ## Requirements
 
