@@ -1,0 +1,51 @@
+{
+  "linters": {
+    "enable": [
+      "revive",
+      "govet",
+      "errcheck",
+      "staticcheck",
+      "ineffassign",
+      "unused"
+    ]
+  },
+  "linters-settings": {
+    "revive": {
+      "rules": [
+        {
+          "name": "exported",
+          "severity": "error"
+        },
+        {
+          "name": "package-comments",
+          "severity": "warning"
+        },
+        {
+          "name": "var-naming",
+          "severity": "error"
+        },
+        {
+          "name": "function-naming",
+          "severity": "error"
+        },
+        {
+          "name": "unused-parameter",
+          "severity": "warning"
+        },
+        {
+          "name": "receiver-naming",
+          "severity": "error"
+        }
+      ]
+    }
+  },
+  "issues": {
+    "exclude-rules": [
+      {
+        "path": "_test\\.go",
+        "linters": ["revive"]
+      }
+    ]
+  },
+  "version": "2"
+}

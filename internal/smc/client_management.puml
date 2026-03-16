@@ -1,0 +1,108 @@
+@startuml smc_client_management
+
+title SMC Client Management - Singleton Pattern
+
+' Styling
+skinparam class {
+    BackgroundColor<<Singleton>> LightYellow
+    BorderColor<<Singleton>> Orange
+    BackgroundColor<<Entity>> LightBlue
+    BorderColor<<Entity>> Blue
+}
+
+skinparam stereotypeCBackgroundColor YellowGreen
+
+' External dependency
+package "internal/sdk/auth" {
+    class Auth <<external>> {
+    }
+}
+
+' Main entities
+package "internal/smc" {
+
+    class LogContext <<Entity>> {
+        -ctx: context.Context
+        -mgtServerId: string
+        __
+        +Context(): context.Context
+        +WithField(key string, value interface{}): context.Context
+        +WithFields(fields map[string]interface{}): context.Context
+        +Debug(msg string, additionalFields ...map[string]interface{}): void
+        +Info(msg string, additionalFields ...map[string]interface{}): void
+        +Warn(msg string, additionalFields ...map[string]interface{}): void
+        +Error(msg string, additionalFields ...map[string]interface{}): void
+        +Trace(msg string, additionalFields ...map[string]interface{}): void
+    }
+
+    class Client <<Entity>> {
+        +URL: string
+        +APIKey: string
+        +VerifySSL: bool
+        +Token: string
+        +HTTPClient: *http.Client
+        +APIVersion: string
+        +Auth: *sdk_auth.Auth
+        +UseAuthHeader: bool
+        +MgtServerId: string
+        +SmcContext: *LogContext
+        __
+        +GetLogContext(): *LogContext
+        +UpdateLogContext(ctx context.Context, mgtServerId string): void
+    }
+
+    class ClientManager <<Singleton>> {
+        -clients: map[string]*Client
+        -lock: sync.RWMutex
+        __
+        +GetClient(mgtServerId string): (*Client, error)
+        +AddClient(mgtServerId string, client *Client): error
+        +RemoveClient(mgtServerId string): void
+        +HasClient(mgtServerId string): bool
+        +ListClients(): []string
+        +Clear(): void
+    }
+
+    class "Global Variables" as GlobalVars <<utility>> {
+        {static} -managerInstance: *ClientManager
+        __
+        {static} +GetClientManager(): *ClientManager
+    }
+}
+
+' Relationships
+ClientManager "1" *-- "0..*" Client : manages >
+Client --> Auth : uses >
+Client *-- "1" LogContext : contains >
+GlobalVars ..> ClientManager : creates/returns
+GlobalVars : <<singleton pattern>>
+
+' Notes
+note right of ClientManager
+  **Thread-Safe Singleton**
+  - Uses sync.RWMutex for concurrent access
+  - Directly initialized at package startup
+  - Manages multiple SMC clients by MgtServerId
+
+  **Note**: Multiple clients not yet fully supported,
+  but prevents re-login by checking existing sessions
+end note
+
+note right of Client
+  **SMC API Client**
+  Represents an authenticated connection
+  to a Stonesoft Management Center (SMC)
+
+  MgtServerId identifies which SMC deployment
+  this client is connected to
+end note
+
+note bottom of GlobalVars
+  **Singleton Initialization**
+  managerInstance is directly initialized
+  as a package variable with an empty
+  clients map at startup
+end note
+
+@enduml
+

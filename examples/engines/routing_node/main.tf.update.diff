@@ -1,0 +1,47 @@
+diff --git a/examples/engines/routing_node/main.tf b/examples/engines/routing_node/main.tf
+index 5c93a7f..ada9ff9 100644
+--- a/examples/engines/routing_node/main.tf
++++ b/examples/engines/routing_node/main.tf
+@@ -59,9 +59,25 @@ resource "smc_single_fw" "tf_single_fw" {
+       }
+     }
+   }
++  physical_interfaces {
++    physical_interface {
++      interface_id = 1
++      interfaces {
++        single_node_interface {
++          nodeid        = 1
++          nicid         = 1
++          address       = "192.168.101.14"
++          network_value = "192.168.101.00/24"
++        }
++      }
++    }
++  }
+ }
+ 
+ resource "smc_routing_node" "tf_single_fw" {
++  depends_on = [smc_router.tf_sample_router, smc_network.tf_sample_network,
++    smc_router.tf_sample_router2, smc_network.tf_sample_network2]
++
+   id = smc_single_fw.tf_single_fw.lk.routing
+   level = "engine_cluster"
+   routing_node {
+@@ -80,4 +96,16 @@ resource "smc_routing_node" "tf_single_fw" {
+       }
+     }
+   }
++  routing_node {
++    level = "interface"
++    name = "Interface 1"
++    routing_node {
++      level = "network"
++      href = smc_network.tf_sample_network2.id
++      routing_node {
++        level = "gateway"
++        href = smc_router.tf_sample_router2.id
++      }
++    }
++  }
+ }

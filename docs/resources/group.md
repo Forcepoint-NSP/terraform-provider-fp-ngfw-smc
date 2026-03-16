@@ -1,0 +1,48 @@
+---
+page_title: "smc_group"
+subcategory: "network_elements"
+description: |-
+  This represents a Group, which is a Network Element that includes other elements and represents them all at once in policies and other parts of the configuration. It includes attributes for monitoring and a list of elements that are part of the group.
+---
+
+# smc_group (Resource)
+
+This represents a Group, which is a Network Element that includes other elements and represents them all at once in policies and other parts of the configuration. It includes attributes for monitoring and a list of elements that are part of the group.
+
+## Examples
+
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.1/examples/network_elements/expression) for a complete minimal example
+
+This example creates a group object in SMC containing hosts or other elements.
+
+```hcl
+resource "smc_group" "tf_group1" {
+  element = [
+    smc_host.tf_host1.id,
+    smc_host.tf_host2.id
+  ]
+  name    = "tf_group1"
+  comment = var.resource_comment
+}
+```
+
+
+## Simple Attributes
+- `id` (String) this attribute is the identifier of terraform resource
+- `comment` (String) An optional comment for the element. This field is not required.
+- `element` (List of String) URI of the Storable element.
+- `is_monitored` (Boolean) Indicates whether the Group is listed in monitoring.
+- `location_ref` (String) This represents the definition of a Location, which keeps a list of Network Elements belonging to the same location.
+- `name` (String) Name of the object.
+
+
+## Readonly Attributes
+- `admin_domain` (String) This represents a Domain. Domains are administrative boundaries that allow you to separate the configuration details and other information in the system for the purpose of limiting administrator access.
+- `etag` (String) The ETag of the element, used for versioning. This field is not required.
+- `key` (Number) The unique identifier for the element. This field is required for updates but not for creation.
+- `link` (List of Blocks, see [here](attr_api_link.md)) The API's links of the element, providing additional actions or resources.
+- `locked` (Boolean) Indicates if the element is locked. This field is not required.
+- `read_only` (Boolean) Indicates if the element is read-only. This field is not required.
+- `system` (Boolean) Indicates if the element is a System element. This field is not required.
+- `system_key` (Number) The system key of the System element. This field is not required.
+- `trashed` (Boolean) Indicates if the element is trashed. This field is not required.
