@@ -1,0 +1,19 @@
+--- main.tf.orig	2025-11-12 20:59:01.270947671 +0100
++++ main.tf	2025-11-12 20:59:30.261136861 +0100
+@@ -72,7 +72,7 @@
+     service = [data.smc_href.ftp_service.href]
+   }
+   action { action = ["discard"] }
+-  rank = 5.0
++  rank = 1.1
+ }
+ 
+ resource "smc_fw_ipv4_access_rule" "allow_icmp" {
+@@ -96,6 +96,6 @@
+     service = [data.smc_href.AOL_service.href]
+   }
+   action { action = ["allow"] }
+-  rank = 1.0
++  rank = 5.1
+ }
+ 

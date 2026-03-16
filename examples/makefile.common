@@ -1,0 +1,15 @@
+init:
+	-@rm -rf .terraform*
+	terraform init
+
+plan:
+	terraform plan
+
+apply:
+	terraform apply -auto-approve
+
+destroy:
+	terraform destroy -auto-approve
+
+clean:
+	rm -rf .terraform* terraform*

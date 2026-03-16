@@ -1,0 +1,29 @@
+#!/usr/bin/env nu
+# -*- nushell -*-
+
+use std/assert
+use ../../../common.nu *
+
+git checkout main.tf
+terraform apply -auto-approve
+let attrs = get_attributes "smc_single_fw" "tf_single_fw"
+assert ($attrs.id =~ "^(http|https)://.+:8082/7\\.\\d/elements/single_fw/[0-9]+$")
+assert (($attrs.key|into string) =~ "^[0-9]+$")
+assert equal $attrs.lk.self $attrs.id
+assert equal ($attrs.physical_interfaces|length) 1
+
+open main.tf.update.diff | patch main.tf
+terraform apply -auto-approve
+let attrs = get_attributes "smc_single_fw" "tf_single_fw"
+assert equal ($attrs.physical_interfaces|length) 2
+assert ($attrs.id != "")
+
+open main.tf.update.diff | patch -R main.tf
+terraform apply -auto-approve
+let attrs = get_attributes "smc_single_fw" "tf_single_fw"
+assert equal ($attrs.physical_interfaces|length) 1
+assert ($attrs.id != "")
+
+terraform destroy -auto-approve
+let tfstate = open terraform.tfstate|from json
+assert equal ($tfstate.resources|length) 0

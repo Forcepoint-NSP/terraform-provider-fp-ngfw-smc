@@ -1,0 +1,15 @@
+31a32,45
+> 
+>   physical_interfaces {
+>     physical_interface {
+>       interface_id = 1
+>       interfaces {
+>         single_node_interface {
+>           nodeid        = 1
+>           nicid         = 1
+>           address       = "192.168.101.14"
+>           network_value = "192.168.101.00/24"
+>         }
+>       }
+>     }
+>   }
