@@ -11,7 +11,7 @@ This represents a Domain. Domains are administrative boundaries that allow you t
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/single_fw/custom_domain) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/single_fw/custom_domain) for a complete minimal example
 
 This example creates an admin domain in SMC for resource isolation and multi-tenancy.
 

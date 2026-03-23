@@ -11,7 +11,7 @@ This represents a Simple Mail Transfer Protocol (SMTP) server, which is used to 
 
 ## Examples
 
-- [SMTP Server Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/network_elements/servers/radius_server/main.tf)
+- [SMTP Server Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/network_elements/servers/radius_server/main.tf)
 
 Defines an SMTP server for alerting or notification policies.
 

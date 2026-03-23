@@ -11,7 +11,7 @@ This represents an External Gateway, which is used for establishing VPN connecti
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/sdwan/external_gateway) for a minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/sdwan/external_gateway) for a minimal example
 
 This example creates an external gateway object.
 

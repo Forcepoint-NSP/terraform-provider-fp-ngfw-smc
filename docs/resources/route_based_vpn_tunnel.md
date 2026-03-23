@@ -11,7 +11,7 @@ This represents a Route-Based VPN Tunnel. It defines the properties and configur
 
 ## Examples
 
-- [RBVPN Tunnel Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/sdwan/route_based_vpn/ip_ip_mode_internal_gateway/main.tf)
+- [RBVPN Tunnel Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/sdwan/route_based_vpn/ip_ip_mode_internal_gateway/main.tf)
 
 Defines a Route-Based VPN tunnel between two endpoints in an SD-WAN design.
 

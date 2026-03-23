@@ -11,7 +11,7 @@ This represents an IP-proto service, which is used to define a service based on 
 
 ## Examples
 
-- [IP Service Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/services/ip-proto_service/main.tf)
+- [IP Service Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/services/ip-proto_service/main.tf)
 
 Creates a custom IP protocol service by its protocol number for firewall or policy use.
 

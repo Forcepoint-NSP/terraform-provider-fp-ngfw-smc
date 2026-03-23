@@ -82,7 +82,7 @@ provider uses the legacy HCL1 syntax by default.
 However, if you are confident in your configuration, you can use HCL2
 syntax for all resources or for a selected subset.
 
-This approach is illustrated in the [getting started](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/getting_started) example:
+This approach is illustrated in the [getting started](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/getting_started) example:
 
 - Policies and rules use the safer HCL1 syntax
 - Firewalls use the more convenient HCL2 syntax to simplify some parts of the configuration

@@ -11,7 +11,7 @@ This represents an External DNS (Domain Name Service) Server, which is used for 
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/network_elements/servers/external_dns_server) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/network_elements/servers/external_dns_server) for a complete minimal example
 
 This example creates a DNS server object in SMC with TTL and update interval specified.
 

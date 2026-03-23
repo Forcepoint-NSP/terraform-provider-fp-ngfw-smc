@@ -11,7 +11,7 @@ This represents a SUN-RPC service, which is used to define a service based on th
 
 ## Examples
 
-- [RPC Service Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/services/sun-rpc_service/main.tf)
+- [RPC Service Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/services/sun-rpc_service/main.tf)
 
 Defines an RPC service by program number and protocol for firewall rules.
 

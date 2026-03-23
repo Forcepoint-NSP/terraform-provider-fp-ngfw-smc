@@ -11,7 +11,7 @@ This represents the IGMP Querier Settings for Multicast Routing and especially t
 
 ## Examples
 
-- [IGMP Querier Settings Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/PIM/igmp_querier_settings/main.tf)
+- [IGMP Querier Settings Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/dynamic_routing/PIM/igmp_querier_settings/main.tf)
 
 Defines IGMP (Internet Group Management Protocol) querier settings for use in dynamic multicast routing environments.
 

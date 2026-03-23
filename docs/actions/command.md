@@ -8,7 +8,7 @@ description: |-
 
 # smc_command (Action)
 
-Generic action to invoke the smc api. see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/single_fw/single_fw_actions/main.tf) for a full example:
+Generic action to invoke the smc api. see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/single_fw/single_fw_actions/main.tf) for a full example:
 
 - engine initial_contact
 - bind_license to an engine

@@ -11,7 +11,7 @@ This is a configuration file for the VPN Broker Domain. It contains settings and
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/fw_cluster/fw_cluster_with_vpn_broker_interface) for an example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/fw_cluster/fw_cluster_with_vpn_broker_interface) for an example
 
 This example defines a VPN Broker configuration file for use in VPN Broker domains.
 

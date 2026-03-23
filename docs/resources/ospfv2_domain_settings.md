@@ -11,7 +11,7 @@ This represents the OSPFv2 Domain Settings for Dynamic Routing Firewall function
 
 ## Examples
 
-- [OSPFv2 Domain Settings Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/OSPFv2/ospfv2_domain_settings/main.tf)
+- [OSPFv2 Domain Settings Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/dynamic_routing/OSPFv2/ospfv2_domain_settings/main.tf)
 
 Defines domain-wide settings for OSPFv2 routing.
 

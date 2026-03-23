@@ -11,7 +11,7 @@ This represents a DHCP (Dynamic Host Configuration Protocol) Server. A protocol 
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/network_elements/servers/dhcp_server) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/network_elements/servers/dhcp_server) for a complete minimal example
 
 This example creates a DHCP server object in SMC.
 

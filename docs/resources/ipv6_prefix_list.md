@@ -11,7 +11,7 @@ This represents an IPv6 Prefix List, which is used to define a list of IPv6 pref
 
 ## Examples
 
-- [ipv6_prefix_list/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/ipv6_prefix_list/main.tf): Example of an IPv6 prefix list for BGP or route filtering.
+- [ipv6_prefix_list/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/dynamic_routing/ipv6_prefix_list/main.tf): Example of an IPv6 prefix list for BGP or route filtering.
 
 This snippet demonstrates using `smc_ipv6_prefix_list` with multiple entry constraints for BGP prefix-lists.
 

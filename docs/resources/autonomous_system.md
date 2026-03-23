@@ -11,7 +11,7 @@ This represents the Autonomous System for Dynamic Routing Firewall functionality
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/BGP/external_bgp_peers) for a minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/dynamic_routing/BGP/external_bgp_peers) for a minimal example
 
 This example creates an Autonomous System (AS) object to be used in BGP configuration.
 

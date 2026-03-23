@@ -11,7 +11,7 @@ This represents a Group, which is a Network Element that includes other elements
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/network_elements/expression) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/network_elements/expression) for a complete minimal example
 
 This example creates a group object in SMC containing hosts or other elements.
 

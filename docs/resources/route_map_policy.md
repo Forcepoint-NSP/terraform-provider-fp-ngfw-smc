@@ -11,7 +11,7 @@ This represents a Route Map Policy for the Dynamic Routing Firewall settings, wh
 
 ## Examples
 
-- [Route Map Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/examples/engines/dynamic_routing/route_map/)
+- [Route Map Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/examples/engines/dynamic_routing/route_map/)
 
 A `smc_route_map` provides route filtering or modification capabilities for imported and exported routes.
 
