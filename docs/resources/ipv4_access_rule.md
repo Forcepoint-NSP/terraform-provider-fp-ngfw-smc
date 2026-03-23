@@ -10,7 +10,7 @@ description: |-
 This represents an IPv4 Access Rule. It defines how one type of IPv4 connection is handled by providing matching criteria based on the source, destination, and protocol information.
 
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/policies/fw_ipv4_access_rule)
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/policies/fw_ipv4_access_rule)
   for a working example of ipv4 access rule creation
 
 Example:

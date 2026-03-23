@@ -11,7 +11,7 @@ This represents an IP Access List, which is used to define a list of IP addresse
 
 ## Examples
 
-- [IP Access List Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/routing_node_bgp/main.tf)
+- [IP Access List Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/dynamic_routing/routing_node_bgp/main.tf)
 
 An `smc_ip_access_list` allows you to define rules for matching and filtering IP subnets for dynamic routing filtering purposes.
 

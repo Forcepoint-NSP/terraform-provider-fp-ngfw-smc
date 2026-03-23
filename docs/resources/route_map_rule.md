@@ -11,7 +11,7 @@ This represents a Route Map Rule for Route Map Policy. It can be used to define 
 
 ## Examples
 
-- [Route Map Rule Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/route_map/main.tf)
+- [Route Map Rule Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/dynamic_routing/route_map/main.tf)
 
 Defines a rule used within a routing map for policy-based routing adjustments.
 

@@ -11,7 +11,7 @@ This represents the BGP Peering for Dynamic Routing Firewall functionality.
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/BGP/bgp_peering) for an example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/dynamic_routing/BGP/bgp_peering) for an example
 
 This example configures a BGP peering with filters and connection profile.
 

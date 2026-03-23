@@ -11,7 +11,7 @@ This represents the OSPFv2 Interface Settings, which are used to configure OSPFv
 
 ## Examples
 
-- [OSPFv2 Interface Settings Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/OSPFv2/ospfv2_interface_settings/main.tf)
+- [OSPFv2 Interface Settings Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/dynamic_routing/OSPFv2/ospfv2_interface_settings/main.tf)
 
 Defines per-interface OSPFv2 protocol settings.
 

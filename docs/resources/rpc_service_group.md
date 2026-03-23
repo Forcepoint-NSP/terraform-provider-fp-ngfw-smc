@@ -11,7 +11,7 @@ This represents a SUN-RPC Service Group, which is used to group a list of SUN-RP
 
 ## Examples
 
-- [RPC Service Group Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/services/sun-rpc_service/main.tf)
+- [RPC Service Group Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/services/sun-rpc_service/main.tf)
 
 Groups multiple RPC services for application in access rules or policies.
 

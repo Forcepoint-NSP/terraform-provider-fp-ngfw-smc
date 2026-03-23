@@ -11,7 +11,7 @@ This represents a list of IP addresses.
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/network_elements/ip_list) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/network_elements/ip_list) for a complete minimal example
 
 This example creates an IP list and assigns addresses.
 

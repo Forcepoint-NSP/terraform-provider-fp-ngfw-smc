@@ -11,7 +11,7 @@ This represents a Firewall Policy, which is used to define a set of rules and in
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/policies/fw_ipv4_access_rule_section) for a minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/policies/fw_ipv4_access_rule_section) for a minimal example
 
 This example creates a firewall policy used to define IPv4 access rules in SMC.
 

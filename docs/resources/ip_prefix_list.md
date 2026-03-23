@@ -11,7 +11,7 @@ This represents an IP Prefix List, which is used to define a list of IP prefixes
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/ip_prefix_list) for a minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/dynamic_routing/ip_prefix_list) for a minimal example
 
 This example creates an IP prefix list for BGP/OSPF filtering.
 

@@ -11,7 +11,7 @@ This represents a Firewall Template Policy, which is used to define a set of rul
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/policies/fw_template_policy) for a minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/policies/fw_template_policy) for a minimal example
 
 This example creates a firewall template policy for organizing and reusing rule sections.
 

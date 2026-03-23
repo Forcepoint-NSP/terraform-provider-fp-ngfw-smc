@@ -11,7 +11,7 @@ This represents the PIM IPv4 Profile for Dynamic Routing Firewall functionality.
 
 ## Examples
 
-- [PIM IPv4 Profile Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/dynamic_routing/PIM/pim_profiles/main.tf)
+- [PIM IPv4 Profile Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/dynamic_routing/PIM/pim_profiles/main.tf)
 
 Defines a PIM (Protocol Independent Multicast) IPv4 profile for use in multicast configurations.
 

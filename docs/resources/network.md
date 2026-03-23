@@ -11,7 +11,7 @@ This represents a Network, which is a Network Element that represents a (sub)net
 
 ## Examples
 
-- [getting_started/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/getting_started/main.tf): Defines a basic network element for a test/lab environment.
+- [getting_started/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/getting_started/main.tf): Defines a basic network element for a test/lab environment.
 
 This snippet shows the use of `smc_network` to define a simple IPv4 network. This network can later be associated with firewall interfaces or VPN sites.
 

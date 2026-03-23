@@ -10,4 +10,4 @@ The quick start guide helps you create a minimal toy single firewall
 with a test policy that accepts all traffic, bind license and initiate
 the contact with the SMC.
 
-Follow the instructions in https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/getting_started/README.md
+Follow the instructions in https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/getting_started/README.md

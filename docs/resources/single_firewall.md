@@ -11,8 +11,8 @@ This represents a single Firewall device in the Stonesoft Management Center. It 
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/getting_started) for a complete minimal example
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/single_fw) for the list of examples related to single firewall
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/getting_started) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/single_fw) for the list of examples related to single firewall
 
 This example creates a single firewall with two interfaces.  The first
 interface will be used to contact the smc (there must be exactly one

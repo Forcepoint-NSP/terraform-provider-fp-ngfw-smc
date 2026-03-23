@@ -11,7 +11,7 @@ This represents a Group of services, which can contain both individual services 
 
 ## Examples
 
-- [Service Group Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/services/service_group/main.tf)
+- [Service Group Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/services/service_group/main.tf)
 
 Groups multiple services for easier rule or policy management.
 

@@ -11,7 +11,7 @@ This represents a gateway node, which is used to manage the VPN topology and its
 
 ## Examples
 
-- [external_gateway example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/sdwan/external_gateway/main.tf): Adds gateway nodes (central) in a policy-based VPN SD-WAN scenario.
+- [external_gateway example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/sdwan/external_gateway/main.tf): Adds gateway nodes (central) in a policy-based VPN SD-WAN scenario.
 
 This example illustrates the configuration of `smc_gateway_node`
 resources for central gateways in a VPN configuration. Each gateway

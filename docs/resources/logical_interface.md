@@ -11,7 +11,7 @@ This represents a Logical Interface. It is an IPS Element used in the IPS polici
 
 ## Examples
 
-- [Logical Interface Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/single_fw/single_fw_layer2_interfaces/main.tf)
+- [Logical Interface Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/single_fw/single_fw_layer2_interfaces/main.tf)
 
 Defines a logical interface (e.g., capture or inline) on a firewall engine.
 

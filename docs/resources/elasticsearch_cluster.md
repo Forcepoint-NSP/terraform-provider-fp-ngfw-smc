@@ -11,7 +11,7 @@ This represents an Elasticsearch Cluster, which can be either Elasticsearch or O
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/network_elements/servers/elasticsearch_cluster) for an example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/network_elements/servers/elasticsearch_cluster) for an example
 
 This example creates an Elasticsearch cluster definition for SMC integration.
 

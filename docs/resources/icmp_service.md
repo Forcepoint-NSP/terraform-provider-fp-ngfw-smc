@@ -11,7 +11,7 @@ This represents an ICMP service, which is used to define a service based on the 
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/services/icmp_service) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/services/icmp_service) for a complete minimal example
 
 This example creates an ICMP service object in SMC.
 

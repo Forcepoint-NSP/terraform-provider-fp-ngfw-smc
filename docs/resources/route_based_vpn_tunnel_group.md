@@ -11,7 +11,7 @@ This represents a Route Based VPN Tunnel Group. It is used to group tunnels in t
 
 ## Examples
 
-- [RBVPN Tunnel Group Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/sdwan/route_based_vpn/vpn_mode/main.tf)
+- [RBVPN Tunnel Group Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/sdwan/route_based_vpn/vpn_mode/main.tf)
 
 Defines a group of RBVPN tunnels for flexible policy control.
 

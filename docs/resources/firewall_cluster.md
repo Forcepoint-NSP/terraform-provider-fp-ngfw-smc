@@ -11,7 +11,7 @@ This represents a group of two or more firewall devices in the Stonesoft Managem
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/0.0.2/examples/engines/fw_cluster/fw_cluster_with_layer2_interface) for a complete example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/fw_cluster/fw_cluster_with_layer2_interface) for a complete example
 
 This example creates a firewall cluster engine with logical and inline interfaces.
 

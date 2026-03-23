@@ -1,6 +1,6 @@
 PROVIDER_NAME=fp-ngfw-smc
 PROVIDER_FULLNAME=terraform-provider-fp-ngfw-smc
-PROVIDER_VERSION=0.0.2
+PROVIDER_VERSION=1.741.0
 PROVIDER_ORGANIZATION=Forcepoint
 PLUGIN_DIR=plugins/registry.terraform.io/${PROVIDER_ORGANIZATION}/${PROVIDER_NAME}/${PROVIDER_VERSION}/linux_amd64
 RUN=./scripts/run_go
