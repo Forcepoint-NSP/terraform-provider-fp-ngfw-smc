@@ -39,5 +39,5 @@ func (r *ExtendedCommunityExpressionResourceModel) GetSliceIds(ctx context.Conte
 	if r.Expression.IsNull() || r.Expression.IsUnknown() {
 		return nil
 	}
-	return []string{r.Expression.String()}
+	return []string{r.Expression.ValueString()}
 }

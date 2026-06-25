@@ -78,5 +78,5 @@ func (r *WirelessPhysicalInterfaceResourceModel) GetSliceIds(ctx context.Context
 	if r.InterfaceId.IsNull() || r.InterfaceId.IsUnknown() {
 		return nil
 	}
-	return []string{r.InterfaceId.String()}
+	return []string{r.InterfaceId.ValueString()}
 }

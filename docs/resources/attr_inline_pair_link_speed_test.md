@@ -18,6 +18,7 @@ This represents a test that checks whether the network settings (speed/duplex) m
 - `name` (String) Name of the object.
 - `offline_state` (Boolean) Indicates whether the test is executed when the engine is offline or not.
 - `online_state` (Boolean) Indicates whether the test is executed when the engine is online or not.
+- `snmp_notification` (Boolean) Indicates whether an SNMP notification is sent if the test fails.
 - `standby_state` (Boolean) Indicates whether the test is executed when the engine is in standby state or not.
 - `test_action` (String) The action to be taken if the test fails. Options include 'none', 'offline', 'forceoffline', and 'forcespeed'.
 - `test_active` (Boolean) Indicates whether the test is active or not.

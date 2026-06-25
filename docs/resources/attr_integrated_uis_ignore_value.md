@@ -13,6 +13,7 @@ This represents an entry in the Integrated User ID service's ignore list, which 
 
 
 ## Simple Attributes
+- `iuis_ignore_ip` (String) The IP address, subnet, or range to ignore in the Integrated User ID service. Omit for 'Any'. Not allowed with ne_ref.
 - `iuis_ignore_user` (String) The username to ignore in the Integrated User ID service. Omit for 'Any'.
 - `ne_ref` (String) This represents a network element, which is a component that has an IP address and can be part of a network. It includes a location reference.
 

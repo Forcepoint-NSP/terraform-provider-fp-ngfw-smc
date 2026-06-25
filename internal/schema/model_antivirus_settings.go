@@ -32,6 +32,7 @@ var _ = context.Background()
 
 type AntivirusSettingsResourceModel struct {
 	AntivirusEnabled          types.Bool   `tfsdk:"antivirus_enabled" json:"antivirus_enabled,optional,omitempty" `
+	AntivirusHttpProxy        types.String `tfsdk:"antivirus_http_proxy" json:"antivirus_http_proxy,optional,omitempty" `
 	AntivirusHttpProxyEnabled types.Bool   `tfsdk:"antivirus_http_proxy_enabled" json:"antivirus_http_proxy_enabled,optional,omitempty" `
 	AntivirusProxyPassword    types.String `tfsdk:"antivirus_proxy_password" json:"antivirus_proxy_password,optional,omitempty" `
 	AntivirusProxyPort        types.Int64  `tfsdk:"antivirus_proxy_port" json:"antivirus_proxy_port,optional,omitempty" `

@@ -20,9 +20,11 @@ This represents Update Server Profile (aka Update Service). It contains the URLs
 - `name` (String) Name of the object.
 - `retry` (Number) The number of retries for connection attempts.
 - `timeout` (Number) The connection timeout in seconds.
+- `tls_profile_ref` (String) This represents a TLS Profile. It contains common data for establishing a TLS connection, including TLS version, cryptography suites, and trusted certificate authorities.
 
 ## Nested Attributes
 - `ordered_url` (List of Blocks, see [here](attr_ranked_url.md)) The list of URLs to connect to the update server. At least one URL is mandatory.
+- `tlsidentity` (Single Block, see [here](attr_tls_identity.md)) 
 
 ## Readonly Attributes
 - `admin_domain` (String) This represents a Domain. Domains are administrative boundaries that allow you to separate the configuration details and other information in the system for the purpose of limiting administrator access.

@@ -39,5 +39,5 @@ func (r *AsPathExpressionResourceModel) GetSliceIds(ctx context.Context) []strin
 	if r.Expression.IsNull() || r.Expression.IsUnknown() {
 		return nil
 	}
-	return []string{r.Expression.String()}
+	return []string{r.Expression.ValueString()}
 }

@@ -1630,6 +1630,87 @@ func TestMergeRoutingNode(t *testing.T) {
 
 }
 
+// TestMergeIpv6AccessList verifies that the key field is correctly merged from
+// the SMC API response into the plan data even when the same IPv6 subnet is
+// represented in different but equivalent forms (expanded vs compressed).
+// This is the regression test for SMC-64518.
+func TestMergeIpv6AccessList(t *testing.T) {
+	setupTest()
+
+	// Terraform config: user wrote subnets in expanded IPv6 form
+	var configJSON = `
+{
+    "entries": [
+        {
+            "ipv6_access_list_entry": {
+                "action": "deny",
+                "subnet": "2001:0db8:85a3:0000:0000:8a2e:0370:7334/128"
+            }
+        },
+        {
+            "ipv6_access_list_entry": {
+                "action": "permit",
+                "subnet": "2606:2800:0220:0001:0248:1893:25c8:1946/64"
+            }
+        }
+    ],
+    "name": "tf_ipv6_access_list"
+}
+`
+	// SMC API response: subnets are returned in compressed IPv6 form, with key fields set
+	var apiJSON = `
+{
+    "entries": [
+        {
+            "ipv6_access_list_entry": {
+                "action": "permit",
+                "key": 100000002,
+                "subnet": "2606:2800:220:1:248:1893:25c8:1946/64"
+            }
+        },
+        {
+            "ipv6_access_list_entry": {
+                "action": "deny",
+                "key": 100000001,
+                "subnet": "2001:db8:85a3::8a2e:370:7334/128"
+            }
+        }
+    ],
+    "key": 100000000,
+    "name": "tf_ipv6_access_list"
+}
+`
+	ctx := tflogtest.RootLogger(context.Background(), os.Stdout)
+
+	var configData schema.Ipv6AccessListResourceModel
+	var apiData schema.Ipv6AccessListResourceModel
+
+	if err := apijson.UnmarshalRoot([]byte(configJSON), &configData); err != nil {
+		t.Fatalf("Failed to unmarshal config data: %v", err)
+	}
+	if err := apijson.UnmarshalRoot([]byte(apiJSON), &apiData); err != nil {
+		t.Fatalf("Failed to unmarshal API data: %v", err)
+	}
+
+	if err := resource.MergeResourceModels(ctx /*src=*/, &apiData /*dest=*/, &configData); err != nil {
+		t.Fatalf("MergeResourceModels failed: %v", err)
+	}
+
+	entries := *configData.Entries
+	entry0 := entries[0].Ipv6AccessListEntry
+	entry1 := entries[1].Ipv6AccessListEntry
+
+	if entry0.Key.ValueInt64() != 100000001 {
+		t.Errorf("entry[0] (deny): expected key 100000001, got %d", entry0.Key.ValueInt64())
+	}
+	if entry1.Key.ValueInt64() != 100000002 {
+		t.Errorf("entry[1] (permit): expected key 100000002, got %d", entry1.Key.ValueInt64())
+	}
+	if configData.Key.ValueInt64() != 100000000 {
+		t.Errorf("list key: expected 100000000, got %d", configData.Key.ValueInt64())
+	}
+}
+
 // skipped for now. merge full does not work (not needed currently)
 func TestMergeHostFull(t *testing.T) {
 	setupTest()

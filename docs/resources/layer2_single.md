@@ -50,6 +50,9 @@ This represents a Layer 2 firewall device in the Stonesoft Management Center, wh
 - `name` (String) Name of the object.
 - `nondecrypted_ca_certificate_ref` (List of String) URI of the non-decrypted CA certificates.
 - `nondecrypted_tls_server_credentials_ref` (List of String) URI of the non-decrypted TLS server credentials.
+- `opcua_client_x509_credentials` (List of String) URI of the TLS Server Credentials.
+- `opcua_decryption_mode` (String) The OPCUA Decryption Mode. 'none' no decryption, 'transparent' transparent decryption, require to set 'opcua_client_x509_credentials' and 'opcua_server_x509_credentials', 'proxy' proxy ( man in the middle ) decryption. require to set opcua_proxy_ca_credendials
+- `opcua_server_x509_credentials` (List of String) URI of the OPC UA TLS Server Credentials.
 - `passive_discard_access_mode` (Boolean) Indicates whether passive discard mode is enabled for connections that match rules with the Terminate action in the Access Rules. When enabled, it does not stop matching connections but creates a special log entry for testing purposes.
 - `passive_discard_mode` (Boolean) Indicates whether the Passive Discard Mode is enabled. If true, it does not stop matching connections but creates a special log entry Terminate (passive) for testing purposes.
 - `reporting_email_addresses` (String) The contact email address for reporting per sender.
@@ -90,6 +93,7 @@ This represents a Layer 2 firewall device in the Stonesoft Management Center, wh
 - `log_moderation` (List of Blocks, see [here](attr_log_moderation.md)) List of Log Moderation settings, which define how log entries are moderated based on specific criteria.
 - `nodes` (List of Blocks, see [here](attr_engine_node_wrapper.md)) The nodes that are part of this cluster. Each node represents a device that shares the workload.
 - `ntp_settings` (Single Block, see [here](attr_ntp_settings.md)) 
+- `opcua_proxy_ca_credentials` (Single Block, see [here](attr_tls_client_protection_wrapper.md)) 
 - `physical_interfaces` (List of Blocks, see [here](attr_abstract_physical_interface_wrapper.md)) The specific physical interfaces for the engine.
 - `sandbox_settings` (Single Block, see [here](attr_sandbox_settings.md)) 
 - `scan_detection` (Single Block, see [here](attr_scan_detection_settings.md)) 

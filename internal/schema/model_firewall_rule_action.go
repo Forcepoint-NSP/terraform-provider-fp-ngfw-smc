@@ -32,6 +32,10 @@ var _ = context.Background()
 
 type FirewallRuleActionResourceModel struct {
 	Action                              *[]types.String                         `tfsdk:"action" json:"action,optional,omitempty" `
+	AuthenticationTracking              types.Bool                              `tfsdk:"authentication_tracking" json:"authentication_tracking,optional,omitempty" `
+	AuthenticationTrackingCaching       types.Bool                              `tfsdk:"authentication_tracking_caching" json:"authentication_tracking_caching,optional,omitempty" `
+	ConfirmAction                       types.Bool                              `tfsdk:"confirm_action" json:"confirm_action,optional,omitempty" `
+	ConfirmActionCaching                types.Bool                              `tfsdk:"confirm_action_caching" json:"confirm_action_caching,optional,omitempty" `
 	ConnectionTrackingOptions           *ConnectionTrackingOptionsResourceModel `tfsdk:"connection_tracking_options" json:"connection_tracking_options,optional,omitempty" `
 	Decrypting                          types.Bool                              `tfsdk:"decrypting" json:"decrypting,optional,omitempty" `
 	DeepInspection                      types.Bool                              `tfsdk:"deep_inspection" json:"deep_inspection,optional,omitempty" `

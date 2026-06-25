@@ -2,16 +2,16 @@
 page_title: "modem_interface"
 subcategory: "interfaces"
 description: |-
-  This represents a Modem Interface, which is used for defining the settings of a 3G or 4G/LTE modem. It includes attributes for modem type and authentication method.
+  This represents a Modem Interface, which is used for defining the settings of 4G/LTE modem. It includes attributes for modem type and authentication method.
 ---
 
 # modem_interface (Nested-Attribute)
 
-This represents a Modem Interface, which is used for defining the settings of a 3G or 4G/LTE modem. It includes attributes for modem type and authentication method.
+This represents a Modem Interface, which is used for defining the settings of 4G/LTE modem. It includes attributes for modem type and authentication method.
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/single_fw/single_fw_modem_interfaces) for a full example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/engines/single_fw/single_fw_modem_interfaces) for a full example
 
 for Ipv4
 
@@ -42,13 +42,13 @@ for Ipv4
 - `interface_id` (String) The Interface ID automatically maps to a physical network port of the same number during the initial configuration of the engine, but the mapping can be changed as necessary through the engine's command line interface. In case of VLAN Physical Interface, enter the VLAN ID (1-4094). The VLAN IDs you add must be the same as the VLAN IDs that are used in the switch at the other end of the VLAN trunk. Each VLAN Interface is identified as Interface-ID.VLAN-ID, for example 2.100 for Interface ID 2 and VLAN ID 100.
 - `mac_prefix` (String) The MAC Address prefix used for a shared interface, which is used to generate unique MAC addresses for interfaces in a shared configuration.
 - `managed_address_flag` (Boolean) Indicates whether Managed Address Configuration is enabled in IPv6 Router Advertisements, which allows the Firewall to offer IPv6 addresses over DHCPv6.
-- `modem_auth_method` (String) The authentication method used for the Modem Interface, applicable for 4G/LTE modems.
-- `modem_interface_type` (String) The type of the Modem Interface, indicating whether it is a 3G or 4G/LTE modem.
+- `modem_interface_type` (String) The type of the Modem Interface, indicating whether it is a 4G/LTE modem.
 - `mtu` (Number) The MTU (maximum transmission unit) size on the connected link. Either enter a value between 400-65535. The default value is 1500.
 - `name` (String) Name of the object.
 - `other_configuration_flag` (Boolean) Indicates whether Other Configuration is enabled in IPv6 Router Advertisements, which allows the Firewall to offer additional configuration information over DHCPv6.
 - `override_engine_settings` (Boolean) Indicates whether the Engine's Default Settings are overridden for this interface, allowing for custom configurations.
 - `override_log_moderation_settings` (Boolean) Indicates whether the Log Moderation settings are overridden for this interface, allowing for custom log moderation configurations.
+- `pin_code` (String) The PIN code needed for the modem's SIM card. If the PIN code is included in the configuration and you change the modem's SIM card after configuring the Firewall, you must change the PIN code.
 - `qos_limit` (Number) The throughput limit for the link on this interface in kilobits per second (kbps). The same throughput is automatically applied to any VLANs created under this Physical Interface.
 - `qos_mode` (String) Defines how QoS is applied to the link on this interface, such as 'none', 'dscp_handling', 'full_qos', or 'throttling'.
 - `qos_policy_ref` (String) This represents a QoS Policy, which is used for Bandwidth Management and Traffic Prioritization based on QoS Classes or DSCP Matches.
@@ -62,6 +62,7 @@ for Ipv4
 - `zone_ref` (String) This represents a Zone, which is used to group together network interfaces of Firewall, IPS, and Layer 2 Firewall engines. Zones can be used to specify receiving or sending interfaces in policies and automatically apply to new interfaces associated with the same Zone.
 
 ## Nested Attributes
+- `apn_interfaces` (List of Blocks, see [here](attr_apn_interface.md)) The list of APN interfaces associated with this modem interface. Each APN interface represents an unique Access Point Name configuration.
 - `arp_entry` (List of Blocks, see [here](attr_arp_entry.md)) the ARP entries associated with this physical interface.
 - `dhcp_relay` (Single Block, see [here](attr_dhcp_relay.md)) 
 - `dhcp_server_on_interface` (Single Block, see [here](attr_dhcp_server_settings.md)) 

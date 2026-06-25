@@ -31,5 +31,7 @@ var _ = fmt.Sprintf
 var _ = context.Background()
 
 type VssContextIscSettingsResourceModel struct {
-	IscPolicyId types.Int64 `tfsdk:"isc_policy_id" json:"isc_policy_id,optional,omitempty" `
+	IscName       types.String `tfsdk:"isc_name" json:"isc_name,optional,omitempty" `
+	IscPolicyId   types.Int64  `tfsdk:"isc_policy_id" json:"isc_policy_id,optional,omitempty" `
+	IscTrafficTag types.String `tfsdk:"isc_traffic_tag" json:"isc_traffic_tag,optional,omitempty" `
 }

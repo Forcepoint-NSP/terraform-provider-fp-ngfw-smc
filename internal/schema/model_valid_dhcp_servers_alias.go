@@ -53,5 +53,5 @@ func (r *ValidDhcpServersAliasResourceModel) GetSliceIds(ctx context.Context) []
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

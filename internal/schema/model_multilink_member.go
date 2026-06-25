@@ -31,6 +31,7 @@ var _ = fmt.Sprintf
 var _ = context.Background()
 
 type MultilinkMemberResourceModel struct {
+	IpRange     types.String                     `tfsdk:"ip_range" json:"ip_range,optional,omitempty" `
 	NetlinkRef  types.String                     `tfsdk:"netlink_ref" json:"netlink_ref,optional,omitempty" `
 	NetlinkRole types.String                     `tfsdk:"netlink_role" json:"netlink_role,optional,omitempty" `
 	NetworkRef  types.String                     `tfsdk:"network_ref" json:"network_ref,optional,omitempty" `

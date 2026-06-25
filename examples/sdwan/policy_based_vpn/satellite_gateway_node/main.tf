@@ -115,7 +115,7 @@ resource "smc_single_fw" "tf_single_fw" {
 }
 
 resource "smc_vpn" "tf_sample_vpn" {
-  mobile_vpn_topology_mode = "None"
+  mobile_vpn_topology_mode = "none"
   name                     = "tf_sample_vpn"
   nat                      = true
   vpn_profile              = data.smc_href.suite_b_gcm_128.id

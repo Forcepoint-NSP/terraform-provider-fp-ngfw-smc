@@ -17,7 +17,7 @@ This represents the Sidewinder Logging Profile Settings, which includes configur
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
 - `element` (String) This is the base class for all storable elements.
-- `enable` (String) Indicates whether the logging profile settings are: '0' not enabled; '1' always enabled; '2' limited.
+- `enable` (String) Indicates whether the logging profile settings are: 'never' or 'always' or 'limited'.
 - `interval` (Number) The interval value in seconds for the logging profile settings, which is applicable when the activation is limited.
 - `threshold` (Number) The threshold value for the logging profile settings, which is applicable when the activation is limited.
 

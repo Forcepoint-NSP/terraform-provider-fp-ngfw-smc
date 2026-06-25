@@ -2,7 +2,7 @@ terraform {
   required_providers {
     smc = {
       source  = "forcepoint-nsp/fp-ngfw-smc"
-      version = "1.741.0"
+      version = "1.750.0"
     }
   }
 }
@@ -19,19 +19,23 @@ variable "url" {
 
 variable "api_version" {
   type    = string
-  default = "7.4"
+  default = null
+}
+
+variable "trusted_cert" {
+  type    = string
+  default = null
+}
+
+variable "verify_ssl" {
+  type    = bool
+  default = false
 }
 
 provider "smc" {
-  url         = var.url
-  api_key     = var.api_key
-  api_version = var.api_version
-}
-
-provider "smc" {
-  alias       = "tfdomain"
-  domain      = "tf_domain"
-  url         = var.url
-  api_key     = var.api_key
-  api_version = var.api_version
+  url          = var.url
+  api_key      = var.api_key
+  api_version  = var.api_version
+  trusted_cert = var.trusted_cert
+  verify_ssl   = var.verify_ssl
 }

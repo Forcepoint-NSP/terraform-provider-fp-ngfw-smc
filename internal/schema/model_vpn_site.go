@@ -31,28 +31,29 @@ var _ = fmt.Sprintf
 var _ = context.Background()
 
 type VpnSiteResourceModel struct {
-	ID          types.String                                       `tfsdk:"id"`
-	FromRef     types.String                                       `tfsdk:"from_ref"`
-	AdminDomain types.String                                       `tfsdk:"admin_domain" json:"admin_domain,optional,omitempty" fpro:"admin_domain"`
-	Automatic   types.Bool                                         `tfsdk:"automatic" json:"automatic,optional,omitempty" `
-	Comment     types.String                                       `tfsdk:"comment" json:"comment,optional,omitempty" `
-	Etag        types.String                                       `tfsdk:"etag" json:"etag,optional,omitempty" fpro:"etag"`
-	Gateway     types.String                                       `tfsdk:"gateway" json:"gateway,optional,omitempty" `
-	Key         types.Int64                                        `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
-	Link        customfield.NestedObjectList[ApiLinkResourceModel] `tfsdk:"-" json:"link,optional,omitempty" fpro:"link"`
-	Lk          customfield.Map[types.String]                      `tfsdk:"link" json:"-" `
-	Locked      types.Bool                                         `tfsdk:"locked" json:"locked,optional,omitempty" fpro:"locked"`
-	Name        types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
-	ReadOnly    types.Bool                                         `tfsdk:"read_only" json:"read_only,optional,omitempty" fpro:"read_only"`
-	SiteElement *[]types.String                                    `tfsdk:"site_element" json:"site_element,optional,omitempty" `
-	System      types.Bool                                         `tfsdk:"system" json:"system,optional,omitempty" fpro:"system"`
-	SystemKey   types.Int64                                        `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`
-	Trashed     types.Bool                                         `tfsdk:"trashed" json:"trashed,optional,omitempty" fpro:"trashed"`
+	ID            types.String                                       `tfsdk:"id"`
+	FromRef       types.String                                       `tfsdk:"from_ref"`
+	AdminDomain   types.String                                       `tfsdk:"admin_domain" json:"admin_domain,optional,omitempty" fpro:"admin_domain"`
+	Automatic     types.Bool                                         `tfsdk:"automatic" json:"automatic,optional,omitempty" `
+	Comment       types.String                                       `tfsdk:"comment" json:"comment,optional,omitempty" `
+	Etag          types.String                                       `tfsdk:"etag" json:"etag,optional,omitempty" fpro:"etag"`
+	Gateway       types.String                                       `tfsdk:"gateway" json:"gateway,optional,omitempty" `
+	Key           types.Int64                                        `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
+	Link          customfield.NestedObjectList[ApiLinkResourceModel] `tfsdk:"-" json:"link,optional,omitempty" fpro:"link"`
+	Lk            customfield.Map[types.String]                      `tfsdk:"link" json:"-" `
+	Locked        types.Bool                                         `tfsdk:"locked" json:"locked,optional,omitempty" fpro:"locked"`
+	Name          types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
+	ReadOnly      types.Bool                                         `tfsdk:"read_only" json:"read_only,optional,omitempty" fpro:"read_only"`
+	SiteElement   *[]types.String                                    `tfsdk:"site_element" json:"site_element,optional,omitempty" `
+	System        types.Bool                                         `tfsdk:"system" json:"system,optional,omitempty" fpro:"system"`
+	SystemKey     types.Int64                                        `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`
+	Trashed       types.Bool                                         `tfsdk:"trashed" json:"trashed,optional,omitempty" fpro:"trashed"`
+	VpnReferences *[]SiteVpnReferenceResourceModel                   `tfsdk:"vpn_references" json:"vpn_references,optional,omitempty" `
 }
 
 func (r *VpnSiteResourceModel) GetSliceIds(ctx context.Context) []string {
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

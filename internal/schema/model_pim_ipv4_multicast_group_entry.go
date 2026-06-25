@@ -41,5 +41,5 @@ func (r *PimIpv4MulticastGroupEntryResourceModel) GetSliceIds(ctx context.Contex
 	if r.Mapping.IsNull() || r.Mapping.IsUnknown() {
 		return nil
 	}
-	return []string{r.Mapping.String()}
+	return []string{r.Mapping.ValueString()}
 }

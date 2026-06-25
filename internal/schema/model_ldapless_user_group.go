@@ -53,5 +53,5 @@ func (r *LdaplessUserGroupResourceModel) GetSliceIds(ctx context.Context) []stri
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

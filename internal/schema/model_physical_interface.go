@@ -54,6 +54,7 @@ type PhysicalInterfaceResourceModel struct {
 	Mtu                           types.Int64                                        `tfsdk:"mtu" json:"mtu,optional,omitempty" `
 	MulticastIp                   types.String                                       `tfsdk:"multicast_ip" json:"multicast_ip,optional,omitempty" `
 	Name                          types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
+	NativeVlanId                  types.Int64                                        `tfsdk:"native_vlan_id" json:"native_vlan_id,optional,omitempty" `
 	OtherConfigurationFlag        types.Bool                                         `tfsdk:"other_configuration_flag" json:"other_configuration_flag,optional,omitempty" `
 	OverrideEngineSettings        types.Bool                                         `tfsdk:"override_engine_settings" json:"override_engine_settings,optional,omitempty" `
 	OverrideLogModerationSettings types.Bool                                         `tfsdk:"override_log_moderation_settings" json:"override_log_moderation_settings,optional,omitempty" `
@@ -81,5 +82,5 @@ func (r *PhysicalInterfaceResourceModel) GetSliceIds(ctx context.Context) []stri
 	if r.InterfaceId.IsNull() || r.InterfaceId.IsUnknown() {
 		return nil
 	}
-	return []string{r.InterfaceId.String()}
+	return []string{r.InterfaceId.ValueString()}
 }

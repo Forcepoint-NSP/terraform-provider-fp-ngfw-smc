@@ -30,14 +30,14 @@ terraform {
   required_providers {
     smc = {
       source  = "forcepoint-nsp/fp-ngfw-smc"
-      version = "1.741.1"
+      version = "1.750.0"
     }
   }
 
   provider "smc" {
     url          = "https://mysmc:8082"
     api_key      = "xxxxxxxxxxxxxxxxx"
-    api_version  = "7.4"
+    api_version  = "7.5"
     trusted_cert = "./mycert.pem"
     verify_ssl   = true
   }
@@ -73,4 +73,10 @@ api_version = "7.3"
 Use latest fp-ngfw-smc terraform version 1.74x.y
 
 > default SMC API version used by latest provider 1.74x.y is SMC API 7.4.
+
+## Provider version for SMC 7.5
+
+Use latest fp-ngfw-smc terraform version 1.75x.y
+
+> default SMC API version used by latest provider 1.75x.y is SMC API 7.5.
 

@@ -11,7 +11,7 @@ This represents the Internal Gateway, which is used for managing VPN connections
 
 ## Examples
 
-<!-- - [two_gateway_in_one_engine_disabled/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/sdwan/policy_based_vpn/two_gateway_in_one_engine_disabled/main.tf): Configures an internal gateway as part of a firewall cluster's SD-WAN setup. -->
+<!-- - [two_gateway_in_one_engine_disabled/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/sdwan/policy_based_vpn/two_gateway_in_one_engine_disabled/main.tf): Configures an internal gateway as part of a firewall cluster's SD-WAN setup. -->
 
 This example demonstrates how to configure an `smc_internal_gateway` resource for enabling internal gateway features in a firewall engine within an SD-WAN topology. It shows typical attributes including VPN client mode and SSL/TLS settings for remote access.
 
@@ -75,8 +75,8 @@ resource "smc_internal_gateway" "tf_single_fw1_2" {
 - `windows_update` (Boolean) Indicates whether Windows Update is enabled for this Internal Gateway.
 
 ## Nested Attributes
+- `application_access_portal_setting` (List of Blocks, see [here](attr_application_access_portal_setting.md)) The Application Access Portal Settings for this Internal Gateway.
 - `dhcp_relay` (Single Block, see [here](attr_dhcp_client_configuration.md)) 
-- `ssl_vpn_portal_setting` (List of Blocks, see [here](attr_ssl_vpn_portal_setting.md)) The Application Access Portal Settings for this Internal Gateway.
 - `ssl_vpn_proxy` (Single Block, see [here](attr_ssl_vpn_setting.md)) 
 - `ssl_vpn_tunneling` (Single Block, see [here](attr_ssl_vpn_setting.md)) 
 

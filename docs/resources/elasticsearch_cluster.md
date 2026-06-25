@@ -11,7 +11,7 @@ This represents an Elasticsearch Cluster, which can be either Elasticsearch or O
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/network_elements/servers/elasticsearch_cluster) for an example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/network_elements/servers/elasticsearch_cluster) for an example
 
 This example creates an Elasticsearch cluster definition for SMC integration.
 
@@ -50,6 +50,7 @@ resource "smc_elasticsearch_cluster" "elasticsearch_cluster" {
 - `name` (String) Name of the object.
 - `port` (Number) The port number for the Elasticsearch Cluster.
 - `product` (String) The product type of the Elasticsearch Cluster, either 'elasticsearch' or 'opensearch'.
+- `tls_profile` (String) This represents a TLS Profile. It contains common data for establishing a TLS connection, including TLS version, cryptography suites, and trusted certificate authorities.
 
 ## Nested Attributes
 - `authentication_settings` (Single Block, see [here](attr_elasticsearch_authentication_settings.md)) 

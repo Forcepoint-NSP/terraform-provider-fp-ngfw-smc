@@ -39,5 +39,5 @@ func (r *DnsRelayInterfaceEntryResourceModel) GetSliceIds(ctx context.Context) [
 	if r.Address.IsNull() || r.Address.IsUnknown() {
 		return nil
 	}
-	return []string{r.Address.String()}
+	return []string{r.Address.ValueString()}
 }

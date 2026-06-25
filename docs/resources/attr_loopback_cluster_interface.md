@@ -16,7 +16,7 @@ This represents the CVI Loopback IP address, which is used for loopback traffic 
 - `address` (String) The IP Address (IPv4 or IPv6) of the interface. For dynamic interfaces, this will be null.
 - `comment` (String) An optional comment for the element. This field is not required.
 - `igmp_mode` (String) The IGMP mode for this interface, which can be 'upstream' or 'downstream'. In upstream mode, the firewall acts as an IGMP querier for multicast servers and hosts in local networks. In downstream mode, the firewall queries downstream networks for hosts that want to join or leave multicast host groups.
-- `igmp_version` (String) The IGMP version used by this interface, which can be 1, 2, or 3. The default version is 3, but you may need to select another version for compatibility with certain hosts.
+- `igmp_version` (String) The IGMP version used by this interface, which can be igmpv1, igmpv2, or igmpv3. The default version is 3, but you may need to select another version for compatibility with certain hosts.
 - `name` (String) Name of the object.
 - `network_value` (String) The IP Network (IPv4 or IPv6) of the interface. For dynamic interfaces, this will be null.
 - `nicid` (String) The Interface ID of the interface.

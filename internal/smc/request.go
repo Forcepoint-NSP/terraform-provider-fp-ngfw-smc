@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"net/http"
 	neturl "net/url"
+	"strings"
 	"time"
 )
 
@@ -318,7 +319,12 @@ func SearchElements(config *GenericCRUDConfig, namePattern string) ([]SearchResu
 	client := config.Client
 
 	encodedName := neturl.QueryEscape(namePattern)
-	searchURL := fmt.Sprintf("%s/%s/elements/%s?filter=%s&exact_match=true", client.BaseUrl, client.APIVersion, config.ResourceType, encodedName)
+	var searchURL string
+	if strings.ContainsAny(namePattern, "*?") {
+		searchURL = fmt.Sprintf("%s/%s/elements/%s?filter=%s", client.BaseUrl, client.APIVersion, config.ResourceType, encodedName)
+	} else {
+		searchURL = fmt.Sprintf("%s/%s/elements/%s?filter=%s&exact_match=true", client.BaseUrl, client.APIVersion, config.ResourceType, encodedName)
+	}
 	headers := client.GetJSONHeaders()
 
 	searchResp, err := client.DoRequest(Options{
@@ -332,13 +338,22 @@ func SearchElements(config *GenericCRUDConfig, namePattern string) ([]SearchResu
 	}
 
 	if searchResp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("search failed with status %d: %s", searchResp.StatusCode, string(searchResp.Body))
+		return nil, fmt.Errorf("search failed with status %d at %s: %s", searchResp.StatusCode, searchURL, string(searchResp.Body))
 	}
 
 	var searchResponse SearchResponse
 	if err := json.Unmarshal(searchResp.Body, &searchResponse); err != nil {
+		client.SmcContext.Debug("SearchElements unmarshal failed", map[string]interface{}{
+			"url":           searchURL,
+			"response_body": string(searchResp.Body),
+			"error":         err.Error(),
+		})
 		return nil, fmt.Errorf("failed to unmarshal search response: %w", err)
 	}
 
+	client.SmcContext.Debug("SearchElements completed", map[string]interface{}{
+		"url":   searchURL,
+		"count": len(searchResponse.Result),
+	})
 	return searchResponse.Result, nil
 }

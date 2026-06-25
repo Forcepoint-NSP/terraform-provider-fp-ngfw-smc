@@ -258,7 +258,8 @@ resource "smc_single_fw" "tf_single_fw" {
       enabled         = true
     }
     ospfv2 {
-      enabled = false
+      enabled   = false
+      router_id = "automatic"
     }
   }
 

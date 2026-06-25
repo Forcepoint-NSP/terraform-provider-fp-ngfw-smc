@@ -17,8 +17,8 @@ This represents an entry in an IPv6 Prefix List, which is used to filter BGP rou
 - `comment` (String) A comment for the access or prefix list entry.
 - `max_prefix_length` (Number) The maximum prefix length for the IPv6 prefix list entry, used to filter routes.
 - `min_prefix_length` (Number) The minimum prefix length for the IPv6 prefix list entry, used to filter routes.
-- `name` (String) Name of the object.
 - `ne_ref` (String) This represents a network element, which is a component that has an IP address and can be part of a network. It includes a location reference.
+- `rank` (Number) The rank of the access list entry.
 - `subnet` (String) The IP network or subnet for the access or prefix list entry.
 
 

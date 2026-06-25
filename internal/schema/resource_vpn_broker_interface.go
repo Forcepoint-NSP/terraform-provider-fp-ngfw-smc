@@ -19,6 +19,7 @@ package schema
 
 import (
 	"context"
+	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -68,4 +69,25 @@ func NewVpnBrokerInterfaceResource() resource.Resource {
 	}
 	r.ResourceBase.Dispatch = r
 	return r
+}
+
+var _ resource.ResourceWithValidateConfig = &VpnBrokerInterfaceResource{}
+
+func (r *VpnBrokerInterfaceResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var data VpnBrokerInterfaceResourceModel
+	// Config.Get fails when any attribute is unknown (e.g. a module output that has
+	// not been resolved yet).  In that case we skip sub-validation; the framework
+	// will call ValidateConfig again once all values are known.
+	if diags := req.Config.Get(ctx, &data); diags.HasError() {
+		return
+	}
+	r.validateInterfaces(data, resp)
+}
+
+func (r *VpnBrokerInterfaceResource) validateInterfaces(data VpnBrokerInterfaceResourceModel, resp *resource.ValidateConfigResponse) {
+	if data.Interfaces != nil {
+		for _i0, _v0 := range *data.Interfaces {
+			smcresource.ValidateAnyOf(&_v0, fmt.Sprintf("interfaces[%d]", _i0), &resp.Diagnostics)
+		}
+	}
 }

@@ -31,27 +31,29 @@ var _ = fmt.Sprintf
 var _ = context.Background()
 
 type UpdateServerProfileResourceModel struct {
-	ID          types.String                                       `tfsdk:"id"`
-	AdminDomain types.String                                       `tfsdk:"admin_domain" json:"admin_domain,optional,omitempty" fpro:"admin_domain"`
-	Comment     types.String                                       `tfsdk:"comment" json:"comment,optional,omitempty" `
-	Etag        types.String                                       `tfsdk:"etag" json:"etag,optional,omitempty" fpro:"etag"`
-	Key         types.Int64                                        `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
-	Link        customfield.NestedObjectList[ApiLinkResourceModel] `tfsdk:"-" json:"link,optional,omitempty" fpro:"link"`
-	Lk          customfield.Map[types.String]                      `tfsdk:"link" json:"-" `
-	Locked      types.Bool                                         `tfsdk:"locked" json:"locked,optional,omitempty" fpro:"locked"`
-	Name        types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
-	OrderedUrl  *[]RankedUrlResourceModel                          `tfsdk:"ordered_url" json:"ordered_url,optional,omitempty" `
-	ReadOnly    types.Bool                                         `tfsdk:"read_only" json:"read_only,optional,omitempty" fpro:"read_only"`
-	Retry       types.Int64                                        `tfsdk:"retry" json:"retry,optional,omitempty" `
-	System      types.Bool                                         `tfsdk:"system" json:"system,optional,omitempty" fpro:"system"`
-	SystemKey   types.Int64                                        `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`
-	Timeout     types.Int64                                        `tfsdk:"timeout" json:"timeout,optional,omitempty" `
-	Trashed     types.Bool                                         `tfsdk:"trashed" json:"trashed,optional,omitempty" fpro:"trashed"`
+	ID            types.String                                       `tfsdk:"id"`
+	AdminDomain   types.String                                       `tfsdk:"admin_domain" json:"admin_domain,optional,omitempty" fpro:"admin_domain"`
+	Comment       types.String                                       `tfsdk:"comment" json:"comment,optional,omitempty" `
+	Etag          types.String                                       `tfsdk:"etag" json:"etag,optional,omitempty" fpro:"etag"`
+	Key           types.Int64                                        `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
+	Link          customfield.NestedObjectList[ApiLinkResourceModel] `tfsdk:"-" json:"link,optional,omitempty" fpro:"link"`
+	Lk            customfield.Map[types.String]                      `tfsdk:"link" json:"-" `
+	Locked        types.Bool                                         `tfsdk:"locked" json:"locked,optional,omitempty" fpro:"locked"`
+	Name          types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
+	OrderedUrl    *[]RankedUrlResourceModel                          `tfsdk:"ordered_url" json:"ordered_url,optional,omitempty" `
+	ReadOnly      types.Bool                                         `tfsdk:"read_only" json:"read_only,optional,omitempty" fpro:"read_only"`
+	Retry         types.Int64                                        `tfsdk:"retry" json:"retry,optional,omitempty" `
+	System        types.Bool                                         `tfsdk:"system" json:"system,optional,omitempty" fpro:"system"`
+	SystemKey     types.Int64                                        `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`
+	Timeout       types.Int64                                        `tfsdk:"timeout" json:"timeout,optional,omitempty" `
+	TlsProfileRef types.String                                       `tfsdk:"tls_profile_ref" json:"tls_profile_ref,optional,omitempty" `
+	TLSIdentity   *TlsIdentityResourceModel                          `tfsdk:"tlsidentity" json:"TLSIdentity,optional,omitempty" `
+	Trashed       types.Bool                                         `tfsdk:"trashed" json:"trashed,optional,omitempty" fpro:"trashed"`
 }
 
 func (r *UpdateServerProfileResourceModel) GetSliceIds(ctx context.Context) []string {
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

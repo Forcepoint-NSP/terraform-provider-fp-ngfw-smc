@@ -11,7 +11,7 @@ This represents the PIM IPv4 Profile for Dynamic Routing Firewall functionality.
 
 ## Examples
 
-- [PIM IPv4 Profile Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/dynamic_routing/PIM/pim_profiles/main.tf)
+- [PIM IPv4 Profile Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/engines/dynamic_routing/PIM/pim_profiles/main.tf)
 
 Defines a PIM (Protocol Independent Multicast) IPv4 profile for use in multicast configurations.
 
@@ -56,6 +56,9 @@ resource "smc_pim_ipv4_profile" "pim_profile" {
 - `joined_prune` (Number) The Joined-Prune interval in seconds. This value determines how long a PIM router will wait before sending a prune message after a join.
 - `name` (String) Name of the object.
 - `smart_multicast_antispoofing` (Boolean) Indicates whether Smart Multicast Antispoofing is enabled. When enabled, it helps prevent multicast spoofing attacks.
+- `spt_switch_interval` (Number) The PIM-SM SPT Switch Interval in seconds. This value determines how often the SPT switch threshold is evaluated.
+- `spt_switch_threshold` (Number) The PIM-SM SPT switch threshold in the specified unit. This value determines when to switch from the shared tree to the shortest path tree.
+- `spt_switch_threshold_unit` (String) The PIM-SM SPT switch threshold unit. This determines the unit of measurement for the SPT switch threshold.
 
 ## Nested Attributes
 - `pim_multicast_group_entry` (List of Blocks, see [here](attr_pim_ipv4_multicast_group_entry.md)) The PIM Multicast Group entries. These entries define the multicast groups that the PIM Profile will manage.

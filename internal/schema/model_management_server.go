@@ -52,7 +52,6 @@ type ManagementServerResourceModel struct {
 	LocationRef                         types.String                                       `tfsdk:"location_ref" json:"location_ref,optional,omitempty" `
 	Locked                              types.Bool                                         `tfsdk:"locked" json:"locked,optional,omitempty" fpro:"locked"`
 	LogDiskSpaceHandlingMode            types.String                                       `tfsdk:"log_disk_space_handling_mode" json:"log_disk_space_handling_mode,optional,omitempty" `
-	MgtIntegrationContainer             *[]ManagementIntegrationContainerResourceModel     `tfsdk:"mgt_integration_container" json:"mgt_integration_container,optional,omitempty" `
 	Name                                types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
 	NetflowCollector                    *[]NetflowCollectorResourceModel                   `tfsdk:"netflow_collector" json:"netflow_collector,optional,omitempty" `
 	RadiusMethod                        types.String                                       `tfsdk:"radius_method" json:"radius_method,optional,omitempty" `
@@ -89,5 +88,5 @@ func (r *ManagementServerResourceModel) GetSliceIds(ctx context.Context) []strin
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

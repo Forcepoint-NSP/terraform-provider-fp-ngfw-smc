@@ -338,6 +338,20 @@ func (r *ResourceBase[T]) smcCreateSubResource(
 func (r *ResourceBase[T]) updateTfState(ctx context.Context, data *T, id string,
 	state *tfsdk.State, diag *diag.Diagnostics) (*smc.ResponseData, error) {
 
+	// Normalize the href against the current base URL and API version so the
+	// id persisted to state stays valid after an SMC upgrade or http->https
+	// switch (SMC-66510, SMC-64735). SMC element ids are stable across
+	// versions, so only the scheme/host/port and version prefix change.
+	normalizedId, err := r.Config.Client.NormalizeHref(id)
+	if err != nil {
+		diag.AddError(
+			"Error normalizing resource href",
+			fmt.Sprintf("Could not normalize href '%s': %s", id, err.Error()),
+		)
+		return nil, err
+	}
+	id = normalizedId
+
 	// Read the created resource to get full details
 	readResp, err := r.Config.ReadResourceByHref(id)
 	if err != nil {

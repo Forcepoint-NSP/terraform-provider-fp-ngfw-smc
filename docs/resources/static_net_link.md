@@ -11,7 +11,7 @@ This represents a Static NetLink, which is a type of NetLink used for routing in
 
 ## Examples
 
-- [Netlink Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/network_elements/netlink/main.tf)
+- [Netlink Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/network_elements/netlink/main.tf)
 
 Defines a Netlink, which controls WAN redundancy and failover.
 
@@ -48,11 +48,14 @@ resource "smc_netlink" "tf_sample_netlink" {
 - `location_ref` (String) This represents the definition of a Location, which keeps a list of Network Elements belonging to the same location.
 - `name` (String) Name of the object.
 - `network_ref` (List of String) URI of the Network to define the address space.
+- `nsp_name` (String) The NSP Name for the NetLink, which is the provider name of your ISP.
 - `output_speed` (Number) The Output Speed in bits per second for the NetLink, which defines the real-life bandwidth this network connection provides. It is used to calculate how much traffic each link receives in relation to the other links.
 - `probe_address` (List of String) The IP address that is probed with ICMP echo requests (ping) to determine if the link is up. Repeat this for each IP address you want to add. We recommend entering more than one address to avoid excluding the link in case the host that is probed goes down.
 - `standby_mode_period` (Number) The standby period in seconds for the NetLink, which defines how often the link is probed when it is in Standby mode. Leave the setting for Standby Mode as 0 if you prefer not to test this link when it is on standby.
 - `standby_mode_timeout` (Number) The standby timeout in seconds for the NetLink, which defines how long the firewall waits before it considers the probe failed in Standby mode. Change the setting for Standby Mode to 0 if you prefer not to test this link when it is on standby.
 
+## Nested Attributes
+- `domain_server_address` (List of Blocks, see [here](attr_dns_element.md)) The list of DNS elements that define the DNS servers provided by the ISP. Each element contains the DNS server address and other related information.
 
 ## Readonly Attributes
 - `admin_domain` (String) This represents a Domain. Domains are administrative boundaries that allow you to separate the configuration details and other information in the system for the purpose of limiting administrator access.

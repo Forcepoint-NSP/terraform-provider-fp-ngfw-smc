@@ -54,5 +54,5 @@ func (r *TrustedUpdateCertificateAuthorityResourceModel) GetSliceIds(ctx context
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

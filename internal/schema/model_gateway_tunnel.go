@@ -35,8 +35,8 @@ type GatewayTunnelResourceModel struct {
 	FromRef            types.String                                       `tfsdk:"from_ref"`
 	Comment            types.String                                       `tfsdk:"comment" json:"comment,optional,omitempty" `
 	Enabled            types.Bool                                         `tfsdk:"enabled" json:"enabled,optional,omitempty" `
-	GatewayNode1       *GatewayNodeResourceModel                          `tfsdk:"gateway_node_1" json:"gateway_node_1,optional,omitempty" `
-	GatewayNode2       *GatewayNodeResourceModel                          `tfsdk:"gateway_node_2" json:"gateway_node_2,optional,omitempty" `
+	GatewayNode1       types.String                                       `tfsdk:"gateway_node_1" json:"gateway_node_1,optional,omitempty" `
+	GatewayNode2       types.String                                       `tfsdk:"gateway_node_2" json:"gateway_node_2,optional,omitempty" `
 	HashedPresharedKey types.String                                       `tfsdk:"hashed_preshared_key" json:"hashed_preshared_key,optional,omitempty" `
 	Key                types.Int64                                        `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
 	Link               customfield.NestedObjectList[ApiLinkResourceModel] `tfsdk:"-" json:"link,optional,omitempty" fpro:"link"`
@@ -44,11 +44,12 @@ type GatewayTunnelResourceModel struct {
 	Name               types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
 	PpkRef             types.String                                       `tfsdk:"ppk_ref" json:"ppk_ref,optional,omitempty" `
 	PresharedKey       types.String                                       `tfsdk:"preshared_key" json:"preshared_key,optional,omitempty" `
+	VpnProfile         types.String                                       `tfsdk:"vpn_profile" json:"vpn_profile,optional,omitempty" `
 }
 
 func (r *GatewayTunnelResourceModel) GetSliceIds(ctx context.Context) []string {
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

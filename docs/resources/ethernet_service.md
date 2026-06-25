@@ -1,11 +1,11 @@
 ---
-page_title: "smc_service_ethernet"
+page_title: "smc_ethernet_service"
 subcategory: "services"
 description: |-
   This represents an Ethernet service, which is used to define a service based on Ethernet protocols. It includes a frame type and optional MAC values for traffic identification.
 ---
 
-# smc_service_ethernet (Resource)
+# smc_ethernet_service (Resource)
 
 
 ⚠️ __Experimental feature, use with caution__. This feature is not yet fully supported and may change without deprecation in future releases.

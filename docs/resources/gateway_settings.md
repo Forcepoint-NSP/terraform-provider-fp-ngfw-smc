@@ -18,6 +18,8 @@ This represents various gateway and VPN parameters to be set at Firewall level. 
 - `id` (String) this attribute is the identifier of terraform resource
 - `certificate_cache_crl_validity` (Number) Time in seconds for which the certificate cache is valid.
 - `comment` (String) An optional comment for the element. This field is not required.
+- `dpd_interval` (Number) Dead Peer Detection interval in seconds. If not set, the engine default is used.
+- `dpd_timeout` (Number) Dead Peer Detection timeout in seconds. If not set, the engine default is used.
 - `mobike_after_sa_update` (Boolean) Whether the After SA flag is set for Mobike Policy.
 - `mobike_before_sa_update` (Boolean) Whether the Before SA flag is set for Mobike Policy.
 - `mobike_no_rrc` (Boolean) Whether the No RRC flag is set for Mobike Policy.

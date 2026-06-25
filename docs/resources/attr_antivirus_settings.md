@@ -14,6 +14,7 @@ This represents the settings for the antivirus feature on a firewall element, in
 
 ## Simple Attributes
 - `antivirus_enabled` (Boolean) Indicates whether the antivirus feature is enabled on the firewall element.
+- `antivirus_http_proxy` (String) The HTTP Proxy address used for antivirus updates.
 - `antivirus_http_proxy_enabled` (Boolean) Indicates whether the HTTP Proxy is enabled for antivirus updates. By default, it is not enabled.
 - `antivirus_proxy_password` (String) The HTTP Proxy password used for authentication when accessing the antivirus update server.
 - `antivirus_proxy_port` (Number) The HTTP Proxy port used for antivirus updates.

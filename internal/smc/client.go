@@ -39,11 +39,16 @@ const PingEntryPoint = "elements/admin_domain/1"
 // SmcClient represents an SMC API client with authentication capabilities.
 // URL will be used as a unique identifier for the provider (SMC Server ID)
 type SmcClient struct {
-	BaseUrl       string // Base URL of the SMC API. expecting: "http(s)://<host>[:port]"
-	APIKey        string
-	VerifySSL     bool   // Whether to verify SSL certificates
-	TrustedCert   string // PEM encoded trusted certificate
-	Token         string // Authentication token (JSESSIONID or Authorization header)
+	BaseUrl     string // Base URL of the SMC API. expecting: "http(s)://<host>[:port]"
+	APIKey      string
+	VerifySSL   bool   // Whether to verify SSL certificates
+	TrustedCert string // PEM encoded trusted certificate
+	Token       string // Authentication token (JSESSIONID or Authorization header value)
+	// SessionCookie holds the JSESSIONID returned by the SMC login response.
+	// When the SMC option "Use SSL for session ID" is disabled, the server
+	// tracks sessions via JSESSIONID even on HTTPS, so this cookie must be
+	// sent alongside the Authorization header on every request.
+	SessionCookie string
 	APIVersion    string // API version to use. eg "7.4"
 	Domain        string
 	UseAuthHeader bool // Track whether to use Authorization header
@@ -125,6 +130,21 @@ func createTLSConfig(trustedCert string, insecure bool) (*tls.Config, error) {
 	return tlsConfig, nil
 }
 
+// NormalizeHref rewrites an SMC href so it targets the currently configured
+// connection: it replaces the scheme/host/port with the client BaseUrl and the
+// API version path segment with the client APIVersion.
+//
+// SMC element ids are stable across versions, so an href stored in Terraform
+// state (e.g. from a previous SMC version, or before an http->https switch)
+// remains valid after being normalized. See SMC-66510 and SMC-64735.
+func (c *SmcClient) NormalizeHref(href string) (string, error) {
+	normalized, err := ReplaceBaseInURL(href, c.BaseUrl)
+	if err != nil {
+		return "", err
+	}
+	return ReplaceVersionInURL(normalized, c.APIVersion)
+}
+
 // unsafeRequest performs the actual HTTP request without
 // locking. Should not be called directly, use DoRequest instead.
 func (c *SmcClient) unsafeRequest(opts *Options) (*ResponseData, error) {
@@ -138,11 +158,12 @@ func (c *SmcClient) unsafeRequest(opts *Options) (*ResponseData, error) {
 		body = bytes.NewReader(opts.Body)
 	}
 
-	// replace the scheme, host and port with those from the
-	// client (reverse proxy)
-	newUrl, err := ReplaceBaseInURL(opts.URL, c.BaseUrl)
+	// replace the scheme, host, port and API version with those from
+	// the client, so a stale href stored in state still targets the
+	// currently configured SMC (reverse proxy, http->https, version upgrade)
+	newUrl, err := c.NormalizeHref(opts.URL)
 	if err != nil {
-		return nil, fmt.Errorf("failed to replace base URL: %w", err)
+		return nil, fmt.Errorf("failed to normalize URL: %w", err)
 	}
 	req, err := http.NewRequestWithContext(ctx, opts.Method, newUrl, body)
 	if err != nil {
@@ -150,6 +171,14 @@ func (c *SmcClient) unsafeRequest(opts *Options) (*ResponseData, error) {
 	}
 
 	for k, v := range opts.Headers {
+		// Skip auth headers — they are always set below from c.Token/c.UseAuthHeader.
+		// opts.Headers may contain stale auth values captured before login (e.g. an
+		// empty JSESSIONID cookie from GetJSONHeaders() on an unauthenticated client).
+		// Letting them through causes the SMC to reject the request with 401 even
+		// when a valid Authorization header is also present.
+		if strings.EqualFold(k, "Authorization") || strings.EqualFold(k, "Cookie") {
+			continue
+		}
 		req.Header.Set(k, v)
 	}
 
@@ -161,8 +190,19 @@ func (c *SmcClient) unsafeRequest(opts *Options) (*ResponseData, error) {
 
 	if c.UseAuthHeader {
 		req.Header.Set("Authorization", c.Token)
+		if c.SessionCookie != "" {
+			req.Header.Set("Cookie", fmt.Sprintf("JSESSIONID=%s", c.SessionCookie))
+		}
+		c.SmcContext.Debug(fmt.Sprintf(
+			"Sending %s %s with Authorization header: token=%q jsessionid=%q",
+			opts.Method, newUrl, c.Token[:min(len(c.Token), 60)], c.SessionCookie,
+		))
 	} else {
 		req.Header.Set("Cookie", fmt.Sprintf("JSESSIONID=%s", c.Token))
+		c.SmcContext.Debug(fmt.Sprintf(
+			"Sending %s %s with JSESSIONID cookie: token=%q",
+			opts.Method, newUrl, c.Token[:min(len(c.Token), 60)],
+		))
 	}
 
 	// Create HTTP client with optional TLS configuration
@@ -186,8 +226,10 @@ func (c *SmcClient) unsafeRequest(opts *Options) (*ResponseData, error) {
 		client.Transport = transport
 	}
 
+	c.SmcContext.Trace(fmt.Sprintf("→ %s %s", opts.Method, newUrl))
 	resp, err := client.Do(req)
 	if err != nil {
+		c.SmcContext.Trace(fmt.Sprintf("← %s %s error: %s", opts.Method, newUrl, err.Error()))
 		return nil, err
 	}
 	defer func() { _ = resp.Body.Close() }()
@@ -196,6 +238,11 @@ func (c *SmcClient) unsafeRequest(opts *Options) (*ResponseData, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	c.SmcContext.Trace(fmt.Sprintf(
+		"← %s %s %d headers=%v body=%s",
+		opts.Method, newUrl, resp.StatusCode, resp.Header, string(respBody),
+	))
 
 	etag := resp.Header.Get("ETag")
 	if etag != "" {
@@ -405,35 +452,47 @@ func (c *SmcClient) Login(ctx context.Context) error {
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		c.SmcContext.Error("Login failed with non-success status", map[string]any{
 			"status_code": resp.StatusCode,
+			"url":         url,
 			"body":        string(resp.Body),
+			"headers":     resp.Headers,
 		})
-		return fmt.Errorf("login failed with status %d: %s", resp.StatusCode, string(resp.Body))
+		return fmt.Errorf("login failed with status %d at %s: %s", resp.StatusCode, url, string(resp.Body))
+	}
+
+	// Always extract JSESSIONID from Set-Cookie (needed alongside Authorization on HTTPS).
+	for _, cookieStr := range resp.Headers["Set-Cookie"] {
+		if !strings.Contains(cookieStr, "JSESSIONID=") {
+			continue
+		}
+		for _, part := range strings.Split(cookieStr, ";") {
+			part = strings.TrimSpace(part)
+			if strings.HasPrefix(part, "JSESSIONID=") {
+				c.SessionCookie = strings.TrimPrefix(part, "JSESSIONID=")
+				break
+			}
+		}
 	}
 
 	// Try to get token from Authorization header first (for HTTPS)
 	if authHeader := resp.Headers.Get("Authorization"); authHeader != "" {
 		c.Token = authHeader
 		c.UseAuthHeader = true
-		c.SmcContext.Info("Successfully logged in using Authorization header")
+		c.LoginConfirmed = true
+		c.SmcContext.Debug(fmt.Sprintf(
+			"Login OK (Authorization header): token=%q jsessionid=%q",
+			authHeader[:min(len(authHeader), 60)],
+			c.SessionCookie,
+		))
 		return nil
 	}
 
-	// Fallback: Extract JSESSIONID from Set-Cookie header (for HTTP)
-	cookies := resp.Headers["Set-Cookie"]
-	for _, cookieStr := range cookies {
-		if strings.Contains(cookieStr, "JSESSIONID=") {
-			parts := strings.Split(cookieStr, ";")
-			for _, part := range parts {
-				if strings.HasPrefix(part, "JSESSIONID=") {
-					c.Token = strings.TrimPrefix(part, "JSESSIONID=")
-					c.UseAuthHeader = false
-					c.SmcContext.Info("Successfully logged in using JSESSIONID cookie")
-					break
-				}
-			}
-		}
+	// Fallback: use JSESSIONID cookie only (for HTTP)
+	if c.SessionCookie != "" {
+		c.Token = c.SessionCookie
+		c.UseAuthHeader = false
+		c.LoginConfirmed = true
+		c.SmcContext.Info(fmt.Sprintf("Login OK (JSESSIONID cookie): jsessionid=%q", c.SessionCookie))
 	}
-	c.LoginConfirmed = true
 	return nil
 }
 

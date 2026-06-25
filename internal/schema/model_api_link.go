@@ -40,5 +40,5 @@ func (r *ApiLinkResourceModel) GetSliceIds(ctx context.Context) []string {
 	if r.Href.IsNull() || r.Href.IsUnknown() {
 		return nil
 	}
-	return []string{r.Href.String()}
+	return []string{r.Href.ValueString()}
 }

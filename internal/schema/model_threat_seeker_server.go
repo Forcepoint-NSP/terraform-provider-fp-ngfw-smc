@@ -37,6 +37,8 @@ type ThreatSeekerServerResourceModel struct {
 	DdsApiKey     types.String                                       `tfsdk:"dds_api_key" json:"dds_api_key,optional,omitempty" `
 	DdsUrl        types.String                                       `tfsdk:"dds_url" json:"dds_url,optional,omitempty" `
 	Etag          types.String                                       `tfsdk:"etag" json:"etag,optional,omitempty" fpro:"etag"`
+	GuidRtcc      types.String                                       `tfsdk:"guid_rtcc" json:"guid_rtcc,optional,omitempty" `
+	GuidRtss      types.String                                       `tfsdk:"guid_rtss" json:"guid_rtss,optional,omitempty" `
 	Key           types.Int64                                        `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
 	Link          customfield.NestedObjectList[ApiLinkResourceModel] `tfsdk:"-" json:"link,optional,omitempty" fpro:"link"`
 	Lk            customfield.Map[types.String]                      `tfsdk:"link" json:"-" `
@@ -48,7 +50,9 @@ type ThreatSeekerServerResourceModel struct {
 	SystemKey     types.Int64                                        `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`
 	Trashed       types.Bool                                         `tfsdk:"trashed" json:"trashed,optional,omitempty" fpro:"trashed"`
 	TsCertificate types.String                                       `tfsdk:"ts_certificate" json:"ts_certificate,optional,omitempty" `
+	Tskey         types.String                                       `tfsdk:"tskey" json:"tskey,optional,omitempty" `
 	TskeyExp      types.String                                       `tfsdk:"tskey_exp" json:"tskey_exp,optional,omitempty" `
+	Tstoken       types.String                                       `tfsdk:"tstoken" json:"tstoken,optional,omitempty" `
 	Url           types.String                                       `tfsdk:"url" json:"url,optional,omitempty" `
 }
 
@@ -56,5 +60,5 @@ func (r *ThreatSeekerServerResourceModel) GetSliceIds(ctx context.Context) []str
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

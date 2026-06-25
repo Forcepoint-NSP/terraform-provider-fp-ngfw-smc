@@ -1,14 +1,24 @@
 /* this test creates a custom domain 'tf_domain', then connects to it
-   using a provider alias and creates a single firewall within that domain 
+   using a provider alias and creates a single firewall within that domain
 */
+
+provider "smc" {
+  alias       = "tfdomain"
+  domain      = "tf_domain"
+  url         = var.url
+  api_key     = var.api_key
+  api_version = var.api_version
+}
+
 variable "resource_comment" {
   type    = string
   default = "Created by Terraform"
 }
 
 resource "smc_admin_domain" "tf_domain" {
-  name    = "tf_domain"
-  comment = "test domain created by terraform"
+  name          = "tf_domain"
+  comment       = "test domain created by terraform"
+  contact_email = "admin@example.com"
 }
 
 data "smc_href" "log_server" {

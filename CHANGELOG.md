@@ -1,3 +1,30 @@
+## 1.750.0 (2026-06-23)
+
+Targets SMC API **7.5 / 7.5.0** (base path `/7.4/` → `/7.5/`). Main changes vs 7.4.1:
+
+**SSL VPN Portal → Application Access Portal** _(API only — no example yet)_
+- SSL VPN Portal feature renamed and reworked: all `SSL_VPN_*` schemas removed, replaced by `Application_Access_*` (portal, portal policy, rules, service profile, web service, SSO domain, logo/icon/background assets)
+- Internal gateway: `ssl_vpn_portal_setting` → `application_access_portal_setting`
+
+**ZTNA Connector → Replica Internal Gateways** _(API only — no example yet)_
+- `ZTNA_Connector_Settings` removed; `ztna_connector_settings` dropped from all engines
+- New `replica_internal_gateway` / `replica_internal_endpoint` elements; `replica_internal_gateways` added on single/cluster/cloud/virtual firewalls, master engine, VSS container
+
+**Interfaces**
+- New `APN_Interface`; `Modem_Interface` gains `apn_interfaces` + `pin_code`, drops `modem_auth_method` — example: `engines/single_fw/single_fw_modem_interfaces`
+- Legacy `apn` / `phone_number` / `pin_code` removed from node interfaces
+- `Physical_Interface` gains `native_vlan_id` _(API only — no example yet)_
+
+**VPN / IPsec** _(API only — no example yet)_
+- VPN profile: TFC traffic-flow confidentiality (`tfc_padding`, `tfc_disable_dscp_copy`)
+- Gateway settings: dead-peer-detection tuning (`dpd_interval`, `dpd_timeout`)
+
+**Policies & logging** _(API only — no example yet)_
+- Firewall rule action: authentication & confirmation tracking + caching
+- Log tasks (archive/delete/export): `use_elasticsearch`
+
+---
+
 ## 1.741.0 (2026-03-23)
 
 Targets SMC API **7.4 / 7.4.1**. First production-ready release covering:

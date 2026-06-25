@@ -146,6 +146,24 @@ func (d *SubElementDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		return
 	}
 
+	// Guard against a provider that has not been (fully) configured, e.g. when
+	// the provider url is unknown because it depends on a resource created in
+	// the same apply (SMC-66522). Without this guard the search below would
+	// dereference a nil client and crash the plugin. Reference the resource
+	// that provides the provider configuration with depends_on so this read is
+	// deferred until apply, when the client is available.
+	if d.client == nil {
+		resp.Diagnostics.AddError(
+			"SMC client not configured",
+			"The SMC provider configuration contains unknown values (for example a "+
+				"url derived from a resource created in the same apply), so this data "+
+				"source cannot be read yet. Add a depends_on referencing the resource "+
+				"that produces the provider configuration so the read is deferred "+
+				"until apply.",
+		)
+		return
+	}
+
 	// Perform the search
 	// Create CRUD config for the search
 	config := &smc.GenericCRUDConfig{

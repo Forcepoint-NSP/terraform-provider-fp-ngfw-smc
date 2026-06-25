@@ -32,6 +32,7 @@ var _ = context.Background()
 
 type IpNetlinkWeightResourceModel struct {
 	ArpGenerate types.Bool   `tfsdk:"arp_generate" json:"arp_generate,optional,omitempty" `
+	Ipaddress   types.String `tfsdk:"ipaddress" json:"ipaddress,optional,omitempty" `
 	NetlinkRef  types.String `tfsdk:"netlink_ref" json:"netlink_ref,optional,omitempty" `
 	NetworkRef  types.String `tfsdk:"network_ref" json:"network_ref,optional,omitempty" `
 	Weight      types.Int64  `tfsdk:"weight" json:"weight,optional,omitempty" `

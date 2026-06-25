@@ -11,7 +11,7 @@ This represents a Routing Node in the Security Management Client, which is used 
 
 ## Examples
 
-- [getting_started/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/engines/routing_node): Declares a routing node for a firewall engine.
+- [getting_started/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/engines/routing_node): Declares a routing node for a firewall engine.
 
 This snippet shows use of the `smc_routing_node` resource to define the routing structure for a firewall cluster, referencing interfaces and routes.
 
@@ -45,7 +45,7 @@ resource "smc_routing_node" "tf_single_fw" {
 - `comment` (String) An optional comment for the element. This field is not required.
 - `communication_mode` (String) The type of communication mode used for this interface in case of OSPF dynamic routing configuration, such as 'not_forced', 'point_to_point', 'passive', or 'unicast'.
 - `custom_configuration` (String) Custom configuration for the routing node, which can be used to specify additional settings or parameters.
-- `dynamic_classid` (String) The Dynamic Type of the associated element, such as 'interface', 'modem_interface', 'adsl_interface', 'network', 'gateway', or 'netlink'.
+- `dynamic_classid` (String) The Dynamic Type of the associated element, such as 'interface', 'vlan_interface', 'apn_interface', 'adsl_interface', 'vpn broker interface', 'port_group_interface', 'network', 'gateway', 'netlink'.
 - `dynamic_ipv6` (Boolean) Indicates whether the dynamic element is IPv6 or not. By default, it is not IPv6.
 - `dynamic_nicid` (String) The Dynamic Interface ID of the associated Physical Interface, required for dynamic interface levels.
 - `exclude_from_ip_counting` (Boolean) Indicates whether the Interface Routing element should be excluded from IP counting, which means it will not be considered in IP address usage calculations.

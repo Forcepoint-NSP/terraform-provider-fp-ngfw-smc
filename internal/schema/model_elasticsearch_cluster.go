@@ -53,6 +53,7 @@ type ElasticsearchClusterResourceModel struct {
 	ReadOnly               types.Bool                                         `tfsdk:"read_only" json:"read_only,optional,omitempty" fpro:"read_only"`
 	System                 types.Bool                                         `tfsdk:"system" json:"system,optional,omitempty" fpro:"system"`
 	SystemKey              types.Int64                                        `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`
+	TlsProfile             types.String                                       `tfsdk:"tls_profile" json:"tls_profile,optional,omitempty" `
 	Trashed                types.Bool                                         `tfsdk:"trashed" json:"trashed,optional,omitempty" fpro:"trashed"`
 }
 
@@ -60,5 +61,5 @@ func (r *ElasticsearchClusterResourceModel) GetSliceIds(ctx context.Context) []s
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

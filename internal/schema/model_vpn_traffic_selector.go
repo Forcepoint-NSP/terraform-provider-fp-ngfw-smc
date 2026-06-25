@@ -35,6 +35,7 @@ type VpnTrafficSelectorResourceModel struct {
 	AdminDomain    types.String                                       `tfsdk:"admin_domain" json:"admin_domain,optional,omitempty" fpro:"admin_domain"`
 	Comment        types.String                                       `tfsdk:"comment" json:"comment,optional,omitempty" `
 	Etag           types.String                                       `tfsdk:"etag" json:"etag,optional,omitempty" fpro:"etag"`
+	Ipaddress      types.String                                       `tfsdk:"ipaddress" json:"ipaddress,optional,omitempty" `
 	Key            types.Int64                                        `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
 	Link           customfield.NestedObjectList[ApiLinkResourceModel] `tfsdk:"-" json:"link,optional,omitempty" fpro:"link"`
 	Lk             customfield.Map[types.String]                      `tfsdk:"link" json:"-" `
@@ -52,5 +53,5 @@ func (r *VpnTrafficSelectorResourceModel) GetSliceIds(ctx context.Context) []str
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

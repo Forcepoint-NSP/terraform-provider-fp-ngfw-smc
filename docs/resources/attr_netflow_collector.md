@@ -18,7 +18,7 @@ This represents a Netflow collector, which is a sub part of Log Server entity. I
 - `host` (String) This represents a network element, which is a component that has an IP address and can be part of a network. It includes a location reference.
 - `kafka_topic` (String) The Kafka Topic used for forwarding logs through Kafka. This is only applicable when the service is set to 'kafka'.
 - `netflow_collector_port` (Number) The port used for log forwarding.
-- `netflow_collector_service` (String) The network protocol for forwarding the log data, such as 'udp', 'tcp', or 'tcp_with_tls'.
+- `netflow_collector_service` (String) The network protocol for forwarding the log data, such as 'udp', 'tcp', or 'tcp_with_tls', or 'kafka', or 'kafka_with_tls'.
 - `netflow_collector_version` (String) The format for forwarding the log data, such as 'cef', 'csv', 'leef', 'netflow_v11', 'ipfix', 'xml', or 'esm'.
 - `tls_profile` (String) This represents a TLS Profile. It contains common data for establishing a TLS connection, including TLS version, cryptography suites, and trusted certificate authorities.
 

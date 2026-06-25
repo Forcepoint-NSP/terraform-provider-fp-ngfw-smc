@@ -24,6 +24,7 @@ This represents a Sandbox Data Center element, which is referenced by the sandbo
 - `portal_url` (String) The portal URL of the Sandbox Data Center. This is used for accessing the sandbox portal.
 - `sandbox_type` (String) The type of the Sandbox Data Center. Valid values are 'forcepoint_sandbox', 'local_shm_sandbox', 'cloud_sandbox', and 'local_sandbox'.
 - `server_url` (String) The server URL of the Sandbox Data Center. This is required for the sandbox service to connect.
+- `tls_profile` (String) This represents a TLS Profile. It contains common data for establishing a TLS connection, including TLS version, cryptography suites, and trusted certificate authorities.
 
 
 ## Readonly Attributes

@@ -31,6 +31,7 @@ var _ = fmt.Sprintf
 var _ = context.Background()
 
 type IntegratedUisIgnoreValueResourceModel struct {
+	IuisIgnoreIp   types.String `tfsdk:"iuis_ignore_ip" json:"iuis_ignore_ip,optional,omitempty" `
 	IuisIgnoreUser types.String `tfsdk:"iuis_ignore_user" json:"iuis_ignore_user,optional,omitempty" `
 	NeRef          types.String `tfsdk:"ne_ref" json:"ne_ref,optional,omitempty" `
 }

@@ -17,6 +17,7 @@ This represents a Server Pool, which is a group of servers used for inbound traf
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
 - `comment` (String) An optional comment for the element. This field is not required.
+- `dns_server` (String) This represents an External DNS (Domain Name Service) Server, which is used for DDNS updates, resolving virus signature mirrors, and URL filtering categorization services.
 - `domain_name` (String) The DNS name of the Server Pool, which is used to route traffic to the pool.
 - `location_ref` (String) This represents the definition of a Location, which keeps a list of Network Elements belonging to the same location.
 - `monitoring_frequency` (Number) The frequency in seconds at which the Server Pool monitors the availability of its servers.

@@ -32,7 +32,6 @@ var _ = context.Background()
 
 type LoopbackNodeInterfaceResourceModel struct {
 	Address                        types.String                                       `tfsdk:"address" json:"address,optional,omitempty" `
-	Apn                            types.String                                       `tfsdk:"apn" json:"apn,optional,omitempty" `
 	AuthRequest                    types.Bool                                         `tfsdk:"auth_request" json:"auth_request,optional,omitempty" `
 	AuthRequestSource              types.Bool                                         `tfsdk:"auth_request_source" json:"auth_request_source,optional,omitempty" `
 	AutomaticDefaultRoute          types.Bool                                         `tfsdk:"automatic_default_route" json:"automatic_default_route,optional,omitempty" `
@@ -55,8 +54,6 @@ type LoopbackNodeInterfaceResourceModel struct {
 	Nodeid                         types.Int64                                        `tfsdk:"nodeid" json:"nodeid,optional,omitempty" `
 	Ospfv2AreaRef                  types.String                                       `tfsdk:"ospfv2_area_ref" json:"ospfv2_area_ref,optional,omitempty" `
 	Outgoing                       types.Bool                                         `tfsdk:"outgoing" json:"outgoing,optional,omitempty" `
-	PhoneNumber                    types.String                                       `tfsdk:"phone_number" json:"phone_number,optional,omitempty" `
-	PinCode                        types.String                                       `tfsdk:"pin_code" json:"pin_code,optional,omitempty" `
 	Pppoa                          types.Bool                                         `tfsdk:"pppoa" json:"pppoa,optional,omitempty" `
 	Pppoe                          types.Bool                                         `tfsdk:"pppoe" json:"pppoe,optional,omitempty" `
 	PppoePassword                  types.String                                       `tfsdk:"pppoe_password" json:"pppoe_password,optional,omitempty" `
@@ -76,5 +73,5 @@ func (r *LoopbackNodeInterfaceResourceModel) GetSliceIds(ctx context.Context) []
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

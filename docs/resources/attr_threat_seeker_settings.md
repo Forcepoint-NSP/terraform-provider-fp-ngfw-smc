@@ -14,6 +14,7 @@ This represents the definition of Threat Seeker settings, which includes enablin
 
 ## Simple Attributes
 - `http_proxy` (List of String) URI of the HTTP Proxy.
+- `local_real_time_scanning_enabled` (Boolean) Indicates whether real-time methods for local scanning is enabled.
 - `local_url_categorization_enabled` (Boolean) Indicates whether local URL categorization is enabled.
 - `ts_enabled` (Boolean) Indicates whether Threat Seeker is enabled.
 

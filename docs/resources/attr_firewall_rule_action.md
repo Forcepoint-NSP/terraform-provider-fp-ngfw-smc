@@ -14,6 +14,10 @@ This represents a Firewall Rule Action, which includes options for forced next h
 
 ## Simple Attributes
 - `action` (List of String) 
+- `authentication_tracking` (Boolean) Flag to indicate whether authentication tracking is enabled for the traffic matching this rule.
+- `authentication_tracking_caching` (Boolean) Cross-Origin Authentication Caching. Allows authenticated pages to reuse access for content loaded from other domains.
+- `confirm_action` (Boolean) Flag to indicate whether confirm action is enabled for the traffic matching this rule.
+- `confirm_action_caching` (Boolean) Cross-Origin Confirm Caching. Allows confirmed pages to reuse access for content loaded from other domains.
 - `decrypting` (Boolean) Flag to indicate whether decryption is enabled for the traffic matching this rule.
 - `deep_inspection` (Boolean) Flag to enable deep inspection of traffic that matches this rule. This will inspect the traffic against the Inspection Policy referenced by this policy.
 - `dos_protection` (Boolean) Flag to enable or disable DoS protection for matching traffic. This will apply the DoS protection settings defined in the policy.

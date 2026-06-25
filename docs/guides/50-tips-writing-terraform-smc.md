@@ -164,6 +164,27 @@ helps you:
 Enable the Terraform extension in your IDE for a more productive
 authoring experience.
 
+## Prefer attribute references over hardcoded values
+
+When a resource attribute (such as a firewall interface's `network_value`) mirrors a
+value that belongs to another resource, reference the attribute directly instead of
+copying the string:
+
+```hcl
+# Preferred — creates an explicit dependency, update ordering is guaranteed
+network_value = smc_network.my_net.ipv4_network
+
+# Avoid — no ordering guarantee when both resources are updated together
+# network_value = "10.100.100.0/24"
+```
+
+This matters during `terraform apply` when both resources are modified at the same time.
+Without an attribute reference, some tools may update them concurrently, which can cause
+HTTP 409 conflicts on the SMC API (ETag mismatch). With an attribute reference, the
+network resource is always fully updated before the firewall update begins.
+
+See [Relationship Between Resources — Explicit attribute references during updates](./30-relationship-between-resources.md) for a detailed explanation.
+
 ## Dumping the Provider Schema
 
 To inspect the full schema of the SMC Terraform provider, you can use

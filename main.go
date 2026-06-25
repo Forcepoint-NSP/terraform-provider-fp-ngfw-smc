@@ -31,7 +31,7 @@ import (
 	"github.com/terraform-providers/terraform-provider-smc/internal/smc"
 )
 
-const PROVIDER_ADDRESS = "registry.terraform.io/forcepoint/fp-ngfw-smc"
+const PROVIDER_ADDRESS = "registry.terraform.io/forcepoint-nsp/fp-ngfw-smc"
 
 // these will be set by the goreleaser configuration
 // to appropriate values for the compiled binary.

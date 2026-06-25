@@ -168,7 +168,7 @@ resource "smc_internal_endpoint" "ep_212_20_1_1" {
 }
 
 resource "smc_vpn" "tf_sample_vpn" {
-  mobile_vpn_topology_mode = "None"
+  mobile_vpn_topology_mode = "none"
   name                     = "tf_sample_vpn"
   nat                      = false
   vpn_profile              = data.smc_href.suite_b_gcm_128.href

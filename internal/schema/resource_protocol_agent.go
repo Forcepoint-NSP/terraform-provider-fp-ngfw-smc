@@ -19,6 +19,7 @@ package schema
 
 import (
 	"context"
+	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -68,4 +69,34 @@ func NewProtocolAgentResource() resource.Resource {
 	}
 	r.ResourceBase.Dispatch = r
 	return r
+}
+
+var _ resource.ResourceWithValidateConfig = &ProtocolAgentResource{}
+
+func (r *ProtocolAgentResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var data ProtocolAgentResourceModel
+	// Config.Get fails when any attribute is unknown (e.g. a module output that has
+	// not been resolved yet).  In that case we skip sub-validation; the framework
+	// will call ValidateConfig again once all values are known.
+	if diags := req.Config.Get(ctx, &data); diags.HasError() {
+		return
+	}
+	r.validatePaParameters(data, resp)
+	r.validatePaValues(data, resp)
+}
+
+func (r *ProtocolAgentResource) validatePaParameters(data ProtocolAgentResourceModel, resp *resource.ValidateConfigResponse) {
+	if data.PaParameters != nil {
+		for _i0, _v0 := range *data.PaParameters {
+			smcresource.ValidateAnyOf(&_v0, fmt.Sprintf("pa_parameters[%d]", _i0), &resp.Diagnostics)
+		}
+	}
+}
+
+func (r *ProtocolAgentResource) validatePaValues(data ProtocolAgentResourceModel, resp *resource.ValidateConfigResponse) {
+	if data.PaValues != nil {
+		for _i0, _v0 := range *data.PaValues {
+			smcresource.ValidateAnyOf(&_v0, fmt.Sprintf("pa_values[%d]", _i0), &resp.Diagnostics)
+		}
+	}
 }

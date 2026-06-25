@@ -34,6 +34,7 @@ type ServerPoolResourceModel struct {
 	ID                  types.String                                       `tfsdk:"id"`
 	AdminDomain         types.String                                       `tfsdk:"admin_domain" json:"admin_domain,optional,omitempty" fpro:"admin_domain"`
 	Comment             types.String                                       `tfsdk:"comment" json:"comment,optional,omitempty" `
+	DnsServer           types.String                                       `tfsdk:"dns_server" json:"dns_server,optional,omitempty" `
 	DomainName          types.String                                       `tfsdk:"domain_name" json:"domain_name,optional,omitempty" `
 	Etag                types.String                                       `tfsdk:"etag" json:"etag,optional,omitempty" fpro:"etag"`
 	IpNetlinkWeight     *[]IpNetlinkWeightResourceModel                    `tfsdk:"ip_netlink_weight" json:"ip_netlink_weight,optional,omitempty" `
@@ -62,5 +63,5 @@ func (r *ServerPoolResourceModel) GetSliceIds(ctx context.Context) []string {
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

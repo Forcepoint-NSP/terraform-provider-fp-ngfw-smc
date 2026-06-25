@@ -14,9 +14,8 @@ This represents an entry in a Community Access List, which is used to filter BGP
 
 ## Simple Attributes
 - `action` (String) The action to be taken for this access list entry.
-- `comment` (String) An optional comment for the element. This field is not required.
 - `community` (String) The expression that defines the community access list entry, typically a BGP community.
-- `name` (String) Name of the object.
+- `rank` (Number) The rank of the access list entry.
 
 
 ## Readonly Attributes
