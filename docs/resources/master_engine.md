@@ -73,8 +73,12 @@ This represents a physical engine device that provides resources for Virtual Sec
 - `name` (String) Name of the object.
 - `nondecrypted_ca_certificate_ref` (List of String) URI of the non-decrypted CA certificates.
 - `nondecrypted_tls_server_credentials_ref` (List of String) URI of the non-decrypted TLS server credentials.
+- `opcua_client_x509_credentials` (List of String) URI of the TLS Server Credentials.
+- `opcua_decryption_mode` (String) The OPCUA Decryption Mode. 'none' no decryption, 'transparent' transparent decryption, require to set 'opcua_client_x509_credentials' and 'opcua_server_x509_credentials', 'proxy' proxy ( man in the middle ) decryption. require to set opcua_proxy_ca_credendials
+- `opcua_server_x509_credentials` (List of String) URI of the OPC UA TLS Server Credentials.
 - `passive_discard_mode` (Boolean) Indicates whether the Passive Discard Mode is enabled. If true, it does not stop matching connections but creates a special log entry Terminate (passive) for testing purposes.
 - `quic_enabled` (Boolean) Indicates whether QUIC ports are enabled for Web Traffic. If true, QUIC protocol is allowed for web traffic.
+- `replica_internal_gateways` (List of String) The List of replica internal gateways
 - `reporting_email_addresses` (String) The contact email address for reporting per sender.
 - `rollback_timeout` (Number) The time the engine waits for a management connection before it rolls back to the previously installed policy when the Policy Handshake option is active. The default value is 60 seconds.
 - `routing_node_ref` (String) This represents a Routing Node in the Security Management Client, which is used to configure routing for network traffic on firewalls.
@@ -125,6 +129,7 @@ This represents a physical engine device that provides resources for Virtual Sec
 - `nat_definition` (List of Blocks, see [here](attr_nat_definition.md)) The NAT Definitions that define the Network Address Translation rules for the Firewall Cluster.
 - `nodes` (List of Blocks, see [here](attr_engine_node_wrapper.md)) The nodes that are part of this cluster. Each node represents a device that shares the workload.
 - `ntp_settings` (Single Block, see [here](attr_ntp_settings.md)) 
+- `opcua_proxy_ca_credentials` (Single Block, see [here](attr_tls_client_protection_wrapper.md)) 
 - `physical_interfaces` (List of Blocks, see [here](attr_abstract_physical_interface_wrapper.md)) The specific physical interfaces for the engine.
 - `pim_settings` (Single Block, see [here](attr_pim_settings.md)) 
 - `policy_route` (List of Blocks, see [here](attr_policy_route.md)) The Policy Routes that define the routing rules for the Firewall Cluster. These routes are used to control the flow of traffic based on specific criteria.

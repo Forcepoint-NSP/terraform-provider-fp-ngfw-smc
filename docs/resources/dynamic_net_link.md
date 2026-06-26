@@ -24,6 +24,7 @@ This represents a Dynamic NetLink, which is a type of NetLink used for routing i
 - `learn_dns_server_automatically` (Boolean) Indicates whether the Dynamic NetLink automatically learns DNS servers. If true, the NetLink will learn DNS servers dynamically.
 - `location_ref` (String) This represents the definition of a Location, which keeps a list of Network Elements belonging to the same location.
 - `name` (String) Name of the object.
+- `nsp_name` (String) The NSP Name for the NetLink, which is the provider name of your ISP.
 - `output_speed` (Number) The Output Speed in bits per second for the NetLink, which defines the real-life bandwidth this network connection provides. It is used to calculate how much traffic each link receives in relation to the other links.
 - `probe_address` (List of String) The IP address that is probed with ICMP echo requests (ping) to determine if the link is up. Repeat this for each IP address you want to add. We recommend entering more than one address to avoid excluding the link in case the host that is probed goes down.
 - `standby_mode_period` (Number) The standby period in seconds for the NetLink, which defines how often the link is probed when it is in Standby mode. Leave the setting for Standby Mode as 0 if you prefer not to test this link when it is on standby.

@@ -51,5 +51,5 @@ func (r *InlineIpsInterfaceResourceModel) GetSliceIds(ctx context.Context) []str
 	if r.Nicid.IsNull() || r.Nicid.IsUnknown() {
 		return nil
 	}
-	return []string{r.Nicid.String()}
+	return []string{r.Nicid.ValueString()}
 }

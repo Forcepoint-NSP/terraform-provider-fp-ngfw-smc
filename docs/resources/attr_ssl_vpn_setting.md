@@ -1,6 +1,6 @@
 ---
 page_title: "ssl_vpn_setting"
-subcategory: "sslvpn"
+subcategory: "applicationaccess"
 description: |-
   This represents the SSL VPN settings, which include options for SSL/TLS versions, cryptography suites, and renegotiation timeout.
 ---

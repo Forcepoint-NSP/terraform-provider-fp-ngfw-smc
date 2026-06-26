@@ -72,5 +72,5 @@ func (r *PortGroupInterfaceResourceModel) GetSliceIds(ctx context.Context) []str
 	if r.InterfaceId.IsNull() || r.InterfaceId.IsUnknown() {
 		return nil
 	}
-	return []string{r.InterfaceId.String()}
+	return []string{r.InterfaceId.ValueString()}
 }

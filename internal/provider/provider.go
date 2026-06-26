@@ -107,6 +107,35 @@ func (p *SmcProvider) Configure(ctx context.Context, req provider.ConfigureReque
 		return
 	}
 
+	// Tolerate unknown configuration values. When an attribute such as `url`
+	// is derived from a resource created in the same apply, it is unknown at
+	// plan time. Returning early without an error (and without setting
+	// ResourceData/DataSourceData/ActionData) leaves ProviderData nil, so the
+	// framework defers dependent resources, data sources and actions. Terraform
+	// then invokes Configure again with concrete values once the dependency is
+	// created, and the deferred work proceeds in a single apply. See SMC-66522.
+	//
+	// When the client supports deferred actions (Terraform's experimental
+	// deferral protocol), also signal a deferral so dependent reads/changes are
+	// postponed automatically. In a standard CLI run DeferralAllowed is false;
+	// there, deferral relies on the caller ordering the provider configuration
+	// after its dependency (e.g. a depends_on on the dependent resource), and
+	// the nil-client guards in the data sources keep an early read from
+	// panicking.
+	if data.URL.IsUnknown() ||
+		data.APIKey.IsUnknown() ||
+		data.VerifySSL.IsUnknown() ||
+		data.APIVersion.IsUnknown() ||
+		data.TrustedCert.IsUnknown() ||
+		data.Domain.IsUnknown() {
+		if req.ClientCapabilities.DeferralAllowed {
+			resp.Deferred = &provider.Deferred{
+				Reason: provider.DeferredReasonProviderConfigUnknown,
+			}
+		}
+		return
+	}
+
 	url := data.URL.ValueString()
 	apikey := data.APIKey.ValueString()
 	verifySSL := true

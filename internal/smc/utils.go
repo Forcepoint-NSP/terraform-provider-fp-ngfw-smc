@@ -18,8 +18,13 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"regexp"
 	"strings"
 )
+
+// versionSegmentRe matches an SMC API version path segment, e.g. "7.4" or "6.11".
+// SMC hrefs are of the form "<scheme>://<host>[:port]/<version>/elements/...".
+var versionSegmentRe = regexp.MustCompile(`^\d+\.\d+$`)
 
 func ReplaceBaseInURL(origUrl, baseUrl string) (string, error) {
 	u, err := url.Parse(baseUrl)
@@ -27,6 +32,33 @@ func ReplaceBaseInURL(origUrl, baseUrl string) (string, error) {
 		return "", fmt.Errorf("invalid URL: %w", err)
 	}
 	return ReplaceInURL(origUrl, u.Scheme, u.Hostname(), u.Port())
+}
+
+// ReplaceVersionInURL replaces the SMC API version path segment (the first
+// path segment, e.g. "/7.4/") of rawURL with the given version. If version is
+// empty or the first path segment does not look like a version (matching
+// \d+\.\d+), the URL is returned unchanged.
+//
+// SMC element ids are stable across versions, so rewriting only the version
+// prefix keeps an href stored in Terraform state addressable after an SMC
+// upgrade where the version changes (e.g. 7.4 -> 7.6). See SMC-66510.
+func ReplaceVersionInURL(rawURL, version string) (string, error) {
+	if version == "" {
+		return rawURL, nil
+	}
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return "", fmt.Errorf("invalid URL: %w", err)
+	}
+	segments := strings.SplitN(strings.TrimPrefix(u.Path, "/"), "/", 2)
+	if len(segments) == 0 || !versionSegmentRe.MatchString(segments[0]) {
+		// No recognizable version segment; leave the URL untouched.
+		return rawURL, nil
+	}
+	segments[0] = version
+	u.Path = "/" + strings.Join(segments, "/")
+	u.RawPath = "" // force re-derivation from the updated Path
+	return u.String(), nil
 }
 
 // ReplaceBaseInURL takes an input URL string and replaces its scheme, host, and port.

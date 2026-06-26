@@ -14,5 +14,6 @@ This represents the definition of Hostname mapping in DNS Relay Profile, which i
 
 ## Simple Attributes
 - `hostnames` (String) The hostname or hostnames for the DNS Relay Profile Hostname Mapping, which can be a single hostname or a comma-separated list of hostnames.
+- `ipaddress` (String) The IP address or network for the DNS Relay Profile Hostname Mapping, which can be a single IP address or a network range.
 
 

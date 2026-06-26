@@ -48,5 +48,5 @@ func (r *ClusterInterfaceResourceModel) GetSliceIds(ctx context.Context) []strin
 	if r.Address.IsNull() || r.Address.IsUnknown() {
 		return nil
 	}
-	return []string{r.Address.String()}
+	return []string{r.Address.ValueString()}
 }

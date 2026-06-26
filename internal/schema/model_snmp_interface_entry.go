@@ -39,5 +39,5 @@ func (r *SnmpInterfaceEntryResourceModel) GetSliceIds(ctx context.Context) []str
 	if r.Address.IsNull() || r.Address.IsUnknown() {
 		return nil
 	}
-	return []string{r.Address.String()}
+	return []string{r.Address.ValueString()}
 }

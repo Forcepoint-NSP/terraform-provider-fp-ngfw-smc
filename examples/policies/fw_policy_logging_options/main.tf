@@ -59,7 +59,7 @@ resource "smc_fw_ipv4_access_rule" "rule2" {
     deep_inspection                        = true
     file_filtering                         = true
     network_application_latency_monitoring = "probing"
-    scan_detection                         = "undefined"
+    scan_detection                         = "off"
     snort                                  = true
   }
 }

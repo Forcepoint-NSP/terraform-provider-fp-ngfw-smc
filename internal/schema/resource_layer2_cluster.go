@@ -19,6 +19,7 @@ package schema
 
 import (
 	"context"
+	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -68,4 +69,127 @@ func NewLayer2ClusterResource() resource.Resource {
 	}
 	r.ResourceBase.Dispatch = r
 	return r
+}
+
+var _ resource.ResourceWithValidateConfig = &Layer2ClusterResource{}
+
+func (r *Layer2ClusterResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var data Layer2ClusterResourceModel
+	// Config.Get fails when any attribute is unknown (e.g. a module output that has
+	// not been resolved yet).  In that case we skip sub-validation; the framework
+	// will call ValidateConfig again once all values are known.
+	if diags := req.Config.Get(ctx, &data); diags.HasError() {
+		return
+	}
+	r.validateNodes(data, resp)
+	r.validatePhysicalInterfaces(data, resp)
+	r.validateTests(data, resp)
+}
+
+func (r *Layer2ClusterResource) validateNodes(data Layer2ClusterResourceModel, resp *resource.ValidateConfigResponse) {
+	if data.Nodes != nil {
+		for _i0, _v0 := range *data.Nodes {
+			smcresource.ValidateAnyOf(&_v0, fmt.Sprintf("nodes[%d]", _i0), &resp.Diagnostics)
+			if _v0.FirewallNode != nil {
+				if _v0.FirewallNode.Tests != nil {
+					for _i1, _v1 := range *_v0.FirewallNode.Tests {
+						smcresource.ValidateAnyOf(&_v1, fmt.Sprintf("nodes[%d].firewall_node.tests[%d]", _i0, _i1), &resp.Diagnostics)
+					}
+				}
+			}
+		}
+	}
+}
+
+func (r *Layer2ClusterResource) validatePhysicalInterfaces(data Layer2ClusterResourceModel, resp *resource.ValidateConfigResponse) {
+	if data.PhysicalInterfaces != nil {
+		for _i0, _v0 := range *data.PhysicalInterfaces {
+			smcresource.ValidateAnyOf(&_v0, fmt.Sprintf("physical_interfaces[%d]", _i0), &resp.Diagnostics)
+			if _v0.PhysicalInterface != nil {
+				if _v0.PhysicalInterface.Interfaces != nil {
+					for _i1, _v1 := range *_v0.PhysicalInterface.Interfaces {
+						smcresource.ValidateAnyOf(&_v1, fmt.Sprintf("physical_interfaces[%d].physical_interface.interfaces[%d]", _i0, _i1), &resp.Diagnostics)
+					}
+				}
+			}
+			if _v0.AdslInterface != nil {
+				if _v0.AdslInterface.Interfaces != nil {
+					for _i1, _v1 := range *_v0.AdslInterface.Interfaces {
+						smcresource.ValidateAnyOf(&_v1, fmt.Sprintf("physical_interfaces[%d].adsl_interface.interfaces[%d]", _i0, _i1), &resp.Diagnostics)
+					}
+				}
+			}
+			if _v0.PortGroupInterface != nil {
+				if _v0.PortGroupInterface.Interfaces != nil {
+					for _i1, _v1 := range *_v0.PortGroupInterface.Interfaces {
+						smcresource.ValidateAnyOf(&_v1, fmt.Sprintf("physical_interfaces[%d].port_group_interface.interfaces[%d]", _i0, _i1), &resp.Diagnostics)
+					}
+				}
+			}
+			if _v0.WirelessInterface != nil {
+				if _v0.WirelessInterface.Interfaces != nil {
+					for _i1, _v1 := range *_v0.WirelessInterface.Interfaces {
+						smcresource.ValidateAnyOf(&_v1, fmt.Sprintf("physical_interfaces[%d].wireless_interface.interfaces[%d]", _i0, _i1), &resp.Diagnostics)
+					}
+				}
+			}
+			if _v0.SwitchInterface != nil {
+				if _v0.SwitchInterface.Interfaces != nil {
+					for _i1, _v1 := range *_v0.SwitchInterface.Interfaces {
+						smcresource.ValidateAnyOf(&_v1, fmt.Sprintf("physical_interfaces[%d].switch_interface.interfaces[%d]", _i0, _i1), &resp.Diagnostics)
+					}
+				}
+			}
+			if _v0.TunnelInterface != nil {
+				if _v0.TunnelInterface.Interfaces != nil {
+					for _i1, _v1 := range *_v0.TunnelInterface.Interfaces {
+						smcresource.ValidateAnyOf(&_v1, fmt.Sprintf("physical_interfaces[%d].tunnel_interface.interfaces[%d]", _i0, _i1), &resp.Diagnostics)
+					}
+				}
+			}
+			if _v0.ModemInterface != nil {
+				if _v0.ModemInterface.Interfaces != nil {
+					for _i1, _v1 := range *_v0.ModemInterface.Interfaces {
+						smcresource.ValidateAnyOf(&_v1, fmt.Sprintf("physical_interfaces[%d].modem_interface.interfaces[%d]", _i0, _i1), &resp.Diagnostics)
+					}
+				}
+			}
+			if _v0.VirtualVlanInterface != nil {
+				if _v0.VirtualVlanInterface.Interfaces != nil {
+					for _i1, _v1 := range *_v0.VirtualVlanInterface.Interfaces {
+						smcresource.ValidateAnyOf(&_v1, fmt.Sprintf("physical_interfaces[%d].virtual_vlan_interface.interfaces[%d]", _i0, _i1), &resp.Diagnostics)
+					}
+				}
+			}
+			if _v0.VlanInterface != nil {
+				if _v0.VlanInterface.Interfaces != nil {
+					for _i1, _v1 := range *_v0.VlanInterface.Interfaces {
+						smcresource.ValidateAnyOf(&_v1, fmt.Sprintf("physical_interfaces[%d].vlan_interface.interfaces[%d]", _i0, _i1), &resp.Diagnostics)
+					}
+				}
+			}
+			if _v0.SsidInterface != nil {
+				if _v0.SsidInterface.Interfaces != nil {
+					for _i1, _v1 := range *_v0.SsidInterface.Interfaces {
+						smcresource.ValidateAnyOf(&_v1, fmt.Sprintf("physical_interfaces[%d].ssid_interface.interfaces[%d]", _i0, _i1), &resp.Diagnostics)
+					}
+				}
+			}
+			if _v0.ApnInterface != nil {
+				if _v0.ApnInterface.Interfaces != nil {
+					for _i1, _v1 := range *_v0.ApnInterface.Interfaces {
+						smcresource.ValidateAnyOf(&_v1, fmt.Sprintf("physical_interfaces[%d].apn_interface.interfaces[%d]", _i0, _i1), &resp.Diagnostics)
+					}
+				}
+			}
+		}
+	}
+}
+
+func (r *Layer2ClusterResource) validateTests(data Layer2ClusterResourceModel, resp *resource.ValidateConfigResponse) {
+	if data.Tests != nil {
+		for _i0, _v0 := range *data.Tests {
+			smcresource.ValidateAnyOf(&_v0, fmt.Sprintf("tests[%d]", _i0), &resp.Diagnostics)
+		}
+	}
 }

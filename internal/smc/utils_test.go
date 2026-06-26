@@ -106,3 +106,140 @@ func TestReplaceInURL(t *testing.T) {
 		})
 	}
 }
+
+func TestReplaceVersionInURL(t *testing.T) {
+	tests := []struct {
+		name      string
+		rawURL    string
+		version   string
+		want      string
+		wantError bool
+	}{
+		{
+			name:    "replace version in element href",
+			rawURL:  "https://smc.example.com:8082/7.4/elements/single_fw/1409",
+			version: "7.6",
+			want:    "https://smc.example.com:8082/7.6/elements/single_fw/1409",
+		},
+		{
+			name:    "replace version in nested sub-resource href",
+			rawURL:  "http://localhost:8082/7.4/elements/single_fw/268571118/internal_gateway/268439099",
+			version: "7.6",
+			want:    "http://localhost:8082/7.6/elements/single_fw/268571118/internal_gateway/268439099",
+		},
+		{
+			name:    "version only path",
+			rawURL:  "https://smc.example.com:8082/7.4/login",
+			version: "7.6",
+			want:    "https://smc.example.com:8082/7.6/login",
+		},
+		{
+			name:    "preserve query and fragment",
+			rawURL:  "https://smc.example.com:8082/7.4/elements/host?filter=foo#frag",
+			version: "7.6",
+			want:    "https://smc.example.com:8082/7.6/elements/host?filter=foo#frag",
+		},
+		{
+			name:    "minor.major with two-digit minor",
+			rawURL:  "https://smc.example.com:8082/6.11/elements/host/1",
+			version: "7.6",
+			want:    "https://smc.example.com:8082/7.6/elements/host/1",
+		},
+		{
+			name:    "empty version leaves URL unchanged",
+			rawURL:  "https://smc.example.com:8082/7.4/elements/host/1",
+			version: "",
+			want:    "https://smc.example.com:8082/7.4/elements/host/1",
+		},
+		{
+			name:    "non-version first segment left untouched",
+			rawURL:  "https://smc.example.com:8082/api/elements/host/1",
+			version: "7.6",
+			want:    "https://smc.example.com:8082/api/elements/host/1",
+		},
+		{
+			name:    "no path left untouched",
+			rawURL:  "https://smc.example.com:8082",
+			version: "7.6",
+			want:    "https://smc.example.com:8082",
+		},
+		{
+			name:    "IPv6 host",
+			rawURL:  "https://[2001:db8::1]:8082/7.4/elements/host/1",
+			version: "7.6",
+			want:    "https://[2001:db8::1]:8082/7.6/elements/host/1",
+		},
+		{
+			name:      "invalid URL",
+			rawURL:    "ht!tp://invalid/7.4/x",
+			version:   "7.6",
+			want:      "",
+			wantError: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ReplaceVersionInURL(tt.rawURL, tt.version)
+			if (err != nil) != tt.wantError {
+				t.Errorf("ReplaceVersionInURL() error = %v, wantError %v", err, tt.wantError)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("ReplaceVersionInURL() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNormalizeHref(t *testing.T) {
+	tests := []struct {
+		name       string
+		baseURL    string
+		apiVersion string
+		href       string
+		want       string
+	}{
+		{
+			name:       "version upgrade only (SMC-66510)",
+			baseURL:    "https://smc.example.com:8082",
+			apiVersion: "7.6",
+			href:       "https://smc.example.com:8082/7.4/elements/single_fw/1409",
+			want:       "https://smc.example.com:8082/7.6/elements/single_fw/1409",
+		},
+		{
+			name:       "http to https switch (SMC-64735)",
+			baseURL:    "https://smc.example.com:8082",
+			apiVersion: "7.4",
+			href:       "http://smc.example.com:8082/7.4/elements/host/1",
+			want:       "https://smc.example.com:8082/7.4/elements/host/1",
+		},
+		{
+			name:       "scheme, host, port and version all change",
+			baseURL:    "https://proxy.internal:443",
+			apiVersion: "7.6",
+			href:       "http://smc.example.com:8082/7.4/elements/host/1",
+			want:       "https://proxy.internal:443/7.6/elements/host/1",
+		},
+		{
+			name:       "already normalized is a no-op",
+			baseURL:    "https://smc.example.com:8082",
+			apiVersion: "7.6",
+			href:       "https://smc.example.com:8082/7.6/elements/host/1",
+			want:       "https://smc.example.com:8082/7.6/elements/host/1",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &SmcClient{BaseUrl: tt.baseURL, APIVersion: tt.apiVersion}
+			got, err := c.NormalizeHref(tt.href)
+			if err != nil {
+				t.Fatalf("NormalizeHref() unexpected error = %v", err)
+			}
+			if got != tt.want {
+				t.Errorf("NormalizeHref() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

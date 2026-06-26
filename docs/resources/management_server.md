@@ -52,7 +52,6 @@ This represents a Management Server, which is the central component that stores 
 - `elasticsearch_authentication_settings` (Single Block, see [here](attr_elasticsearch_authentication_settings.md)) 
 - `external_pki_certificate_settings` (Single Block, see [here](attr_certificate_settings.md)) 
 - `forwarding_tls_settings` (Single Block, see [here](attr_tls_settings.md)) 
-- `mgt_integration_container` (List of Blocks, see [here](attr_management_integration_container.md)) The Management Integration Containers for the Management Server, which define the settings for different management integrations.
 - `netflow_collector` (List of Blocks, see [here](attr_netflow_collector.md)) The Netflow Collector to which the Management Server forwards audit data. You can define which type of audit data you want to forward and in which format, and use Filters to specify in detail which log data is forwarded.
 - `sms_http_channel` (List of Blocks, see [here](attr_sms_http_channel.md)) The HTTP channel for the Management Server, which defines the settings for HTTP-based communication.
 - `sms_script_channel` (List of Blocks, see [here](attr_sms_script_channel.md)) The Script channel for the Management Server, which defines the settings for script-based communication.

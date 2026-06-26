@@ -15,5 +15,7 @@ This represents a static IPv6 to IPv4 mapping in the IPv6 Transition Mechanism s
 ## Simple Attributes
 - `comment` (String) An optional comment for the mapping.
 - `rank` (Number) The rank for ordering mappings, where a lower value indicates a higher priority.
+- `siit_eam_mapping_ipv4_network` (String) The IPv4 network address for the mapping.
+- `siit_eam_mapping_ipv6_prefix` (String) The IPv6 prefix for the mapping.
 
 

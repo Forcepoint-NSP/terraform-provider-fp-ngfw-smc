@@ -102,12 +102,17 @@ type VirtualFirewallResourceModel struct {
 	Nodes                                    *[]EngineNodeWrapperResourceModel                  `tfsdk:"nodes" json:"nodes,optional,omitempty" `
 	NondecryptedCaCertificateRef             *[]types.String                                    `tfsdk:"nondecrypted_ca_certificate_ref" json:"nondecrypted_ca_certificate_ref,optional,omitempty" `
 	NondecryptedTlsServerCredentialsRef      *[]types.String                                    `tfsdk:"nondecrypted_tls_server_credentials_ref" json:"nondecrypted_tls_server_credentials_ref,optional,omitempty" `
+	OpcuaClientX509Credentials               *[]types.String                                    `tfsdk:"opcua_client_x509_credentials" json:"opcua_client_x509_credentials,optional,omitempty" `
+	OpcuaDecryptionMode                      types.String                                       `tfsdk:"opcua_decryption_mode" json:"opcua_decryption_mode,optional,omitempty" `
+	OpcuaProxyCaCredentials                  *TlsClientProtectionWrapperResourceModel           `tfsdk:"opcua_proxy_ca_credentials" json:"opcua_proxy_ca_credentials,optional,omitempty" `
+	OpcuaServerX509Credentials               *[]types.String                                    `tfsdk:"opcua_server_x509_credentials" json:"opcua_server_x509_credentials,optional,omitempty" `
 	PassiveDiscardMode                       types.Bool                                         `tfsdk:"passive_discard_mode" json:"passive_discard_mode,optional,omitempty" `
 	PhysicalInterfaces                       *[]AbstractPhysicalInterfaceWrapperResourceModel   `tfsdk:"physical_interfaces" json:"physicalInterfaces,optional,omitempty" `
 	PimSettings                              *PimSettingsResourceModel                          `tfsdk:"pim_settings" json:"pim_settings,optional,omitempty" `
 	PolicyRoute                              *[]PolicyRouteResourceModel                        `tfsdk:"policy_route" json:"policy_route,optional,omitempty" `
 	QuicEnabled                              types.Bool                                         `tfsdk:"quic_enabled" json:"quic_enabled,optional,omitempty" `
 	ReadOnly                                 types.Bool                                         `tfsdk:"read_only" json:"read_only,optional,omitempty" fpro:"read_only"`
+	ReplicaInternalGateways                  *[]types.String                                    `tfsdk:"replica_internal_gateways" json:"replica_internal_gateways,optional,omitempty" `
 	ReportingEmailAddresses                  types.String                                       `tfsdk:"reporting_email_addresses" json:"reporting_email_addresses,optional,omitempty" `
 	RollbackTimeout                          types.Int64                                        `tfsdk:"rollback_timeout" json:"rollback_timeout,optional,omitempty" `
 	RoutingNodeRef                           types.String                                       `tfsdk:"routing_node_ref" json:"routing_node_ref,optional,omitempty" `
@@ -150,12 +155,11 @@ type VirtualFirewallResourceModel struct {
 	UserIdServiceRef                         types.String                                       `tfsdk:"user_id_service_ref" json:"user_id_service_ref,optional,omitempty" `
 	VirtualResource                          types.String                                       `tfsdk:"virtual_resource" json:"virtual_resource,optional,omitempty" `
 	WebAuthentication                        *UserAuthenticationBbaResourceModel                `tfsdk:"web_authentication" json:"web_authentication,optional,omitempty" `
-	ZtnaConnectorSettings                    *ZtnaConnectorSettingsResourceModel                `tfsdk:"ztna_connector_settings" json:"ztna_connector_settings,optional,omitempty" `
 }
 
 func (r *VirtualFirewallResourceModel) GetSliceIds(ctx context.Context) []string {
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

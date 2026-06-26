@@ -24,7 +24,7 @@ This represents a User Alert Check. It contains settings for the type of check, 
 - `severity` (Number) The severity of the alert. It is a value between 1 (low) and 10 (critical). By default, it is set to 10 for high severity.
 - `threshold_duration_unit` (String) The unit of time for the threshold duration. It can be one of the following: minutes, hours.
 - `threshold_duration_value` (Number) The duration value for the threshold. It is used to specify how long the threshold should be monitored before triggering an alert.
-- `threshold_type` (String) The type of threshold. It can be one of the following: single_occurrence, event_count, bandwidth_count.
+- `threshold_type` (String) The type of threshold. It can be one of the following: single_event, event_count, bandwidth_count.
 - `threshold_unit` (String) The unit of measurement for the threshold value. It can be one of the following: events, kb, mb, gb, tb.
 - `threshold_value` (Number) The threshold value. It can be the number of events or the amount of traffic in KB/MB/GB/TB, depending on the threshold type. The events quantity is only for bandwidth_check and web_content_check checks.
 

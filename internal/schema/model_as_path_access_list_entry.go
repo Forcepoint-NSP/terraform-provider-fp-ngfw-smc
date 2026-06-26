@@ -31,16 +31,15 @@ var _ = fmt.Sprintf
 var _ = context.Background()
 
 type AsPathAccessListEntryResourceModel struct {
-	Action     types.String `tfsdk:"action" json:"action,optional,omitempty" `
-	Comment    types.String `tfsdk:"comment" json:"comment,optional,omitempty" `
-	Expression types.String `tfsdk:"expression" json:"expression,optional,omitempty" `
-	Key        types.Int64  `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
-	Name       types.String `tfsdk:"name" json:"name,optional,omitempty" `
+	Action     types.String  `tfsdk:"action" json:"action,optional,omitempty" `
+	Expression types.String  `tfsdk:"expression" json:"expression,optional,omitempty" `
+	Key        types.Int64   `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
+	Rank       types.Float64 `tfsdk:"rank" json:"rank,optional,omitempty" `
 }
 
 func (r *AsPathAccessListEntryResourceModel) GetSliceIds(ctx context.Context) []string {
 	if r.Expression.IsNull() || r.Expression.IsUnknown() {
 		return nil
 	}
-	return []string{r.Expression.String()}
+	return []string{r.Expression.ValueString()}
 }

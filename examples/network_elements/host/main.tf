@@ -4,10 +4,11 @@ variable "resource_comment" {
 }
 
 resource "smc_host" "tf_host_example" {
-  name      = "tf_host_example"
-  address   = "192.168.1.44"
-  comment   = var.resource_comment
-  secondary = ["212.20.1.1", "123.6.5.22"]
+  name         = "tf_host_example"
+  address      = "192.168.1.44"
+  ipv6_address = "fc00::1"
+  comment      = var.resource_comment
+  secondary    = ["212.20.1.1", "123.6.5.22"]
 }
 
 output "host_href" {

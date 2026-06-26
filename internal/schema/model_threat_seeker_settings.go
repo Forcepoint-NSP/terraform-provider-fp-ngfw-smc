@@ -32,6 +32,7 @@ var _ = context.Background()
 
 type ThreatSeekerSettingsResourceModel struct {
 	HttpProxy                     *[]types.String `tfsdk:"http_proxy" json:"http_proxy,optional,omitempty" `
+	LocalRealTimeScanningEnabled  types.Bool      `tfsdk:"local_real_time_scanning_enabled" json:"local_real_time_scanning_enabled,optional,omitempty" `
 	LocalUrlCategorizationEnabled types.Bool      `tfsdk:"local_url_categorization_enabled" json:"local_url_categorization_enabled,optional,omitempty" `
 	TsEnabled                     types.Bool      `tfsdk:"ts_enabled" json:"ts_enabled,optional,omitempty" `
 }

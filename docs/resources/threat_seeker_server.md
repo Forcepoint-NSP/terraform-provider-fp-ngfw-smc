@@ -19,10 +19,14 @@ This represents a Threat Seeker Server, which is a System object holding configu
 - `comment` (String) An optional comment for the element. This field is not required.
 - `dds_api_key` (String) The API key for accessing the ThreatSeeker DDS service.
 - `dds_url` (String) The URL to the ThreatSeeker DDS service.
+- `guid_rtcc` (String) The API key for accessing the ThreatSeeker GUID RTCC.
+- `guid_rtss` (String) The API key for accessing the ThreatSeeker GUID RTSS.
 - `location_ref` (String) This represents the definition of a Location, which keeps a list of Network Elements belonging to the same location.
 - `name` (String) Name of the object.
 - `ts_certificate` (String) The CA certificate for the Threat Seeker Server, which is used to establish a secure connection.
+- `tskey` (String) The Threat Seeker License Key, which is required to access the Threat Seeker Server.
 - `tskey_exp` (String) The expiration date of the Threat Seeker License Key
+- `tstoken` (String) The encrypted Threat Seeker License Key, used for secure communication with the Threat Seeker Server.
 - `url` (String) The complete URL to the Threat Seeker Server.
 
 

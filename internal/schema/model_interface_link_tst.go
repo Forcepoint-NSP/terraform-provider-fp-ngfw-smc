@@ -41,6 +41,7 @@ type InterfaceLinkTestResourceModel struct {
 	Nicid             types.String                                       `tfsdk:"nicid" json:"nicid,optional,omitempty" `
 	OfflineState      types.Bool                                         `tfsdk:"offline_state" json:"offline_state,optional,omitempty" `
 	OnlineState       types.Bool                                         `tfsdk:"online_state" json:"online_state,optional,omitempty" `
+	SnmpNotification  types.Bool                                         `tfsdk:"snmp_notification" json:"snmp_notification,optional,omitempty" `
 	StandbyState      types.Bool                                         `tfsdk:"standby_state" json:"standby_state,optional,omitempty" `
 	TestAction        types.String                                       `tfsdk:"test_action" json:"test_action,optional,omitempty" `
 	TestActive        types.Bool                                         `tfsdk:"test_active" json:"test_active,optional,omitempty" `
@@ -51,5 +52,5 @@ func (r *InterfaceLinkTestResourceModel) GetSliceIds(ctx context.Context) []stri
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

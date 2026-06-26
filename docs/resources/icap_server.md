@@ -32,6 +32,9 @@ A stub configuration:
 - `icap_path` (String) The path for the ICAP server.
 - `icap_port` (Number) The port number for the ICAP server.
 - `icap_secure` (Boolean) Flag indicating if secure ICAP is enabled. Defaults to false.
+- `icap_xhdr_clientip` (String) The X-Header for the client IP address in ICAP requests.
+- `icap_xhdr_serverip` (String) The X-Header for the server IP address in ICAP requests.
+- `icap_xhdr_username` (String) The X-Header for the username in ICAP requests.
 - `ipv6_address` (String) The primary IPv6 address of the device, which is used for network communication.
 - `location_ref` (String) This represents the definition of a Location, which keeps a list of Network Elements belonging to the same location.
 - `name` (String) Name of the object.

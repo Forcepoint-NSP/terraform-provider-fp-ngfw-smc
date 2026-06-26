@@ -27,6 +27,7 @@ This represents a physical interface on the engine, including properties such as
 - `mtu` (Number) The MTU (maximum transmission unit) size on the connected link. Either enter a value between 400-65535. The default value is 1500.
 - `multicast_ip` (String) The multicast IP address used for automatically calculating a MAC address in multicastigmp mode. IP address from the range 224.0.0.0-239.255.255.255.
 - `name` (String) Name of the object.
+- `native_vlan_id` (Number) The Native VLAN ID for the physical interface.
 - `other_configuration_flag` (Boolean) Indicates whether Other Configuration is enabled in IPv6 Router Advertisements, which allows the Firewall to offer additional configuration information over DHCPv6.
 - `override_engine_settings` (Boolean) Indicates whether the Engine's Default Settings are overridden for this interface, allowing for custom configurations.
 - `override_log_moderation_settings` (Boolean) Indicates whether the Log Moderation settings are overridden for this interface, allowing for custom log moderation configurations.

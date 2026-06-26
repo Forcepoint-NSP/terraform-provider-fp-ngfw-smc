@@ -14,6 +14,7 @@ This represents a network element that defines the external NATed destination IP
 
 ## Simple Attributes
 - `arp_generate` (Boolean) Automatically generate a proxy ARP for the NATed address in the selected Network.
+- `ipaddress` (String) The external NATed destination IP Address for the Server Pool.
 - `netlink_ref` (String) This represents a Static NetLink, which is a type of NetLink used for routing in Multi-Link features. It includes attributes for gateway, networks, DNS elements, and outbound IP addresses.
 - `network_ref` (String) This represents a Network, which is a Network Element that represents a (sub)network of computers. It includes attributes for IPv4 and IPv6 networks, broadcast address, and validation patterns.
 - `weight` (Number) The weight of this Net Link in the pool.

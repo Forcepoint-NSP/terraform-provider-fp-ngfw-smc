@@ -32,6 +32,10 @@ var _ = context.Background()
 
 type Nat64MappingResourceModel struct {
 	Comment                 types.String  `tfsdk:"comment" json:"comment,optional,omitempty" `
+	Nat64MappingIpv4Address types.String  `tfsdk:"nat64_mapping_ipv4_address" json:"nat64_mapping_ipv4_address,optional,omitempty" `
+	Nat64MappingIpv4Port    types.Int64   `tfsdk:"nat64_mapping_ipv4_port" json:"nat64_mapping_ipv4_port,optional,omitempty" `
+	Nat64MappingIpv6Address types.String  `tfsdk:"nat64_mapping_ipv6_address" json:"nat64_mapping_ipv6_address,optional,omitempty" `
+	Nat64MappingIpv6Port    types.Int64   `tfsdk:"nat64_mapping_ipv6_port" json:"nat64_mapping_ipv6_port,optional,omitempty" `
 	Nat64MappingProtocolRef types.String  `tfsdk:"nat64_mapping_protocol_ref" json:"nat64_mapping_protocol_ref,optional,omitempty" `
 	Rank                    types.Float64 `tfsdk:"rank" json:"rank,optional,omitempty" `
 }

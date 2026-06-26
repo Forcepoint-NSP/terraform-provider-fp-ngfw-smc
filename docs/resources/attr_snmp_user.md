@@ -17,7 +17,7 @@ This represents an SNMP User for SNMP version 3. It includes authentication and 
 - `name` (String) Name of the object.
 - `snmp_authentication_password` (String) The password used for authentication by the SNMP user.
 - `snmp_authentication_protocol` (String) The authentication protocol used by the SNMP user. It can be one of the following: MD5, SHA, SHA-224, SHA-256, SHA-384, or SHA-512.
-- `snmp_privacy_protocol` (String) The privacy protocol used by the SNMP user. It can be one of the following: DES, AES-128, AES-192, or AES-256.
+- `snmp_privacy_protocol` (String) The privacy protocol used by the SNMP user. It can be one of the following: DES, AES, or AES-256.
 - `snmp_private_password` (String) The password used for privacy by the SNMP user.
 
 

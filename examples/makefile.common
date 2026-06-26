@@ -1,15 +1,17 @@
+TF_CLI ?= terraform
+
 init:
 	-@rm -rf .terraform*
-	terraform init
+	$(TF_CLI) init
 
 plan:
-	terraform plan
+	$(TF_CLI) plan
 
 apply:
-	terraform apply -auto-approve
+	$(TF_CLI) apply -auto-approve
 
 destroy:
-	terraform destroy -auto-approve
+	$(TF_CLI) destroy -auto-approve
 
 clean:
 	rm -rf .terraform* terraform*

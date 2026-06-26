@@ -16,7 +16,7 @@ This represents a URL List Application Situation, which is used for URL list fil
 
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
-- `attacker` (String) The attacker involved in the situation, which can be 'none', 'packet_destination', 'connection_source', or 'connection_destination'. By default, it is set to 'none'.
+- `attacker` (String) The attacker involved in the situation, which can be 'None', 'packet_destination', 'connection_source', or 'connection_destination'. By default, it is set to 'none'.
 - `comment` (String) An optional comment for the element. This field is not required.
 - `description` (String) A long description of the situation, providing detailed information about its nature and implications.
 - `display_name` (String) The internal display name of the situation, which is used for identification purposes within the system.
@@ -35,7 +35,7 @@ This represents a URL List Application Situation, which is used for URL list fil
 - `upcoming_event_enabled` (Boolean) Indicates whether the situation is enabled for upcoming events. If true, it means that the situation will be considered for upcoming event processing.
 - `upcoming_event_threshold` (Number) The threshold in days for upcoming events related to the situation. If the situation is enabled for upcoming events, this value indicates how many days in advance the event should be considered.
 - `url_entry` (List of String) The URLs.
-- `victim` (String) The victim involved in the situation, which can be 'none', 'packet_destination', 'connection_source', or 'connection_destination'. By default, it is set to 'none'.
+- `victim` (String) The victim involved in the situation, which can be 'None', 'packet_destination', 'connection_source', or 'connection_destination'. By default, it is set to 'none'.
 - `vulnerability_references` (List of String) A set of references to vulnerabilities associated with the situation, providing additional context and information about potential security issues.
 
 ## Nested Attributes

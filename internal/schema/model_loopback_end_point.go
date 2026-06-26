@@ -44,6 +44,7 @@ type LoopbackEndpointResourceModel struct {
 	ForceNatT         types.Bool                                         `tfsdk:"force_nat_t" json:"force_nat_t,optional,omitempty" `
 	IkePhase1IdType   types.String                                       `tfsdk:"ike_phase1_id_type" json:"ike_phase1_id_type,optional,omitempty" `
 	IkePhase1IdValue  types.String                                       `tfsdk:"ike_phase1_id_value" json:"ike_phase1_id_value,optional,omitempty" `
+	IpsecVpn          types.Bool                                         `tfsdk:"ipsec_vpn" json:"ipsec_vpn,optional,omitempty" `
 	Key               types.Int64                                        `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
 	Link              customfield.NestedObjectList[ApiLinkResourceModel] `tfsdk:"-" json:"link,optional,omitempty" fpro:"link"`
 	Lk                customfield.Map[types.String]                      `tfsdk:"link" json:"-" `
@@ -51,6 +52,8 @@ type LoopbackEndpointResourceModel struct {
 	Name              types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
 	NatT              types.Bool                                         `tfsdk:"nat_t" json:"nat_t,optional,omitempty" `
 	ReadOnly          types.Bool                                         `tfsdk:"read_only" json:"read_only,optional,omitempty" fpro:"read_only"`
+	SslVpnPortal      types.Bool                                         `tfsdk:"application_access_portal" json:"application_access_portal,optional,omitempty" `
+	SslVpnTunnel      types.Bool                                         `tfsdk:"ssl_vpn_tunnel" json:"ssl_vpn_tunnel,optional,omitempty" `
 	System            types.Bool                                         `tfsdk:"system" json:"system,optional,omitempty" fpro:"system"`
 	SystemKey         types.Int64                                        `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`
 	Trashed           types.Bool                                         `tfsdk:"trashed" json:"trashed,optional,omitempty" fpro:"trashed"`
@@ -61,5 +64,5 @@ func (r *LoopbackEndpointResourceModel) GetSliceIds(ctx context.Context) []strin
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

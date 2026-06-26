@@ -19,9 +19,13 @@ This represents a TLS Profile. It contains common data for establishing a TLS co
 - `accept_wildcard` (Boolean) Is server identity check accepts wildcards. Default is false, can be overridden by the chosen server identity method.
 - `check_revocation` (Boolean) Is certificate revocation checked. Default is true.
 - `comment` (String) An optional comment for the element. This field is not required.
+- `crl_delay` (Number) Delay time (hours) for fetching CRL. This is the time to wait before checking the Certificate Revocation List.
+- `ignore_network_issues` (Boolean) Ignore revocation check failures due to network issues. If true, the system will not fail the TLS connection if there are network issues during the revocation check.
 - `name` (String) Name of the object.
+- `ocsp_delay` (Number) Ignore OCSP failure for (hours). This is the time to wait before checking the Online Certificate Status Protocol (OCSP) response.
 - `tls_cryptography_suites` (String) This represents a TLS Cryptography Suite Set Element, which contains a set of cryptographic suites used in SSL VPN configurations.
 - `tls_trusted_ca_ref` (List of String) URI of the trusted CA.
+- `tls_version` (String) Version of TLS. Valid values are: TLSv1, TLSv1.1, TLSv1.2, TLSv1.3.
 - `use_only_subject_alt_name` (Boolean) Use Only Subject Alt Name When the TLS identity is a DNS name, uses only Subject Alternative Name (SAN) certificate matching.
 
 

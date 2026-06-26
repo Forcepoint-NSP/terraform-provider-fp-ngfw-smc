@@ -25,6 +25,8 @@ This represents a VPN Profile. It contains settings for IKE and IPsec lifetimes,
 - `preshared_key_authentication_for_mobile_vpn` (Boolean) Indicates whether preshared key authentication is allowed or not, together with a client certificate authentication.
 - `sa_life_time` (Number) IKE Lifetime in seconds.
 - `sa_to_any_network_allowed` (Boolean) Indicates whether IPsec Security Associations (SAs) to any network are allowed.
+- `tfc_disable_dscp_copy` (Boolean) Indicates whether DSCP copy is disabled per RFC 4301 section 5.1.2.1.
+- `tfc_padding` (Boolean) Indicates whether Traffic Flow Confidentiality (TFC) Padding is enabled. Requires IKEv2.
 - `trust_all_cas` (Boolean) Indicates whether to trust all certificate authorities (CAs) or not. If set to true, all CAs are trusted without validation.
 - `trusted_certificate_authority` (List of String) URI of the VPN Certificate Authority.
 - `tunnel_life_time_kbytes` (Number) IPsec Lifetime in KBytes. This is the maximum amount of data that can be sent before the IPsec SA is rekeyed.

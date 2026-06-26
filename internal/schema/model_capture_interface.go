@@ -49,5 +49,5 @@ func (r *CaptureInterfaceResourceModel) GetSliceIds(ctx context.Context) []strin
 	if r.Nicid.IsNull() || r.Nicid.IsUnknown() {
 		return nil
 	}
-	return []string{r.Nicid.String()}
+	return []string{r.Nicid.ValueString()}
 }

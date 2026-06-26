@@ -87,6 +87,10 @@ type Layer2ClusterResourceModel struct {
 	NondecryptedCaCertificateRef             *[]types.String                                    `tfsdk:"nondecrypted_ca_certificate_ref" json:"nondecrypted_ca_certificate_ref,optional,omitempty" `
 	NondecryptedTlsServerCredentialsRef      *[]types.String                                    `tfsdk:"nondecrypted_tls_server_credentials_ref" json:"nondecrypted_tls_server_credentials_ref,optional,omitempty" `
 	NtpSettings                              *NtpSettingsResourceModel                          `tfsdk:"ntp_settings" json:"ntp_settings,optional,omitempty" `
+	OpcuaClientX509Credentials               *[]types.String                                    `tfsdk:"opcua_client_x509_credentials" json:"opcua_client_x509_credentials,optional,omitempty" `
+	OpcuaDecryptionMode                      types.String                                       `tfsdk:"opcua_decryption_mode" json:"opcua_decryption_mode,optional,omitempty" `
+	OpcuaProxyCaCredentials                  *TlsClientProtectionWrapperResourceModel           `tfsdk:"opcua_proxy_ca_credentials" json:"opcua_proxy_ca_credentials,optional,omitempty" `
+	OpcuaServerX509Credentials               *[]types.String                                    `tfsdk:"opcua_server_x509_credentials" json:"opcua_server_x509_credentials,optional,omitempty" `
 	PassiveDiscardAccessMode                 types.Bool                                         `tfsdk:"passive_discard_access_mode" json:"passive_discard_access_mode,optional,omitempty" `
 	PassiveDiscardMode                       types.Bool                                         `tfsdk:"passive_discard_mode" json:"passive_discard_mode,optional,omitempty" `
 	PhysicalInterfaces                       *[]AbstractPhysicalInterfaceWrapperResourceModel   `tfsdk:"physical_interfaces" json:"physicalInterfaces,optional,omitempty" `
@@ -130,5 +134,5 @@ func (r *Layer2ClusterResourceModel) GetSliceIds(ctx context.Context) []string {
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

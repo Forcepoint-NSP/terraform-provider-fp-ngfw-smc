@@ -11,7 +11,7 @@ This represents a VPN Site, which is a collection of network elements that are p
 
 ## Examples
 
-- [satellite_gateway_node/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.741.0/examples/sdwan/policy_based_vpn/satellite_gateway_node/main.tf): Creates a VPN site for a firewall's internal gateway in SD-WAN.
+- [satellite_gateway_node/main.tf](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/sdwan/policy_based_vpn/satellite_gateway_node/main.tf): Creates a VPN site for a firewall's internal gateway in SD-WAN.
 
 This example demonstrates how to define an `smc_vpn_site` for associating a network element (such as a LAN or subnet) to a firewall's internal gateway in an SD-WAN VPN design.
 
@@ -34,6 +34,8 @@ resource "smc_vpn_site" "site_fw1" {
 - `name` (String) Name of the object.
 - `site_element` (List of String) 
 
+## Nested Attributes
+- `vpn_references` (List of Blocks, see [here](attr_site_vpn_reference.md)) The VPN references associated with this site, which define the VPNs that this site is part of. These references link the site to specific VPN configurations.
 
 ## Readonly Attributes
 - `admin_domain` (String) This represents a Domain. Domains are administrative boundaries that allow you to separate the configuration details and other information in the system for the purpose of limiting administrator access.

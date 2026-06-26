@@ -40,6 +40,9 @@ type IcapServerResourceModel struct {
 	IcapPath             types.String                                       `tfsdk:"icap_path" json:"icap_path,optional,omitempty" `
 	IcapPort             types.Int64                                        `tfsdk:"icap_port" json:"icap_port,optional,omitempty" `
 	IcapSecure           types.Bool                                         `tfsdk:"icap_secure" json:"icap_secure,optional,omitempty" `
+	IcapXhdrClientip     types.String                                       `tfsdk:"icap_xhdr_clientip" json:"icap_xhdr_clientip,optional,omitempty" `
+	IcapXhdrServerip     types.String                                       `tfsdk:"icap_xhdr_serverip" json:"icap_xhdr_serverip,optional,omitempty" `
+	IcapXhdrUsername     types.String                                       `tfsdk:"icap_xhdr_username" json:"icap_xhdr_username,optional,omitempty" `
 	Ipv6Address          types.String                                       `tfsdk:"ipv6_address" json:"ipv6_address,optional,omitempty" `
 	Key                  types.Int64                                        `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
 	Link                 customfield.NestedObjectList[ApiLinkResourceModel] `tfsdk:"-" json:"link,optional,omitempty" fpro:"link"`
@@ -61,5 +64,5 @@ func (r *IcapServerResourceModel) GetSliceIds(ctx context.Context) []string {
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

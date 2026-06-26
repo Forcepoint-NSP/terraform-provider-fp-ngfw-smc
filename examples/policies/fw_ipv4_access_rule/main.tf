@@ -3,6 +3,16 @@ variable "resource_comment" {
   default = "Created by Terraform"
 }
 
+data "smc_href" "gambling" {
+  name = "Gambling"
+  type = "url_category"
+}
+
+data "smc_href" "tiktok" {
+  name = "TikTok"
+  type = "application_situation"
+}
+
 data "smc_href" "tuvalu" {
   name = "Vanuatu"
   type = "country"
@@ -40,8 +50,34 @@ resource "smc_fw_ipv4_access_rule" "allow_ssh" {
     service = [data.smc_href.ssh_service.id]
   }
   action { action = ["allow"] }
+}
+
+resource "smc_fw_ipv4_access_rule" "allow_gambling" {
+  from_ref = smc_fw_policy.example.link.fw_ipv4_access_rules
+  name     = "allow-gambling"
+  sources { any = true }
+  destinations { any = true }
+  services {
+    service = [data.smc_href.gambling.href]
+  }
+  action { action = ["allow"] }
+  comment = "Allow traffic to gambling sites"
   rank = 2
 }
+
+resource "smc_fw_ipv4_access_rule" "allow_tiktok" {
+  from_ref = smc_fw_policy.example.link.fw_ipv4_access_rules
+  name     = "allow-tiktok"
+  sources { any = true }
+  destinations { any = true }
+  services {
+    service = [data.smc_href.tiktok.href]
+  }
+  action { action = ["allow"] }
+  comment = "Allow tiktok"
+  rank = 1
+}
+
 
 resource "smc_fw_ipv4_access_rule" "allow_https" {
   from_ref = smc_fw_policy.example.link.fw_ipv4_access_rules
@@ -52,4 +88,6 @@ resource "smc_fw_ipv4_access_rule" "allow_https" {
     service = [data.smc_href.https_service.id]
   }
   action { action = ["allow"] }
+  rank = 10
+
 }

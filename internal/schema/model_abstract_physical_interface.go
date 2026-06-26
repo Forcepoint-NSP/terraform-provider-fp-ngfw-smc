@@ -32,14 +32,14 @@ var _ = context.Background()
 
 type AbstractPhysicalInterfaceResourceModel struct {
 	AdslInterface        *AdslPhysicalInterfaceResourceModel        `tfsdk:"adsl_interface" json:"adsl_interface,optional,omitempty" `
+	ApnInterface         *ApnInterfaceResourceModel                 `tfsdk:"apn_interface" json:"apn_interface,optional,omitempty" `
 	ModemInterface       *ModemInterfaceResourceModel               `tfsdk:"modem_interface" json:"modem_interface,optional,omitempty" `
 	PhysicalInterface    *PhysicalInterfaceResourceModel            `tfsdk:"physical_interface" json:"physical_interface,optional,omitempty" `
 	PortGroupInterface   *PortGroupInterfaceResourceModel           `tfsdk:"port_group_interface" json:"port_group_interface,optional,omitempty" `
 	SsidInterface        *SsidPhysicalInterfaceResourceModel        `tfsdk:"ssid_interface" json:"ssid_interface,optional,omitempty" `
-	SwitchInterfacePort  *SwitchInterfacePortResourceModel          `tfsdk:"switch_interface_port" json:"switch_interface_port,optional,omitempty" `
+	SwitchInterface      *SwitchInterfaceResourceModel              `tfsdk:"switch_interface" json:"switch_interface,optional,omitempty" `
 	TunnelInterface      *TunnelInterfaceResourceModel              `tfsdk:"tunnel_interface" json:"tunnel_interface,optional,omitempty" `
 	VirtualVlanInterface *VirtualVlanPhysicalInterfaceResourceModel `tfsdk:"virtual_vlan_interface" json:"virtual_vlan_interface,optional,omitempty" `
 	VlanInterface        *VlanPhysicalInterfaceResourceModel        `tfsdk:"vlan_interface" json:"vlan_interface,optional,omitempty" `
-	VpnBrokerInterface   *VpnBrokerInterfaceResourceModel           `tfsdk:"vpn_broker_interface" json:"vpn_broker_interface,optional,omitempty" `
 	WirelessInterface    *WirelessPhysicalInterfaceResourceModel    `tfsdk:"wireless_interface" json:"wireless_interface,optional,omitempty" `
 }

@@ -35,6 +35,8 @@ type GatewaySettingsResourceModel struct {
 	AdminDomain                 types.String                                       `tfsdk:"admin_domain" json:"admin_domain,optional,omitempty" fpro:"admin_domain"`
 	CertificateCacheCrlValidity types.Int64                                        `tfsdk:"certificate_cache_crl_validity" json:"certificate_cache_crl_validity,optional,omitempty" `
 	Comment                     types.String                                       `tfsdk:"comment" json:"comment,optional,omitempty" `
+	DpdInterval                 types.Int64                                        `tfsdk:"dpd_interval" json:"dpd_interval,optional,omitempty" `
+	DpdTimeout                  types.Int64                                        `tfsdk:"dpd_timeout" json:"dpd_timeout,optional,omitempty" `
 	Etag                        types.String                                       `tfsdk:"etag" json:"etag,optional,omitempty" fpro:"etag"`
 	Key                         types.Int64                                        `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
 	Link                        customfield.NestedObjectList[ApiLinkResourceModel] `tfsdk:"-" json:"link,optional,omitempty" fpro:"link"`
@@ -58,5 +60,5 @@ func (r *GatewaySettingsResourceModel) GetSliceIds(ctx context.Context) []string
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

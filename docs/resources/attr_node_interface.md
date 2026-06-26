@@ -14,7 +14,6 @@ This represents a Node Dedicated Interface, which is a unique IP address for eac
 
 ## Simple Attributes
 - `address` (String) The IP Address (IPv4 or IPv6) of the interface. For dynamic interfaces, this will be null.
-- `apn` (String) The Access Point Name (APN) used for the modem connection. This is not required and can be used for modem configurations.
 - `auth_request` (Boolean) Indicates whether this interface is used as the identity for authentication requests.
 - `auth_request_source` (Boolean) Indicates whether this interface is used as the source for authentication requests. If not specified, the source IP address is selected automatically based on routing.
 - `automatic_default_route` (Boolean) Indicates whether the dynamic default route will be automatically created for this dynamic interface.
@@ -27,14 +26,12 @@ This represents a Node Dedicated Interface, which is a unique IP address for eac
 - `dynamic_ipv6_index` (Number) The dynamic index of the IPv6 dynamic interface, which is a value between 1 and 16. For example, for 'First DHCP Interface ip', the index value is 1.
 - `igmp_mode` (String) The IGMP mode for this interface, which can be 'upstream' or 'downstream'. In upstream mode, the firewall acts as an IGMP querier for multicast servers and hosts in local networks. In downstream mode, the firewall queries downstream networks for hosts that want to join or leave multicast host groups.
 - `igmp_querier_settings_ref` (String) This represents the IGMP Querier Settings for Multicast Routing and especially the PIM dynamic routing feature.
-- `igmp_version` (String) The IGMP version used by this interface, which can be 1, 2, or 3. The default version is 3, but you may need to select another version for compatibility with certain hosts.
+- `igmp_version` (String) The IGMP version used by this interface, which can be igmpv1, igmpv2, or igmpv3. The default version is 3, but you may need to select another version for compatibility with certain hosts.
 - `name` (String) Name of the object.
 - `network_value` (String) The IP Network (IPv4 or IPv6) of the interface. For dynamic interfaces, this will be null.
 - `nicid` (String) The Interface ID of the interface.
 - `nodeid` (Number) The unique identifier of the engine node in the cluster, which is a value between 1 and 16.
 - `outgoing` (Boolean) Indicates whether this interface is the default IP address for outgoing traffic. There must be one and only one NDI defined for outgoing traffic.
-- `phone_number` (String) The phone number used for the modem connection. This is not required and can be used for modem configurations.
-- `pin_code` (String) The PIN code used for the modem's SIM card. This is not required and can be used for modem configurations.
 - `pppoa` (Boolean) Indicates whether this interface is configured for PPPoA (Point-to-Point Protocol over ATM).
 - `pppoe` (Boolean) Indicates whether this interface is configured for PPPoE (Point-to-Point Protocol over Ethernet).
 - `pppoe_password` (String) The PPPoE password used for authentication when the interface is configured for PPPoE.

@@ -51,9 +51,11 @@ type AdministratorResourceModel struct {
 	Lk                     customfield.Map[types.String]                      `tfsdk:"link" json:"-" `
 	LocalAdmin             types.Bool                                         `tfsdk:"local_admin" json:"local_admin,optional,omitempty" `
 	Locked                 types.Bool                                         `tfsdk:"locked" json:"locked,optional,omitempty" fpro:"locked"`
+	LoginNameOnEngine      types.String                                       `tfsdk:"login_name_on_engine" json:"login_name_on_engine,optional,omitempty" `
 	Name                   types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
 	Password               types.String                                       `tfsdk:"password" json:"password,optional,omitempty" `
 	Permissions            *AdminPermissionsResourceModel                     `tfsdk:"permissions" json:"permissions,optional,omitempty" `
+	PrimaryAccount         types.Bool                                         `tfsdk:"primary_admin_account" json:"primary_admin_account,optional,omitempty" `
 	ReadOnly               types.Bool                                         `tfsdk:"read_only" json:"read_only,optional,omitempty" fpro:"read_only"`
 	Superuser              types.Bool                                         `tfsdk:"superuser" json:"superuser,optional,omitempty" `
 	System                 types.Bool                                         `tfsdk:"system" json:"system,optional,omitempty" fpro:"system"`
@@ -65,5 +67,5 @@ func (r *AdministratorResourceModel) GetSliceIds(ctx context.Context) []string {
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

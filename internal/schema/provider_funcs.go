@@ -27,361 +27,362 @@ import (
 // Resources returns the list of resources supported by this provider.
 func GetResources(_ context.Context) []func() resource.Resource {
 	resources := []func() resource.Resource{
-		NewBackupTaskResource,
-		NewFirewallTemplatePolicyResource,
-		NewBgpPeeringResource,
-		NewExternalEndpointResource,
-		NewRpcServiceResource,
-		NewVpnSiteResource,
-		NewActiveDirectoryServerResource,
-		NewRouteBasedVpnTunnelResource,
-		NewInterfaceZoneResource,
-		NewExternalGatewayResource,
+		NewExternalBgpPeerResource,
 		NewExternalAuthenticationMethodResource,
 		NewBgpConnectionProfileResource,
-		NewIpListResource,
-		NewExternalBgpPeerResource,
-		NewCommunityAccessListResource,
-		NewFirewallPolicyResource,
-		NewUdpServiceGroupResource,
-		NewRouteMapRuleResource,
-		NewLdapServerResource,
-		NewIpv6AccessListResource,
-		NewHostResource,
-		NewSingleContactAddressResource,
-		NewPimIpv4InterfaceSettingsResource,
-		NewSingleFirewallResource,
-		NewRouteBasedVpnTunnelGroupResource,
-		NewOspfv2DomainSettingsResource,
-		NewLogServerResource,
-		NewIpv6AccessRuleResource,
-		NewGroupResource,
-		NewIpv4NatRuleResource,
-		NewBrokerDomainConfigFileResource,
-		NewPimIpv4ProfileResource,
-		NewBgpProfileResource,
-		NewAddressRangeResource,
 		NewAliasResource,
-		NewRoutingNodeResource,
-		NewIcmpServiceGroupResource,
-		NewRouterResource,
-		NewIpAddressListResource,
-		NewServiceGroupResource,
-		NewLocationResource,
-		NewRpcServiceGroupResource,
-		NewIpPrefixListResource,
-		NewTcpServiceGroupResource,
-		NewIcmpServiceResource,
-		NewTcpServiceResource,
-		NewFirewallClusterResource,
-		NewDhcpServerResource,
-		NewOspfv2KeyChainResource,
-		NewRouteMapPolicyResource,
-		NewIpv6PrefixListResource,
-		NewGatewayNodeResource,
-		NewOspfv2ProfileResource,
-		NewExternalDnsServerResource,
-		NewNtpServerResource,
-		NewMatchExpressionResource,
-		NewProxyServerResource,
-		NewOutboundMultiLinkResource,
-		NewStaticNetlinkResource,
-		NewIpv4AccessRuleResource,
-		NewVpnBrokerInterfaceResource,
-		NewSmtpServerResource,
-		NewInternalUserResource,
-		NewIpServiceGroupResource,
-		NewTacacsServerResource,
-		NewElasticsearchClusterResource,
-		NewBrokerDomainResource,
-		NewIpServiceResource,
-		NewVpnProfileResource,
-		NewIpAccessListResource,
-		NewExpressionResource,
+		NewIpv6AccessRuleResource,
+		NewNetworkResource,
 		NewSubFirewallPolicyResource,
+		NewIcmpServiceResource,
+		NewIgmpQuerierSettingsResource,
+		NewExternalEndpointResource,
+		NewIpv6AccessListResource,
+		NewTcpServiceGroupResource,
+		NewIcmpv6ServiceResource,
+		NewDomainNameResource,
+		NewGroupResource,
+		NewBrokerDomainConfigFileResource,
+		NewPolicyBasedVpnResource,
+		NewNtpServerResource,
+		NewFirewallTemplatePolicyResource,
+		NewIpv4NatRuleResource,
+		NewAddressRangeResource,
+		NewExpressionResource,
+		NewCommunityAccessListResource,
+		NewOspfv2DomainSettingsResource,
+		NewElasticsearchClusterResource,
+		NewPimIpv4ProfileResource,
+		NewIpAccessListResource,
+		NewTacacsServerResource,
+		NewRouterResource,
+		NewSingleContactAddressResource,
+		NewExternalDnsServerResource,
+		NewAutonomousSystemResource,
+		NewIcapServerResource,
+		NewOspfv2InterfaceSettingsResource,
+		NewMatchExpressionResource,
+		NewIpListResource,
+		NewSmtpServerResource,
+		NewOutboundMultiLinkResource,
+		NewActiveDirectoryServerResource,
+		NewOspfv2ProfileResource,
+		NewSingleFirewallResource,
+		NewOspfv2KeyChainResource,
+		NewIpv4AccessRuleResource,
+		NewProxyServerResource,
+		NewInternalGatewayResource,
+		NewIpv6PrefixListResource,
+		NewRouteBasedVpnTunnelResource,
+		NewPimIpv4InterfaceSettingsResource,
+		NewTcpServiceResource,
+		NewDhcpServerResource,
+		NewRouteBasedVpnTunnelGroupResource,
+		NewServiceGroupResource,
+		NewExtendedCommunityAccessListResource,
+		NewLdapServerResource,
+		NewUdpServiceResource,
+		NewLogServerResource,
+		NewIpServiceResource,
+		NewAdministrationDomainResource,
+		NewStaticNetlinkResource,
+		NewBrokerDomainResource,
+		NewFirewallPolicyResource,
+		NewFirewallClusterResource,
+		NewLocationResource,
+		NewVpnProfileResource,
+		NewRouteMapRuleResource,
+		NewRoutingNodeResource,
+		NewBgpPeeringResource,
+		NewInternalUserResource,
+		NewBgpProfileResource,
+		NewVpnBrokerInterfaceResource,
+		NewLogicalInterfaceResource,
+		NewRpcServiceGroupResource,
+		NewVpnSiteResource,
+		NewInterfaceZoneResource,
+		NewRouteMapPolicyResource,
+		NewRpcServiceResource,
+		NewGatewayTunnelResource,
+		NewIcmpServiceGroupResource,
+		NewIpAddressListResource,
+		NewExternalGatewayResource,
+		NewIpPrefixListResource,
+		NewInternalEndpointResource,
+		NewGatewayNodeResource,
+		NewUdpServiceGroupResource,
+		NewHostResource,
 		NewAsPathAccessListResource,
 		NewOspfv2AreaResource,
-		NewAdministrationDomainResource,
-		NewIcapServerResource,
-		NewUdpServiceResource,
-		NewInternalEndpointResource,
-		NewAutonomousSystemResource,
-		NewLogicalInterfaceResource,
-		NewDomainNameResource,
-		NewPolicyBasedVpnResource,
-		NewInternalGatewayResource,
-		NewGatewayTunnelResource,
-		NewExtendedCommunityAccessListResource,
-		NewOspfv2InterfaceSettingsResource,
-		NewNetworkResource,
-		NewIcmpv6ServiceResource,
-		NewIgmpQuerierSettingsResource,
+		NewBackupTaskResource,
+		NewIpServiceGroupResource,
 	}
 	if config.IsExperimentalEnabled() {
-		resources = append(resources, NewStringSituationParameterValueResource)
-		resources = append(resources, NewSshProfileResource)
-		resources = append(resources, NewAlertPolicyResource)
-		resources = append(resources, NewBooleanSituationParameterValueResource)
-		resources = append(resources, NewEcaStringSituationParameterValueResource)
-		resources = append(resources, NewVirtualResourceResource)
-		resources = append(resources, NewVpnTrafficSelectorResource)
-		resources = append(resources, NewIntegerSituationParameterValueResource)
-		resources = append(resources, NewFilterSituationParameterValueResource)
-		resources = append(resources, NewTrustedUpdateCertificateResource)
-		resources = append(resources, NewInternalFileResource)
-		resources = append(resources, NewIpsPolicyResource)
-		resources = append(resources, NewLogServersAliasResource)
-		resources = append(resources, NewPdfTemplateResource)
-		resources = append(resources, NewCorrelationSituationContextResource)
-		resources = append(resources, NewApplicationTagResource)
-		resources = append(resources, NewSubIpv6FirewallPolicyResource)
-		resources = append(resources, NewDynamicNetlinkResource)
-		resources = append(resources, NewExternalLdapUserResource)
-		resources = append(resources, NewStringListSituationParameterValueResource)
-		resources = append(resources, NewCorrelationSituationResource)
-		resources = append(resources, NewEcaApplicationUsageGroupTagResource)
-		resources = append(resources, NewIpsTemplatePolicyResource)
-		resources = append(resources, NewConfigurationSituationParameterValueResource)
-		resources = append(resources, NewInterfaceNicXNetAliasResource)
-		resources = append(resources, NewEcaUserDomainResource)
-		resources = append(resources, NewLdaplessUserGroupResource)
-		resources = append(resources, NewValidmVpnDhcpAddressPoolsAliasResource)
-		resources = append(resources, NewLayer2FirewallNodeResource)
-		resources = append(resources, NewSubLayer2PolicyResource)
-		resources = append(resources, NewExportLogTaskResource)
-		resources = append(resources, NewLinkTypeResource)
-		resources = append(resources, NewTlsMatchSituationContextResource)
-		resources = append(resources, NewClientGatewayResource)
-		resources = append(resources, NewValidmVpnDhcpServersAliasResource)
-		resources = append(resources, NewDynamicInterfaceAliasResource)
-		resources = append(resources, NewNotSpecificPlatformTagResource)
-		resources = append(resources, NewSituationParameterResource)
-		resources = append(resources, NewSslVpnv2PortalPolicyResource)
-		resources = append(resources, NewTrustedUpdateCertificateAuthorityResource)
-		resources = append(resources, NewCertificateRenewalSystemTaskResource)
-		resources = append(resources, NewSpecificSoftwareTagResource)
-		resources = append(resources, NewCountryIpListResource)
-		resources = append(resources, NewOpaqueSituationParameterValueResource)
-		resources = append(resources, NewIpListGroupTagResource)
-		resources = append(resources, NewSidewinderLoggingProfileSettingsResource)
-		resources = append(resources, NewLogicalOperatorSituationParameterValueResource)
-		resources = append(resources, NewSubIpsPolicyResource)
-		resources = append(resources, NewApplicationUsageTagResource)
-		resources = append(resources, NewBinarySituationParameterValueResource)
-		resources = append(resources, NewExternalLdapUserGroupResource)
-		resources = append(resources, NewTrustedCertificateAuthorityResource)
-		resources = append(resources, NewReferenceSituationParameterValueResource)
-		resources = append(resources, NewSslVpnIconFileResource)
-		resources = append(resources, NewSslVpnPortalResource)
-		resources = append(resources, NewWebauthHtmlPageResource)
-		resources = append(resources, NewLocalClusterNdiOnlyAliasResource)
-		resources = append(resources, NewSnortConfigFileResource)
-		resources = append(resources, NewSigningCertificateAuthorityResource)
-		resources = append(resources, NewLocalClusterDynamicInterfaceAliasResource)
-		resources = append(resources, NewRadiusServerResource)
-		resources = append(resources, NewVulnerabilityTypeTagResource)
-		resources = append(resources, NewThirdPartyProbingProfileResource)
-		resources = append(resources, NewImageFileResource)
-		resources = append(resources, NewSituationTagResource)
-		resources = append(resources, NewL2InterfacePolicyResource)
-		resources = append(resources, NewAccessControlListResource)
-		resources = append(resources, NewApplicationExpressionSituationParameterValueResource)
-		resources = append(resources, NewSituationGroupTagResource)
-		resources = append(resources, NewLocalClusterNdiForMgtAliasResource)
-		resources = append(resources, NewManagementServersAliasResource)
-		resources = append(resources, NewCountryIpListGroupTagResource)
-		resources = append(resources, NewTrafficCaptureTaskResource)
-		resources = append(resources, NewHardwareTagResource)
-		resources = append(resources, NewMiniReportResource)
-		resources = append(resources, NewLocalClusterNdiIpv6OnlyAliasResource)
-		resources = append(resources, NewFilterExpressionTagResource)
-		resources = append(resources, NewQosPolicyResource)
-		resources = append(resources, NewFileFilteringCompatibilityTagResource)
-		resources = append(resources, NewDnsRelayProfileResource)
 		resources = append(resources, NewTrustedCaTagResource)
-		resources = append(resources, NewDhcpEnabledInterfaceAddressesAliasResource)
-		resources = append(resources, NewVssContextResource)
-		resources = append(resources, NewFileFilteringRuleResource)
+		resources = append(resources, NewUpdatePackageResource)
+		resources = append(resources, NewUserResponseEntryResource)
+		resources = append(resources, NewAdministratorManagementSystemTaskResource)
+		resources = append(resources, NewGatewaySettingsResource)
+		resources = append(resources, NewValidmVpnDhcpEnabledInterfaceAddressesAliasResource)
+		resources = append(resources, NewLocalClusterNdiIpv6OnlyAliasResource)
+		resources = append(resources, NewPostQuantumPresharedKeyResource)
+		resources = append(resources, NewLayer2PolicyResource)
+		resources = append(resources, NewRouteBasedVpnTunnelSideResource)
+		resources = append(resources, NewVpnTrafficSelectorResource)
+		resources = append(resources, NewNotSpecificSoftwareTagResource)
+		resources = append(resources, NewUserIdServiceResource)
+		resources = append(resources, NewSandboxDataCenterResource)
+		resources = append(resources, NewUpgradeNodeTaskResource)
 		resources = append(resources, NewLayer2EthernetRuleResource)
-		resources = append(resources, NewDefaultNatAddressAliasResource)
+		resources = append(resources, NewDeleteLogTaskResource)
+		resources = append(resources, NewLocalClusterDynamicInterfaceAliasResource)
+		resources = append(resources, NewInternalPostQuantumPresharedKeyResource)
+		resources = append(resources, NewLdaplessUserGroupResource)
+		resources = append(resources, NewVirtualResourceResource)
+		resources = append(resources, NewBookmarkGroupResource)
+		resources = append(resources, NewVirtualFirewallResource)
+		resources = append(resources, NewBooleanSituationParameterValueResource)
+		resources = append(resources, NewCategoryGroupTagResource)
+		resources = append(resources, NewDataContextResource)
+		resources = append(resources, NewFileFilteringPolicyResource)
+		resources = append(resources, NewEcaApplicationSituationResource)
+		resources = append(resources, NewStringSituationParameterValueResource)
+		resources = append(resources, NewApplicationAccessServiceProfileResource)
+		resources = append(resources, NewWebswingUserFileCleanerTaskResource)
+		resources = append(resources, NewSpecificPlatformTagResource)
+		resources = append(resources, NewInspectionSituationContextResource)
+		resources = append(resources, NewFileFilteringRuleResource)
+		resources = append(resources, NewInspectionGlobalRuleResource)
+		resources = append(resources, NewLogicalOperatorSituationParameterValueResource)
+		resources = append(resources, NewIntegratedUserIdServiceResource)
+		resources = append(resources, NewClientGatewayResource)
+		resources = append(resources, NewDeleteCounterDataTaskResource)
+		resources = append(resources, NewApplicationAccessSsoDomainResource)
+		resources = append(resources, NewRuleValidityTimeResource)
+		resources = append(resources, NewSidewinderLoggingProfileResource)
+		resources = append(resources, NewReferenceSituationParameterValueResource)
+		resources = append(resources, NewInspectedServiceResource)
+		resources = append(resources, NewUserAlertCheckResource)
+		resources = append(resources, NewLayer2FirewallNodeResource)
+		resources = append(resources, NewExternalLdapUserDomainResource)
+		resources = append(resources, NewHttpProxyResource)
 		resources = append(resources, NewVirtualIpsNodeResource)
-		resources = append(resources, NewSingleSensorResource)
-		resources = append(resources, NewKnownHostResource)
-		resources = append(resources, NewCloudAutoScaledGroupResource)
-		resources = append(resources, NewRegexpSituationParameterValueResource)
-		resources = append(resources, NewAlertChainResource)
+		resources = append(resources, NewAlertChainRuleResource)
+		resources = append(resources, NewL2fwInterfaceIpv4AccessRuleResource)
+		resources = append(resources, NewUrlCategoryRiskTagResource)
+		resources = append(resources, NewLayer2ClusterResource)
+		resources = append(resources, NewMultiContactAddressResource)
+		resources = append(resources, NewAccessControlListResource)
+		resources = append(resources, NewInspectionTemplatePolicyResource)
+		resources = append(resources, NewVpnCertificateAuthorityResource)
+		resources = append(resources, NewL2fwInterfaceEthernetRuleResource)
+		resources = append(resources, NewRadiusServerResource)
+		resources = append(resources, NewQosLimitRuleResource)
+		resources = append(resources, NewSmcCertificateAuthorityResource)
+		resources = append(resources, NewLocalClusterNdiOnlyAliasResource)
 		resources = append(resources, NewIpv6NatRuleResource)
-		resources = append(resources, NewInternalGatewayCertificateResource)
-		resources = append(resources, NewRoleResource)
-		resources = append(resources, NewProtocolAgentResource)
-		resources = append(resources, NewIpsIpv6AccessRuleResource)
-		resources = append(resources, NewKnownHostListResource)
+		resources = append(resources, NewInterfaceNicXNetAliasResource)
+		resources = append(resources, NewApplicationAccessWebServiceResource)
+		resources = append(resources, NewExternalLdapUserGroupResource)
+		resources = append(resources, NewCertificateRenewalSystemTaskResource)
+		resources = append(resources, NewEcaOperatingSystemSituationResource)
+		resources = append(resources, NewCertificateRevocationFetcherTaskResource)
+		resources = append(resources, NewVssContainerNodeResource)
+		resources = append(resources, NewLinkSelectionValueResource)
+		resources = append(resources, NewWebAuthenticationFileResource)
+		resources = append(resources, NewInternalFileResource)
+		resources = append(resources, NewApplicationAccessPortalResource)
+		resources = append(resources, NewApplianceSwitchModuleResource)
 		resources = append(resources, NewApplicationGroupTagResource)
-		resources = append(resources, NewArchiveLogTaskResource)
+		resources = append(resources, NewIntegerSituationParameterValueResource)
+		resources = append(resources, NewL2InterfacePolicyResource)
+		resources = append(resources, NewNotSpecificPlatformTagResource)
+		resources = append(resources, NewIpsPolicyResource)
+		resources = append(resources, NewIpsTemplatePolicyResource)
+		resources = append(resources, NewValidmVpnDhcpServersAliasResource)
+		resources = append(resources, NewCaCheckerTaskResource)
+		resources = append(resources, NewCloudAutoScaledGroupResource)
+		resources = append(resources, NewApplicationTagResource)
 		resources = append(resources, NewUrlListSituationResource)
 		resources = append(resources, NewIpv4AddressSituationParameterValueResource)
-		resources = append(resources, NewBookmarkResource)
-		resources = append(resources, NewSystemSnapshotResource)
-		resources = append(resources, NewLinkSelectionValueResource)
-		resources = append(resources, NewUrlCategoryRiskTagResource)
-		resources = append(resources, NewInspectionExceptionRuleResource)
-		resources = append(resources, NewGeolocationResource)
-		resources = append(resources, NewCategoryGroupTagResource)
-		resources = append(resources, NewSginfoTaskResource)
-		resources = append(resources, NewQosLimitRuleResource)
-		resources = append(resources, NewInternalUserDomainResource)
-		resources = append(resources, NewReportOperationResource)
-		resources = append(resources, NewLayer2PolicyResource)
-		resources = append(resources, NewCustomAlertResource)
-		resources = append(resources, NewUrlCategoryGroupTagResource)
-		resources = append(resources, NewL2InterfaceTemplatePolicyResource)
-		resources = append(resources, NewRuleValidityTimeResource)
-		resources = append(resources, NewConnectionTypeResource)
-		resources = append(resources, NewInspectionSituationResource)
-		resources = append(resources, NewCheckExpirationOfOneTimePasswordsForNgfwEnginesTaskResource)
-		resources = append(resources, NewDataContextResource)
-		resources = append(resources, NewAdministratorResource)
-		resources = append(resources, NewInternalUserGroupResource)
-		resources = append(resources, NewRouteBasedVpnTunnelSideResource)
-		resources = append(resources, NewApplianceSwitchModuleResource)
-		resources = append(resources, NewHttpProxyResource)
-		resources = append(resources, NewL2fwInterfaceIpv6AccessRuleResource)
-		resources = append(resources, NewMacAddressResource)
-		resources = append(resources, NewValidDhcpServersAliasResource)
-		resources = append(resources, NewL2fwInterfaceIpv4AccessRuleResource)
-		resources = append(resources, NewCloudSingleFirewallResource)
-		resources = append(resources, NewPostQuantumPresharedKeyResource)
-		resources = append(resources, NewEcaClientConfigurationResource)
-		resources = append(resources, NewUrlListSituationParameterValueResource)
-		resources = append(resources, NewSandboxServiceResource)
-		resources = append(resources, NewFileFilteringSituationResource)
-		resources = append(resources, NewInspectedServiceResource)
-		resources = append(resources, NewUpdatePackageResource)
-		resources = append(resources, NewInternalPostQuantumPresharedKeyResource)
-		resources = append(resources, NewCaCheckerTaskResource)
-		resources = append(resources, NewTlsInspectionPolicyResource)
-		resources = append(resources, NewTlsServerCredentialsResource)
-		resources = append(resources, NewInspectionTemplatePolicyResource)
-		resources = append(resources, NewDeleteLogTaskResource)
-		resources = append(resources, NewL2fwInterfaceEthernetRuleResource)
-		resources = append(resources, NewFirewallAlertResource)
-		resources = append(resources, NewTlsProfileResource)
-		resources = append(resources, NewVssContainerNodeResource)
-		resources = append(resources, NewDeleteCounterDataTaskResource)
-		resources = append(resources, NewVulnerabilityResource)
-		resources = append(resources, NewReportTemplateResource)
-		resources = append(resources, NewLoggingFieldResolverResource)
-		resources = append(resources, NewServerPoolResource)
-		resources = append(resources, NewLogoFileResource)
-		resources = append(resources, NewLocalClusterCviAliasResource)
-		resources = append(resources, NewSensorClusterResource)
-		resources = append(resources, NewLayer2TemplatePolicyResource)
-		resources = append(resources, NewWebSiteAccessSituationParameterValueResource)
-		resources = append(resources, NewBrowserColumnsResource)
-		resources = append(resources, NewApplicationSituationContextResource)
 		resources = append(resources, NewSituationContextGroupResource)
-		resources = append(resources, NewNotBrowsedLdapUserResource)
-		resources = append(resources, NewLdapLessUserResource)
-		resources = append(resources, NewApplicationUsageGroupTagResource)
-		resources = append(resources, NewExternalLdapUserDomainResource)
-		resources = append(resources, NewUrlCategorySituationResource)
-		resources = append(resources, NewSidewinderLoggingProfileResource)
-		resources = append(resources, NewMasterEngineResource)
-		resources = append(resources, NewIpsEthernetRuleResource)
-		resources = append(resources, NewSslVpnWebServiceResource)
-		resources = append(resources, NewCertificateRevocationFetcherTaskResource)
-		resources = append(resources, NewTlsMatchSituationResource)
-		resources = append(resources, NewLoopbackEndpointResource)
-		resources = append(resources, NewUpdateServerProfileResource)
-		resources = append(resources, NewInspectionSituationContextResource)
-		resources = append(resources, NewVirtualFirewallResource)
-		resources = append(resources, NewCertificateInfoStoreCheckerTaskResource)
-		resources = append(resources, NewUrlListApplicationSituationResource)
-		resources = append(resources, NewLayer2SingleResource)
-		resources = append(resources, NewSslVpnLogonPageBackgroundResource)
-		resources = append(resources, NewEcaApplicationSituationResource)
-		resources = append(resources, NewSshHostKeyResource)
-		resources = append(resources, NewLocalClusterNdiForHbAliasResource)
-		resources = append(resources, NewSandboxDataCenterResource)
-		resources = append(resources, NewPlainSituationParameterValueResource)
-		resources = append(resources, NewFloatSituationParameterValueResource)
-		resources = append(resources, NewAdministratorManagementSystemTaskResource)
-		resources = append(resources, NewInternalGatewayCertificateRequestResource)
-		resources = append(resources, NewDeviceToolsProfileResource)
-		resources = append(resources, NewSmcCertificateAuthorityResource)
-		resources = append(resources, NewVssContextNodeResource)
-		resources = append(resources, NewEcaEndpointSettingsResource)
-		resources = append(resources, NewEthernetServiceResource)
-		resources = append(resources, NewThirdPartyLoggingProfileResource)
-		resources = append(resources, NewVirtualPhysicalInterfaceResource)
+		resources = append(resources, NewExportLogTaskResource)
+		resources = append(resources, NewReplicaInternalGatewayResource)
+		resources = append(resources, NewApplicationAccessZipFileResource)
+		resources = append(resources, NewMiniReportResource)
+		resources = append(resources, NewSigningCertificateAuthorityResource)
+		resources = append(resources, NewIpsClusterResource)
 		resources = append(resources, NewVulnerabilityImpactTagResource)
-		resources = append(resources, NewEcaOperatingSystemSituationResource)
-		resources = append(resources, NewFirewallNodeResource)
-		resources = append(resources, NewMultiContactAddressResource)
-		resources = append(resources, NewLayer2Ipv6AccessRuleResource)
+		resources = append(resources, NewLayer2SingleResource)
+		resources = append(resources, NewLogServersAliasResource)
+		resources = append(resources, NewFirewallAlertResource)
 		resources = append(resources, NewLldpProfileResource)
-		resources = append(resources, NewValidmVpnDhcpEnabledInterfaceAddressesAliasResource)
-		resources = append(resources, NewIntegratedUserIdServiceResource)
-		resources = append(resources, NewInterfaceNicXIpAliasResource)
-		resources = append(resources, NewSpecificPlatformTagResource)
-		resources = append(resources, NewSslVpnZipFileResource)
-		resources = append(resources, NewUserIdServiceResource)
-		resources = append(resources, NewLinkUsageProfileResource)
-		resources = append(resources, NewDeleteOldSnapshotsTaskResource)
-		resources = append(resources, NewSslVpnSsoDomainResource)
-		resources = append(resources, NewPolicySnapshotResource)
-		resources = append(resources, NewBindingSetResource)
-		resources = append(resources, NewSidewinderTagResource)
-		resources = append(resources, NewUserResponseResource)
-		resources = append(resources, NewBookmarkGroupResource)
-		resources = append(resources, NewVirtualFirewallNodeResource)
-		resources = append(resources, NewNotSpecificSoftwareTagResource)
-		resources = append(resources, NewNotBrowsedLdapUserGroupResource)
-		resources = append(resources, NewConnectionSyncGroupResource)
-		resources = append(resources, NewSslVpnCompanyLogoResource)
-		resources = append(resources, NewOldExecutedTaskCleanerTaskResource)
-		resources = append(resources, NewPaParameterResource)
-		resources = append(resources, NewSubTlsMatchSituationResource)
 		resources = append(resources, NewLocalClusterAliasResource)
-		resources = append(resources, NewUserResponseEntryResource)
-		resources = append(resources, NewApplicationRiskTagResource)
-		resources = append(resources, NewApiClientResource)
-		resources = append(resources, NewFileFilteringPolicyResource)
-		resources = append(resources, NewQosClassResource)
-		resources = append(resources, NewThreatSeekerServerResource)
-		resources = append(resources, NewInspectionGlobalRuleResource)
-		resources = append(resources, NewLayer2ClusterResource)
-		resources = append(resources, NewIdsAlertResource)
-		resources = append(resources, NewEthernetServiceGroupResource)
-		resources = append(resources, NewSystemSnapshotCheckerTaskResource)
-		resources = append(resources, NewCustomPropertiesProfileResource)
-		resources = append(resources, NewWebAuthenticationFileResource)
-		resources = append(resources, NewVirtualIpsResource)
-		resources = append(resources, NewVssContainerNodeIscSettingsResource)
-		resources = append(resources, NewOverviewTemplateResource)
-		resources = append(resources, NewInspectionSituationParameterValueResource)
-		resources = append(resources, NewUpgradeNodeTaskResource)
-		resources = append(resources, NewSslVpnServiceProfileResource)
-		resources = append(resources, NewLayer2Ipv4AccessRuleResource)
-		resources = append(resources, NewWebAccessServerResource)
-		resources = append(resources, NewGatewaySettingsResource)
-		resources = append(resources, NewCloudFirewallNodeResource)
-		resources = append(resources, NewUserAlertCheckResource)
-		resources = append(resources, NewIpsNodeResource)
-		resources = append(resources, NewVpnCertificateAuthorityResource)
-		resources = append(resources, NewCategoryTagResource)
+		resources = append(resources, NewInspectionSituationResource)
 		resources = append(resources, NewGatewayProfileResource)
-		resources = append(resources, NewScheduledTaskResource)
-		resources = append(resources, NewEcaApplicationCategoryTagResource)
-		resources = append(resources, NewWebswingUserFileCleanerTaskResource)
+		resources = append(resources, NewSidewinderTagResource)
+		resources = append(resources, NewThirdPartyLoggingProfileResource)
+		resources = append(resources, NewSituationParameterResource)
+		resources = append(resources, NewFilterExpressionTagResource)
 		resources = append(resources, NewVirtualLayer2Resource)
+		resources = append(resources, NewCustomAlertResource)
+		resources = append(resources, NewThreatSeekerServerResource)
+		resources = append(resources, NewSituationGroupTagResource)
+		resources = append(resources, NewSnortConfigFileResource)
+		resources = append(resources, NewDnsRelayProfileResource)
+		resources = append(resources, NewVirtualIpsResource)
+		resources = append(resources, NewLocalClusterNdiForMgtAliasResource)
+		resources = append(resources, NewCategoryTagResource)
+		resources = append(resources, NewIpsNodeResource)
+		resources = append(resources, NewTlsServerCredentialsResource)
+		resources = append(resources, NewTrustedCertificateAuthorityResource)
+		resources = append(resources, NewSubIpv6FirewallPolicyResource)
+		resources = append(resources, NewTlsMatchSituationContextResource)
+		resources = append(resources, NewApplicationUsageGroupTagResource)
+		resources = append(resources, NewConfigurationSituationParameterValueResource)
+		resources = append(resources, NewMacAddressResource)
+		resources = append(resources, NewPaParameterResource)
+		resources = append(resources, NewSystemSnapshotResource)
+		resources = append(resources, NewCloudSingleFirewallResource)
+		resources = append(resources, NewValidDhcpServersAliasResource)
+		resources = append(resources, NewTlsMatchSituationResource)
+		resources = append(resources, NewGeolocationResource)
+		resources = append(resources, NewCountryIpListResource)
+		resources = append(resources, NewUpdateServerProfileResource)
+		resources = append(resources, NewLdapLessUserResource)
+		resources = append(resources, NewLocalClusterNdiForHbAliasResource)
+		resources = append(resources, NewSpecificSoftwareTagResource)
+		resources = append(resources, NewLinkUsageProfileResource)
+		resources = append(resources, NewReportOperationResource)
+		resources = append(resources, NewSubIpsPolicyResource)
+		resources = append(resources, NewSubTlsMatchSituationResource)
+		resources = append(resources, NewNotBrowsedLdapUserGroupResource)
+		resources = append(resources, NewVulnerabilityResource)
+		resources = append(resources, NewUrlCategorySituationResource)
+		resources = append(resources, NewCheckExpirationOfOneTimePasswordsForNgfwEnginesTaskResource)
+		resources = append(resources, NewApplicationExpressionSituationParameterValueResource)
+		resources = append(resources, NewFirewallNodeResource)
+		resources = append(resources, NewSshProfileResource)
+		resources = append(resources, NewTrustedUpdateCertificateResource)
+		resources = append(resources, NewThirdPartyProbingProfileResource)
+		resources = append(resources, NewArchiveLogTaskResource)
+		resources = append(resources, NewDeviceToolsProfileResource)
+		resources = append(resources, NewLoggingFieldResolverResource)
 		resources = append(resources, NewSnmpAgentResource)
-		resources = append(resources, NewManagementServerResource)
 		resources = append(resources, NewMasterNodeResource)
-		resources = append(resources, NewSubL2InterfacePolicyResource)
-		resources = append(resources, NewAlertChainRuleResource)
+		resources = append(resources, NewIpListGroupTagResource)
+		resources = append(resources, NewInternalUserDomainResource)
+		resources = append(resources, NewBrowserColumnsResource)
+		resources = append(resources, NewApplicationRiskTagResource)
+		resources = append(resources, NewSandboxServiceResource)
+		resources = append(resources, NewIpsIpv6AccessRuleResource)
+		resources = append(resources, NewStringListSituationParameterValueResource)
+		resources = append(resources, NewOverviewTemplateResource)
+		resources = append(resources, NewUrlCategoryGroupTagResource)
+		resources = append(resources, NewManagementServerResource)
+		resources = append(resources, NewServerPoolResource)
+		resources = append(resources, NewUserResponseResource)
+		resources = append(resources, NewDhcpEnabledInterfaceAddressesAliasResource)
+		resources = append(resources, NewQosClassResource)
+		resources = append(resources, NewEcaUserDomainResource)
+		resources = append(resources, NewL2fwInterfaceIpv6AccessRuleResource)
+		resources = append(resources, NewEcaApplicationUsageGroupTagResource)
+		resources = append(resources, NewSshHostKeyResource)
+		resources = append(resources, NewEcaStringSituationParameterValueResource)
+		resources = append(resources, NewDeleteOldSnapshotsTaskResource)
+		resources = append(resources, NewNotBrowsedLdapUserResource)
+		resources = append(resources, NewWebSiteAccessSituationParameterValueResource)
+		resources = append(resources, NewValidmVpnDhcpAddressPoolsAliasResource)
+		resources = append(resources, NewConnectionSyncGroupResource)
+		resources = append(resources, NewApplicationSituationContextResource)
+		resources = append(resources, NewHardwareTagResource)
+		resources = append(resources, NewEcaEndpointSettingsResource)
+		resources = append(resources, NewSingleIpsResource)
+		resources = append(resources, NewPlainSituationParameterValueResource)
+		resources = append(resources, NewWebAccessServerResource)
+		resources = append(resources, NewUrlListSituationParameterValueResource)
+		resources = append(resources, NewIdsAlertResource)
+		resources = append(resources, NewReportTemplateResource)
+		resources = append(resources, NewLogoFileResource)
+		resources = append(resources, NewBookmarkResource)
+		resources = append(resources, NewCloudFirewallNodeResource)
+		resources = append(resources, NewSidewinderLoggingProfileSettingsResource)
+		resources = append(resources, NewFilterSituationParameterValueResource)
+		resources = append(resources, NewDynamicNetlinkResource)
+		resources = append(resources, NewManagementServersAliasResource)
+		resources = append(resources, NewScheduledTaskResource)
 		resources = append(resources, NewLogFieldSituationParameterValueResource)
+		resources = append(resources, NewDefaultNatAddressAliasResource)
+		resources = append(resources, NewBinarySituationParameterValueResource)
+		resources = append(resources, NewApplicationAccessCompanyLogoResource)
+		resources = append(resources, NewDynamicInterfaceAliasResource)
+		resources = append(resources, NewTlsProfileResource)
+		resources = append(resources, NewExternalLdapUserResource)
+		resources = append(resources, NewVssContextNodeResource)
+		resources = append(resources, NewKnownHostListResource)
+		resources = append(resources, NewPdfTemplateResource)
+		resources = append(resources, NewInterfaceNicXIpAliasResource)
+		resources = append(resources, NewFileFilteringCompatibilityTagResource)
+		resources = append(resources, NewLayer2TemplatePolicyResource)
+		resources = append(resources, NewApiClientResource)
+		resources = append(resources, NewRoleResource)
+		resources = append(resources, NewUrlListApplicationSituationResource)
+		resources = append(resources, NewQosPolicyResource)
+		resources = append(resources, NewTrustedUpdateCertificateAuthorityResource)
+		resources = append(resources, NewInternalGatewayCertificateRequestResource)
+		resources = append(resources, NewRegexpSituationParameterValueResource)
+		resources = append(resources, NewSubL2InterfacePolicyResource)
+		resources = append(resources, NewVulnerabilityTypeTagResource)
+		resources = append(resources, NewCustomPropertiesProfileResource)
+		resources = append(resources, NewEcaApplicationCategoryTagResource)
+		resources = append(resources, NewApplicationAccessPortalPolicyResource)
+		resources = append(resources, NewSystemSnapshotCheckerTaskResource)
 		resources = append(resources, NewVirtualFirewallLayer2NodeResource)
+		resources = append(resources, NewLayer2Ipv6AccessRuleResource)
+		resources = append(resources, NewCountryIpListGroupTagResource)
+		resources = append(resources, NewLocalClusterCviAliasResource)
+		resources = append(resources, NewSubLayer2PolicyResource)
+		resources = append(resources, NewProtocolAgentResource)
+		resources = append(resources, NewLayer2Ipv4AccessRuleResource)
+		resources = append(resources, NewLoopbackEndpointResource)
+		resources = append(resources, NewLinkTypeResource)
+		resources = append(resources, NewCertificateInfoStoreCheckerTaskResource)
+		resources = append(resources, NewFloatSituationParameterValueResource)
+		resources = append(resources, NewTlsInspectionPolicyResource)
+		resources = append(resources, NewKnownHostResource)
+		resources = append(resources, NewIpsEthernetRuleResource)
+		resources = append(resources, NewInternalGatewayCertificateResource)
+		resources = append(resources, NewAdministratorResource)
+		resources = append(resources, NewWebauthHtmlPageResource)
+		resources = append(resources, NewTrafficCaptureTaskResource)
+		resources = append(resources, NewEcaClientConfigurationResource)
+		resources = append(resources, NewApplicationUsageTagResource)
+		resources = append(resources, NewBindingSetResource)
+		resources = append(resources, NewAlertPolicyResource)
+		resources = append(resources, NewInternalUserGroupResource)
+		resources = append(resources, NewCorrelationSituationContextResource)
+		resources = append(resources, NewAlertChainResource)
+		resources = append(resources, NewConnectionTypeResource)
+		resources = append(resources, NewEthernetServiceResource)
+		resources = append(resources, NewMasterEngineResource)
+		resources = append(resources, NewInspectionExceptionRuleResource)
+		resources = append(resources, NewSituationTagResource)
+		resources = append(resources, NewPolicySnapshotResource)
+		resources = append(resources, NewCorrelationSituationResource)
+		resources = append(resources, NewOldExecutedTaskCleanerTaskResource)
+		resources = append(resources, NewApplicationAccessLogonPageBackgroundResource)
+		resources = append(resources, NewFileFilteringSituationResource)
+		resources = append(resources, NewApplicationAccessIconFileResource)
+		resources = append(resources, NewVirtualFirewallNodeResource)
+		resources = append(resources, NewVirtualPhysicalInterfaceResource)
+		resources = append(resources, NewInspectionSituationParameterValueResource)
+		resources = append(resources, NewVssContextResource)
+		resources = append(resources, NewImageFileResource)
+		resources = append(resources, NewEthernetServiceGroupResource)
+		resources = append(resources, NewOpaqueSituationParameterValueResource)
+		resources = append(resources, NewVssContainerNodeIscSettingsResource)
+		resources = append(resources, NewL2InterfaceTemplatePolicyResource)
+		resources = append(resources, NewSginfoTaskResource)
 	}
 	return resources
 }

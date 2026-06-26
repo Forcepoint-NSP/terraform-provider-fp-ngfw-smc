@@ -32,4 +32,5 @@ var _ = context.Background()
 
 type DnsRpHostnameMappingResourceModel struct {
 	Hostnames types.String `tfsdk:"hostnames" json:"hostnames,optional,omitempty" `
+	Ipaddress types.String `tfsdk:"ipaddress" json:"ipaddress,optional,omitempty" `
 }

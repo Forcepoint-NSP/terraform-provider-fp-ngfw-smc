@@ -19,6 +19,7 @@ package schema
 
 import (
 	"context"
+	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -68,4 +69,25 @@ func NewVssContainerNodeResource() resource.Resource {
 	}
 	r.ResourceBase.Dispatch = r
 	return r
+}
+
+var _ resource.ResourceWithValidateConfig = &VssContainerNodeResource{}
+
+func (r *VssContainerNodeResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var data VssContainerNodeResourceModel
+	// Config.Get fails when any attribute is unknown (e.g. a module output that has
+	// not been resolved yet).  In that case we skip sub-validation; the framework
+	// will call ValidateConfig again once all values are known.
+	if diags := req.Config.Get(ctx, &data); diags.HasError() {
+		return
+	}
+	r.validateTests(data, resp)
+}
+
+func (r *VssContainerNodeResource) validateTests(data VssContainerNodeResourceModel, resp *resource.ValidateConfigResponse) {
+	if data.Tests != nil {
+		for _i0, _v0 := range *data.Tests {
+			smcresource.ValidateAnyOf(&_v0, fmt.Sprintf("tests[%d]", _i0), &resp.Diagnostics)
+		}
+	}
 }

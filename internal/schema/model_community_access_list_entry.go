@@ -31,16 +31,15 @@ var _ = fmt.Sprintf
 var _ = context.Background()
 
 type CommunityAccessListEntryResourceModel struct {
-	Action    types.String `tfsdk:"action" json:"action,optional,omitempty" `
-	Comment   types.String `tfsdk:"comment" json:"comment,optional,omitempty" `
-	Community types.String `tfsdk:"community" json:"community,optional,omitempty" `
-	Key       types.Int64  `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
-	Name      types.String `tfsdk:"name" json:"name,optional,omitempty" `
+	Action    types.String  `tfsdk:"action" json:"action,optional,omitempty" `
+	Community types.String  `tfsdk:"community" json:"community,optional,omitempty" `
+	Key       types.Int64   `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
+	Rank      types.Float64 `tfsdk:"rank" json:"rank,optional,omitempty" `
 }
 
 func (r *CommunityAccessListEntryResourceModel) GetSliceIds(ctx context.Context) []string {
 	if r.Community.IsNull() || r.Community.IsUnknown() {
 		return nil
 	}
-	return []string{r.Community.String()}
+	return []string{r.Community.ValueString()}
 }

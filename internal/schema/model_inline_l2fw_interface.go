@@ -50,5 +50,5 @@ func (r *InlineL2fwInterfaceResourceModel) GetSliceIds(ctx context.Context) []st
 	if r.Nicid.IsNull() || r.Nicid.IsUnknown() {
 		return nil
 	}
-	return []string{r.Nicid.String()}
+	return []string{r.Nicid.ValueString()}
 }

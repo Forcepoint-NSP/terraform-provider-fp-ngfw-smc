@@ -293,7 +293,7 @@ resource "smc_rbvpn_tunnel" "gre_single_fw1_single_fw2" {
 }
 
 resource "smc_vpn" "tf_sample_vpn" {
-  mobile_vpn_topology_mode = "None"
+  mobile_vpn_topology_mode = "none"
   name                     = "tf_sample_vpn"
   nat                      = false
   vpn_profile              = data.smc_href.suite_b_gcm_128.href

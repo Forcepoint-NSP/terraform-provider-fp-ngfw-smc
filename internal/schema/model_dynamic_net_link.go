@@ -46,6 +46,7 @@ type DynamicNetlinkResourceModel struct {
 	LocationRef                 types.String                                       `tfsdk:"location_ref" json:"location_ref,optional,omitempty" `
 	Locked                      types.Bool                                         `tfsdk:"locked" json:"locked,optional,omitempty" fpro:"locked"`
 	Name                        types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
+	NspName                     types.String                                       `tfsdk:"nsp_name" json:"nsp_name,optional,omitempty" `
 	OutputSpeed                 types.Int64                                        `tfsdk:"output_speed" json:"output_speed,optional,omitempty" `
 	ProbeAddress                *[]types.String                                    `tfsdk:"probe_address" json:"probe_address,optional,omitempty" `
 	ReadOnly                    types.Bool                                         `tfsdk:"read_only" json:"read_only,optional,omitempty" fpro:"read_only"`
@@ -60,5 +61,5 @@ func (r *DynamicNetlinkResourceModel) GetSliceIds(ctx context.Context) []string 
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

@@ -68,11 +68,12 @@ type ArchiveLogTaskResourceModel struct {
 	SystemKey          types.Int64                                        `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`
 	TimeLimitType      types.String                                       `tfsdk:"time_limit_type" json:"time_limit_type,optional,omitempty" `
 	Trashed            types.Bool                                         `tfsdk:"trashed" json:"trashed,optional,omitempty" fpro:"trashed"`
+	UseElasticsearch   types.Bool                                         `tfsdk:"use_elasticsearch" json:"use_elasticsearch,optional,omitempty" `
 }
 
 func (r *ArchiveLogTaskResourceModel) GetSliceIds(ctx context.Context) []string {
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

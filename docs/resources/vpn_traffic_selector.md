@@ -17,6 +17,7 @@ This represents a Virtual Private Network Traffic Selector. It is used to define
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
 - `comment` (String) An optional comment for the element. This field is not required.
+- `ipaddress` (String) Host IPv4/v6 Address or IP Range. It is required for the VPN Traffic Selector.
 - `name` (String) Name of the object.
 - `port_number` (String) Port number if Protocol allows it - Set to '-1' if not allowed. If the port number is not specified, it defaults to 'NO_PORT_NUMBER'.
 - `protocol_number` (String) The protocol. It can be any of the predefined protocol numbers or 'ANY'.

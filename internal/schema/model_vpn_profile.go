@@ -53,6 +53,8 @@ type VpnProfileResourceModel struct {
 	SaToAnyNetworkAllowed                  types.Bool                                         `tfsdk:"sa_to_any_network_allowed" json:"sa_to_any_network_allowed,optional,omitempty" `
 	System                                 types.Bool                                         `tfsdk:"system" json:"system,optional,omitempty" fpro:"system"`
 	SystemKey                              types.Int64                                        `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`
+	TfcDisableDscpCopy                     types.Bool                                         `tfsdk:"tfc_disable_dscp_copy" json:"tfc_disable_dscp_copy,optional,omitempty" `
+	TfcPadding                             types.Bool                                         `tfsdk:"tfc_padding" json:"tfc_padding,optional,omitempty" `
 	Trashed                                types.Bool                                         `tfsdk:"trashed" json:"trashed,optional,omitempty" fpro:"trashed"`
 	TrustAllCas                            types.Bool                                         `tfsdk:"trust_all_cas" json:"trust_all_cas,optional,omitempty" `
 	TrustedCertificateAuthority            *[]types.String                                    `tfsdk:"trusted_certificate_authority" json:"trusted_certificate_authority,optional,omitempty" `
@@ -64,5 +66,5 @@ func (r *VpnProfileResourceModel) GetSliceIds(ctx context.Context) []string {
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }

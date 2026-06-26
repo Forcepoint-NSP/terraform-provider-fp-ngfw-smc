@@ -32,6 +32,7 @@ var _ = context.Background()
 
 type ModemInterfaceResourceModel struct {
 	AggregateMode                 types.String                                       `tfsdk:"aggregate_mode" json:"aggregate_mode,optional,omitempty" `
+	ApnInterfaces                 *[]ApnInterfaceResourceModel                       `tfsdk:"apn_interfaces" json:"apnInterfaces,optional,omitempty" `
 	ArpEntry                      *[]ArpEntryResourceModel                           `tfsdk:"arp_entry" json:"arp_entry,optional,omitempty" `
 	Comment                       types.String                                       `tfsdk:"comment" json:"comment,optional,omitempty" `
 	CustomConfiguration           types.String                                       `tfsdk:"custom_configuration" json:"custom_configuration,optional,omitempty" `
@@ -48,13 +49,13 @@ type ModemInterfaceResourceModel struct {
 	LogModeration                 *[]LogModerationResourceModel                      `tfsdk:"log_moderation" json:"log_moderation,optional,omitempty" `
 	MacPrefix                     types.String                                       `tfsdk:"mac_prefix" json:"mac_prefix,optional,omitempty" `
 	ManagedAddressFlag            types.Bool                                         `tfsdk:"managed_address_flag" json:"managed_address_flag,optional,omitempty" `
-	ModemAuthMethod               types.String                                       `tfsdk:"modem_auth_method" json:"modem_auth_method,optional,omitempty" `
 	ModemInterfaceType            types.String                                       `tfsdk:"modem_interface_type" json:"modem_interface_type,optional,omitempty" `
 	Mtu                           types.Int64                                        `tfsdk:"mtu" json:"mtu,optional,omitempty" `
 	Name                          types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
 	OtherConfigurationFlag        types.Bool                                         `tfsdk:"other_configuration_flag" json:"other_configuration_flag,optional,omitempty" `
 	OverrideEngineSettings        types.Bool                                         `tfsdk:"override_engine_settings" json:"override_engine_settings,optional,omitempty" `
 	OverrideLogModerationSettings types.Bool                                         `tfsdk:"override_log_moderation_settings" json:"override_log_moderation_settings,optional,omitempty" `
+	PinCode                       types.String                                       `tfsdk:"pin_code" json:"pin_code,optional,omitempty" `
 	QosLimit                      types.Int64                                        `tfsdk:"qos_limit" json:"qos_limit,optional,omitempty" `
 	QosMode                       types.String                                       `tfsdk:"qos_mode" json:"qos_mode,optional,omitempty" `
 	QosPolicyRef                  types.String                                       `tfsdk:"qos_policy_ref" json:"qos_policy_ref,optional,omitempty" `
@@ -73,5 +74,5 @@ func (r *ModemInterfaceResourceModel) GetSliceIds(ctx context.Context) []string 
 	if r.InterfaceId.IsNull() || r.InterfaceId.IsUnknown() {
 		return nil
 	}
-	return []string{r.InterfaceId.String()}
+	return []string{r.InterfaceId.ValueString()}
 }

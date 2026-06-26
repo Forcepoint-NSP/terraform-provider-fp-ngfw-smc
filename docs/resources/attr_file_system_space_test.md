@@ -20,6 +20,7 @@ This represents a test that monitors the free disk space on a hard disk partitio
 - `offline_state` (Boolean) Indicates whether the test is executed when the engine is offline or not.
 - `on_partition` (String) The partition name or directory to be monitored for free space.
 - `online_state` (Boolean) Indicates whether the test is executed when the engine is online or not.
+- `snmp_notification` (Boolean) Indicates whether an SNMP notification is sent if the test fails.
 - `standby_state` (Boolean) Indicates whether the test is executed when the engine is in standby state or not.
 - `test_action` (String) The action to be taken if the test fails. Options include 'none', 'offline', 'forceoffline', and 'forcespeed'.
 - `test_active` (Boolean) Indicates whether the test is active or not.

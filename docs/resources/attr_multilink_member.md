@@ -13,6 +13,7 @@ This represents a member of an Outbound Multi-Link element, which defines the Ne
 
 
 ## Simple Attributes
+- `ip_range` (String) The IP address range for dynamic source address translation (NAT) for the internal source IP addresses on this NetLink. Required when static NetLink is used.
 - `netlink_ref` (String) This represents a NetLink, which is used for implementing routing of Multi-Link features. NetLinks can represent any IP-based network links (such as ISP routers, xDSL, leased lines, dial-up modems). NetLinks are combined together into an Outbound Multi-link.
 - `netlink_role` (String) The role of the NetLink in the Outbound Multi-Link configuration, either 'active' or 'standby'.
 - `network_ref` (String) This represents a Network, which is a Network Element that represents a (sub)network of computers. It includes attributes for IPv4 and IPv6 networks, broadcast address, and validation patterns.

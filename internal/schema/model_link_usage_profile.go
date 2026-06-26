@@ -58,5 +58,5 @@ func (r *LinkUsageProfileResourceModel) GetSliceIds(ctx context.Context) []strin
 	if r.Name.IsNull() || r.Name.IsUnknown() {
 		return nil
 	}
-	return []string{r.Name.String()}
+	return []string{r.Name.ValueString()}
 }
