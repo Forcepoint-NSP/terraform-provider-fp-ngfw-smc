@@ -16,7 +16,7 @@ This represents a User ID Service element, which is used to manage user identifi
 
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
-- `address` (String) The primary IPv4 address of the device, which is used for network communication.
+- `address` (String) The primary IPv4 address or FQDN of the device, which is used for network communication.
 - `cache_expiration` (Number) The time in seconds for the cache expiration on the engine. If not specified, it defaults to 300.
 - `comment` (String) An optional comment for the element. This field is not required.
 - `connect_timeout` (Number) The time in seconds for the connection from the engine to time out. If not specified, it defaults to 10.

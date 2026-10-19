@@ -28,7 +28,7 @@ This represents an administrator user. It contains the user's credentials, authe
 - `local_admin` (Boolean) Indicates whether the administrator is a local administrator on the engine. If true, the administrator can log in to the engine directly.
 - `login_name_on_engine` (String) Login name used when connecting to the engine. It is derived from the admin name by default but can be overridden at creation.
 - `name` (String) Name of the object.
-- `password` (String) The password of the administrator user. This is required for local administrators and optional for LDAP-based administrators.
+- `password` (String) The password of the administrator user. It can be set at creation and is otherwise managed through the change_password link. Optional for LDAP-based administrators.
 - `primary_account` (Boolean) 
 - `superuser` (Boolean) Indicates whether the administrator user is a superuser. A superuser has full access to all system functions and settings.
 

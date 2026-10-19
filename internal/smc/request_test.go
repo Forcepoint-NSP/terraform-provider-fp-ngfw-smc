@@ -184,8 +184,11 @@ func TestDoRequest_DELETE(t *testing.T) {
 }
 
 func TestDoRequest_WithHeaders(t *testing.T) {
+	// Auth headers in opts.Headers are intentionally ignored: unsafeRequest
+	// always sets Authorization/Cookie from the client token so that stale
+	// auth values captured before login cannot leak into requests.
 	expectedHeaders := map[string]string{
-		"Authorization": "Bearer token123",
+		"Authorization": "client-token",
 		"User-Agent":    "test-client/1.0",
 		"X-Custom":      "custom-value",
 	}
@@ -201,13 +204,23 @@ func TestDoRequest_WithHeaders(t *testing.T) {
 	}))
 	defer server.Close()
 
+	c := SmcClient{
+		BaseUrl:        server.URL,
+		LoginConfirmed: true,
+		Token:          "client-token",
+		UseAuthHeader:  true,
+	}
 	opts := Options{
-		Method:  "GET",
-		URL:     server.URL,
-		Headers: expectedHeaders,
+		Method: "GET",
+		URL:    server.URL,
+		Headers: map[string]string{
+			"Authorization": "Bearer stale-token",
+			"User-Agent":    "test-client/1.0",
+			"X-Custom":      "custom-value",
+		},
 	}
 
-	_, err := DoRequest(opts)
+	_, err := c.DoRequest(opts)
 	if err != nil {
 		t.Fatalf("DoRequest failed: %v", err)
 	}

@@ -43,7 +43,7 @@ func NewLogContext(ctx context.Context, mgtServerId string) *LogContext {
 
 	// Add default fields
 	if mgtServerId != "" {
-		logCtx = tflog.SetField(logCtx, "mgt_server_id", mgtServerId)
+		logCtx = tflog.SubsystemSetField(logCtx, SubsystemName, "mgt_server_id", mgtServerId)
 	}
 
 	return &LogContext{
@@ -57,27 +57,31 @@ func (lc *LogContext) Context() context.Context {
 	return lc.ctx
 }
 
-// WithField adds a field to the log context and returns a new context
+// WithField adds a field to the log context and returns a new context.
+// Subsystem loggers only emit fields set via SubsystemSetField; fields set
+// with the root-level tflog.SetField are silently dropped.
 func (lc *LogContext) WithField(key string, value interface{}) context.Context {
-	return tflog.SetField(lc.ctx, key, value)
+	return tflog.SubsystemSetField(lc.ctx, SubsystemName, key, value)
 }
 
 // WithFields adds multiple fields to the log context and returns a new context
 func (lc *LogContext) WithFields(fields map[string]interface{}) context.Context {
 	ctx := lc.ctx
 	for k, v := range fields {
-		ctx = tflog.SetField(ctx, k, v)
+		ctx = tflog.SubsystemSetField(ctx, SubsystemName, k, v)
 	}
 	return ctx
 }
 
 // Debug logs a debug message
 func (lc *LogContext) Debug(msg string, additionalFields ...map[string]interface{}) {
-	ctx := lc.ctx
-	if len(additionalFields) > 0 {
-		ctx = lc.WithFields(additionalFields[0])
+	if lc != nil {
+		ctx := lc.ctx
+		if len(additionalFields) > 0 {
+			ctx = lc.WithFields(additionalFields[0])
+		}
+		tflog.SubsystemDebug(ctx, SubsystemName, msg)
 	}
-	tflog.SubsystemDebug(ctx, SubsystemName, msg)
 }
 
 // Info logs an info message

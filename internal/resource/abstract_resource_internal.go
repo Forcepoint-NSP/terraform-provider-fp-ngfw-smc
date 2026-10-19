@@ -29,6 +29,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/terraform-providers/terraform-provider-smc/internal/apijson"
 	"github.com/terraform-providers/terraform-provider-smc/internal/common"
+	"github.com/terraform-providers/terraform-provider-smc/internal/customfield"
 	"github.com/terraform-providers/terraform-provider-smc/internal/datastore"
 	"github.com/terraform-providers/terraform-provider-smc/internal/smc"
 )
@@ -209,14 +210,44 @@ func (r *ResourceBase[T]) smcUpdateResource(
 			}
 		}
 
-		err = MergeResourceModels(ctx /*src*/, stateData /*dest*/, data,
-			"key", "tag", "parent_insert_point", "parent_policy")
+		// Build the outgoing payload from a deep copy of the plan, not
+		// the plan itself: backfilling unset scalar attributes (e.g. a
+		// comment set only via the SMC GUI) must not touch data, since
+		// data is later used to set Terraform state, and Terraform
+		// requires a non-Computed attribute's final state to exactly
+		// match its planned value ("provider produced inconsistent
+		// result after apply" otherwise).
+		payloadData := new(T)
+		planJson, err := apijson.MarshalRoot(*data)
+		if err != nil {
+			diag.AddError(
+				"Error marshalling resource data",
+				fmt.Sprintf("Could not marshal resource data to JSON: %s", err.Error()),
+			)
+			return nil, err
+		}
+		if err := apijson.UnmarshalRoot(planJson, payloadData); err != nil {
+			diag.AddError(
+				"Error parsing resource data",
+				fmt.Sprintf("Could not parse resource data: %s", err.Error()),
+			)
+			return nil, err
+		}
+
+		// Backfill the payload copy with the freshly-read current
+		// object, so any scalar attribute the user didn't configure
+		// keeps its current value instead of going out as null and
+		// being cleared server-side. Computed fields (at every nesting
+		// level, e.g. each routing_node level's own "key") and the
+		// plan's own explicit values and list/object structure are
+		// unaffected, same as before.
+		err = MergeResourceUpdatePayload(ctx /*src*/, stateData, payloadData /*dest*/)
 		if err != nil {
 			// todo diag.AddError
 			return nil, fmt.Errorf("failed to merge resource models for update: %w", err)
 		}
 
-		apiData, err := r.Dispatch.ModelToJson(data)
+		apiData, err := r.Dispatch.ModelToJson(payloadData)
 		if err != nil {
 			diag.AddError(
 				"Error marshalling resource data",
@@ -227,8 +258,7 @@ func (r *ResourceBase[T]) smcUpdateResource(
 
 		resp, err := smc.UpdateResource(r.Config, apiData, resolved_id, readResp.ETag)
 		if err != nil {
-			var statusErr *smc.StatusError
-			if errors.As(err, &statusErr) && statusErr.Code == http.StatusConflict {
+			if isConflict(err) {
 				tflog.Warn(ctx, fmt.Sprintf("Conflict updating resource, retrying: %s", id))
 				time.Sleep(SLEEP_BETWEEN_RETRIES_SEC)
 				continue // retry
@@ -252,6 +282,27 @@ func (r *ResourceBase[T]) smcUpdateResource(
 		r.ResourceType)
 }
 
+// isConflict reports whether err wraps a smc.StatusError for HTTP 409
+// Conflict.
+func isConflict(err error) bool {
+	var statusErr *smc.StatusError
+	return errors.As(err, &statusErr) && statusErr.Code == http.StatusConflict
+}
+
+// isRetryableParallelCreateError reports whether a failed create should be
+// retried in parallel mode: 409 (transient conflict) or a 422 whose message
+// says the parent is locked ("locked by..."). Other 422s are validation
+// failures and must surface immediately.
+func isRetryableParallelCreateError(err error) bool {
+	var statusErr *smc.StatusError
+	if !errors.As(err, &statusErr) {
+		return false
+	}
+	return statusErr.Code == http.StatusConflict ||
+		(statusErr.Code == http.StatusUnprocessableEntity &&
+			strings.Contains(strings.ToLower(statusErr.Message), "locked by"))
+}
+
 // smcCreateResource sends a create request for the given
 // sub-resource with the provided data
 //
@@ -269,15 +320,34 @@ func (r *ResourceBase[T]) smcCreateResource(
 		return nil, err
 	}
 
-	requestResp, err := smc.CreateResource(r.Config, apiData)
-	if err != nil {
+	var lastErr error
+	for range MAX_RETRY {
+		requestResp, err := smc.CreateResource(r.Config, apiData)
+		if err == nil {
+			return requestResp, nil
+		}
+		lastErr = err
+		// Only retry in parallel mode; serially, 409 is a legitimate user error
+		// (duplicate element name) that should fail immediately, not stall for ~20s.
+		// A genuine duplicate name is indistinguishable here and is retried too.
+		if isRetryableParallelCreateError(err) && smc.IsResourceTypeParallel(r.ResourceType) {
+			tflog.Warn(ctx, fmt.Sprintf("Conflict creating resource, retrying: %s", r.ResourceType))
+			time.Sleep(SLEEP_BETWEEN_RETRIES_SEC)
+			continue // retry
+		}
 		diag.AddError(
 			"Error creating resource",
 			fmt.Sprintf("Could not create %s: %s", r.ResourceType, err.Error()),
 		)
 		return nil, err
-	}
-	return requestResp, nil
+	} // for range MAX_RETRY
+
+	// if we reach here, we exhausted retries on conflict (parallel mode only)
+	diag.AddError(
+		"Error creating resource",
+		fmt.Sprintf("Could not create %s after %d retries due to conflicts.", r.ResourceType, MAX_RETRY),
+	)
+	return nil, fmt.Errorf("failed to create %s after %d conflict retries: %w", r.ResourceType, MAX_RETRY, lastErr)
 }
 
 // smcCreateResource sends a create request for the given
@@ -323,16 +393,34 @@ func (r *ResourceBase[T]) smcCreateSubResource(
 		return nil, err
 	}
 
-	requestResp, err := smc.CreateSubResourceWithQueryParams(
-		r.Config, apiData, parentUrl, queryParams)
-	if err != nil {
+	var lastErr error
+	for range MAX_RETRY {
+		requestResp, err := smc.CreateSubResourceWithQueryParams(
+			r.Config, apiData, parentUrl, queryParams)
+		if err == nil {
+			return requestResp, nil
+		}
+		lastErr = err
+		// Only retry in parallel mode; serially, 409 is a legitimate user error.
+		// 422 is retried only when the parent is locked ("locked by...").
+		if isRetryableParallelCreateError(err) && smc.IsResourceTypeParallel(r.ResourceType) {
+			tflog.Warn(ctx, fmt.Sprintf("Conflict creating sub-resource, retrying: %s", r.ResourceType))
+			time.Sleep(SLEEP_BETWEEN_RETRIES_SEC)
+			continue // retry
+		}
 		diag.AddError(
 			"Error creating resource",
 			fmt.Sprintf("Could not create %s: %s", r.ResourceType, err.Error()),
 		)
 		return nil, err
-	}
-	return requestResp, nil
+	} // for range MAX_RETRY
+
+	// if we reach here, we exhausted retries on conflict (parallel mode only)
+	diag.AddError(
+		"Error creating resource",
+		fmt.Sprintf("Could not create %s after %d retries due to conflicts.", r.ResourceType, MAX_RETRY),
+	)
+	return nil, fmt.Errorf("failed to create %s after %d conflict retries: %w", r.ResourceType, MAX_RETRY, lastErr)
 }
 
 func (r *ResourceBase[T]) updateTfState(ctx context.Context, data *T, id string,
@@ -379,6 +467,143 @@ func (r *ResourceBase[T]) updateTfState(ctx context.Context, data *T, id string,
 
 	diag.Append(state.Set(ctx, data)...)
 	return readResp, nil
+}
+
+// normalizeStateHrefs rewrites the scheme/host/port/version of every
+// "id" attribute and every href in every "link" map (the Lk field
+// populated by CopyLinkField), at every nesting level (e.g. each
+// physical_interface block has its own), against the client's current
+// BaseUrl/APIVersion.
+//
+// Only needed on the drift-detection-enabled Read() path, after
+// MergeResourceDrift: copyDriftField in model_drift.go deliberately
+// never refreshes "id"/"link" from the freshly-read apiData (to avoid
+// clobbering state with an SMC response that can omit them), so a
+// stale scheme/host/port baked into an href from before an SMC upgrade
+// or http->https switch survives that merge untouched. Since drift
+// detection also gates whether "id"/"link" get a UseStateForUnknown
+// plan modifier at all (schema_objects.j2), leaving them stale here
+// would carry that stale value into the next plan, which then
+// mismatches what Update's own (unconditional) NormalizeHref actually
+// produces - "Provider produced inconsistent result after apply". See
+// NormalizeHref, SMC-64735, SMC-66510. Pure string rewrite, no network
+// call.
+//
+// Reuses mergeStructs' traversal (the same one copyComputedField relies
+// on for create/update) with src and dest both pointing at state, so
+// nested objects/lists are reached the same way create/update already
+// does, without hand-rolling a second walker.
+//
+// Returns whether anything was actually rewritten, so the caller can
+// skip persisting state back when there's nothing to do.
+func normalizeStateHrefs(ctx context.Context, client *smc.SmcClient, state any) (bool, error) {
+	changed := false
+
+	copyFunc := func(ctx context.Context, params CopyFieldParams) (bool, error) {
+		if params.fieldType.Name == "Lk" {
+			ok, err := normalizeLinkMapField(ctx, client, params.destField)
+			if err != nil {
+				return false, err
+			}
+			changed = changed || ok
+			return true, nil
+		}
+
+		if params.fieldType.Tag.Get("tfsdk") == "id" {
+			ok, err := normalizeIdField(client, params.destField)
+			if err != nil {
+				return false, err
+			}
+			changed = changed || ok
+			return true, nil
+		}
+
+		if params.fieldType.Tag.Get("fpro") != "" || params.fieldType.Tag.Get("tfsdk") == "from_ref" {
+			// no hrefs to normalize on any other fpro/from_ref field,
+			// and recursing would tunnel into framework-internal
+			// types (e.g. the raw "Link" NestedObjectList) that
+			// aren't meant to be walked outside CopyLinkField.
+			return true, nil
+		}
+
+		// not handled here: let mergeStructs' default traversal
+		// recurse into nested objects/lists so their own "id"/"link"
+		// attributes are reached too.
+		return false, nil
+	}
+
+	v := reflect.ValueOf(state)
+	if err := mergeStructs(ctx, v, v, copyFunc); err != nil {
+		return false, err
+	}
+	return changed, nil
+}
+
+// normalizeIdField normalizes a single "id" types.String field in
+// place. Null/unknown/empty values are left alone.
+func normalizeIdField(client *smc.SmcClient, field reflect.Value) (bool, error) {
+	if !field.IsValid() || !field.CanSet() {
+		return false, nil
+	}
+	id, ok := field.Interface().(types.String)
+	if !ok || id.IsNull() || id.IsUnknown() || id.ValueString() == "" {
+		return false, nil
+	}
+
+	normalized, err := client.NormalizeHref(id.ValueString())
+	if err != nil {
+		return false, err
+	}
+	if normalized == id.ValueString() {
+		return false, nil
+	}
+	field.Set(reflect.ValueOf(types.StringValue(normalized)))
+	return true, nil
+}
+
+// normalizeLinkMapField normalizes every href in a single "link" map
+// (the Lk field) in place. Missing/null/unknown maps are left alone.
+func normalizeLinkMapField(ctx context.Context, client *smc.SmcClient, field reflect.Value) (bool, error) {
+	if !field.IsValid() || !field.CanSet() {
+		return false, nil
+	}
+
+	lk, ok := field.Interface().(customfield.Map[types.String])
+	if !ok || lk.IsNull() || lk.IsUnknown() {
+		return false, nil
+	}
+
+	values, diags := lk.Value(ctx)
+	if diags.HasError() {
+		return false, fmt.Errorf("failed to read link map: %v", diags)
+	}
+
+	changed := false
+	normalized := make(map[string]types.String, len(values))
+	for rel, href := range values {
+		if href.IsNull() || href.IsUnknown() {
+			normalized[rel] = href
+			continue
+		}
+		normalizedHref, err := client.NormalizeHref(href.ValueString())
+		if err != nil {
+			return false, err
+		}
+		if normalizedHref != href.ValueString() {
+			changed = true
+		}
+		normalized[rel] = types.StringValue(normalizedHref)
+	}
+	if !changed {
+		return false, nil
+	}
+
+	newMap, diags := customfield.NewMap[types.String](ctx, normalized)
+	if diags.HasError() {
+		return false, fmt.Errorf("failed to rebuild link map: %v", diags)
+	}
+	field.Set(reflect.ValueOf(newMap))
+	return true, nil
 }
 
 func (r *ResourceBase[T]) smcDeleteResource(

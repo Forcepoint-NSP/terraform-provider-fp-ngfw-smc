@@ -12,7 +12,7 @@ locals {
   tf_single_fw_address = "192.168.1.1"
   tf_router            = "192.168.1.254"
   tf_network           = "192.168.1.0/24"
-  tf_dns               = "8.8.8.8"
+  tf_dns               = "8.8.8.9"
   tf_fw_ref            = smc_single_fw.tf_sample_fw
   tf_node_ref          = local.tf_fw_ref.nodes[0].firewall_node
 }
@@ -42,10 +42,10 @@ resource "smc_fw_policy" "tf_aaa_policy" {
 resource "smc_fw_ipv4_access_rule" "allow_ssh" {
   from_ref = smc_fw_policy.tf_aaa_policy.link.fw_ipv4_access_rules
   name     = "aaa"
-  sources      { any = true }
+  sources { any = true }
   destinations { any = true }
-  services     { any = true }
-  action       { action = ["allow"] }
+  services { any = true }
+  action { action = ["allow"] }
 }
 
 resource "smc_network" "tf_sample_network" {
@@ -86,8 +86,8 @@ module "route_intf0" {
 }
 
 resource "smc_single_fw" "tf_sample_fw" {
-  name                  = local.tf_single_fw_name
-  comment               = var.resource_comment
+  name = local.tf_single_fw_name
+  # comment               = var.resource_comment
   log_server_ref        = data.smc_href.log_server.href
   nodes                 = [module.tf_sample_fw_node1.value]
   physical_interfaces   = [module.intf0.value]
@@ -105,7 +105,7 @@ resource "smc_single_fw" "tf_sample_fw" {
       actions = [
         action.smc_command.bind_license.id,
         action.smc_initial_contact.tf_single_fw_contact.id,
-        action.smc_command.upload.id
+        action.smc_engine_upload_policy.upload.id
       ]
     }
   }
@@ -139,11 +139,21 @@ action "smc_command" "bind_license" {
   }
 }
 
-action "smc_command" "upload" {
+action "smc_engine_upload_policy" "upload" {
   config {
-    command_href = local.tf_fw_ref.link.upload
-    query = {
-      filter = smc_fw_policy.tf_aaa_policy.name
-    }
+    href        = local.tf_fw_ref.link.upload
+    policy_name = smc_fw_policy.tf_aaa_policy.name
+    wait        = false
+    # color = true
+  }
+}
+
+# to refresh the installed policy, run:
+# terraform apply -invoke action.smc_engine_refresh_policy.refresh -auto-approve
+action "smc_engine_refresh_policy" "refresh" {
+  config {
+    href = local.tf_fw_ref.link.refresh
+    wait = true
+    # color = true
   }
 }

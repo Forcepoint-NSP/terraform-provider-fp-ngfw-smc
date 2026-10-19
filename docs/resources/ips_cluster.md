@@ -2,14 +2,14 @@
 page_title: "smc_ips_cluster"
 subcategory: "engines"
 description: |-
-  This represents a group of two or more layer 2 IPS devices in the Stonesoft Management Center. It includes attributes for virtual defragmentation, connection limits, filter modes, and cluster modes.
+  This represents a group of two or more layer 2 IPS devices in the Stonesoft Management Center. It includes attributes for virtual defragmentation, connection limits, filter modes, and cluster modes. If no Log Server is specified, one is automatically attached.
 ---
 
 # smc_ips_cluster (Resource)
 
 
 ⚠️ __Experimental feature, use with caution__. This feature is not yet fully supported and may change without deprecation in future releases.
-This represents a group of two or more layer 2 IPS devices in the Stonesoft Management Center. It includes attributes for virtual defragmentation, connection limits, filter modes, and cluster modes.
+This represents a group of two or more layer 2 IPS devices in the Stonesoft Management Center. It includes attributes for virtual defragmentation, connection limits, filter modes, and cluster modes. If no Log Server is specified, one is automatically attached.
 
 
 
@@ -23,7 +23,7 @@ This represents a group of two or more layer 2 IPS devices in the Stonesoft Mana
 - `cluster_mode` (String) Defines the clustering mode of the engine. Options are 'balancing' for simultaneous online nodes or 'standby' for one node online at a time.
 - `comment` (String) An optional comment for the element. This field is not required.
 - `connection_limit` (Number) Sets a limit for connections from a single source and/or destination IP address. When the set number of connections is reached, the next connection attempts are blocked by the engine until a previously open connection is closed.
-- `contact_timeout` (Number) Used when opening any kind of communication between the Management Server and the engines. A consistently slow network connection may require increasing this value. The default value is 60 seconds.
+- `contact_timeout` (Number) Used when opening any kind of communication between the Management Server and the engines. A consistently slow network connection may require increasing this value. Expressed in milliseconds and must be a whole number of seconds (a multiple of 1000). The default value is 120000 (120 seconds).
 - `custom_properties_profile` (List of String) URI of the custom properties profile.
 - `destination_server_certificate_cache_timeout` (Number) The timeout value for certificate entries in the cache in minutes.
 - `discard_quic_if_cant_inspect` (Boolean) Indicates whether QUIC traffic should be discarded when inspection is not possible.

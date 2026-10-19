@@ -11,7 +11,7 @@ This represents a Simple Mail Transfer Protocol (SMTP) server, which is used to 
 
 ## Examples
 
-- [SMTP Server Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/network_elements/servers/radius_server/main.tf)
+- [SMTP Server Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/network_elements/servers/radius_server/main.tf)
 
 Defines an SMTP server for alerting or notification policies.
 
@@ -29,7 +29,7 @@ resource "smc_smtp_server" "smtp" {
 
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
-- `address` (String) The primary IPv4 address of the device, which is used for network communication.
+- `address` (String) The primary IPv4 address or FQDN of the device, which is used for network communication.
 - `comment` (String) An optional comment for the element. This field is not required.
 - `email_sender_address` (String) The default sender email address used in the From field of the e-mail. This default value can be overridden in the properties of the element where the SMTP Server is used.
 - `email_sender_name` (String) The default sender name used in the From field of the e-mail. This default value can be overridden in the properties of the element where the SMTP Server is used.

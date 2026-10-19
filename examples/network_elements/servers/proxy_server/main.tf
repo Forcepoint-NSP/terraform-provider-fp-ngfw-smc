@@ -80,7 +80,6 @@ resource "smc_proxy_server" "fp_web_cloud_proxy" {
   address             = "10.1.1.3"
   balancing_mode      = "src"
   fp_proxy_key        = "SuperPassword00!!"
-  fp_proxy_key_hashed = "$6$iIFMVfOLuNtwhtfz$up4y6ZmWBxkmeuc8lnmxn.hYjM7xTiD5qeBmZkWre4yzo6iZGe67E42y0/xZ74HBJiOSnNauYTKqrvpFVU8vr."
   fp_proxy_key_id     = 1
   fp_proxy_user_id    = "12345"
   http_proxy          = "forcepoint_ap-web_cloud"

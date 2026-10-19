@@ -124,24 +124,26 @@ resource "smc_vpn" "tf_sample_vpn" {
 
 resource "smc_gateway_node" "tf_sample_central_gateway" {
   from_ref   = smc_vpn.tf_sample_vpn.link.central_gateway_node
-  name       = "tf_sample_central_gateway"
+  comment    = "tf_sample_central_gateway"
   node_usage = "central"
   gateway    = data.smc_sub_href.internal_gateway["fw1"].id
 }
 
 resource "smc_gateway_node" "tf_sample_satellite_gateway2" {
   from_ref   = smc_vpn.tf_sample_vpn.link.satellite_gateway_node
-  name       = "tf_sample_satellite_gateway2"
+  comment    = "tf_sample_satellite_gateway2"
   node_usage = "satellite"
   gateway    = data.smc_sub_href.internal_gateway["fw2"].id
-  child_node = [smc_gateway_node.tf_sample_satellite_gateway3.id]
+  # child_node = [smc_gateway_node.tf_sample_satellite_gateway3.id]
+
 }
 
 resource "smc_gateway_node" "tf_sample_satellite_gateway3" {
-  from_ref   = smc_vpn.tf_sample_vpn.link.satellite_gateway_node
-  name       = "tf_sample_satellite_gateway3"
-  node_usage = "satellite"
-  gateway    = data.smc_sub_href.internal_gateway["fw3"].id
+  from_ref    = smc_vpn.tf_sample_vpn.link.satellite_gateway_node
+  comment     = "tf_sample_satellite_gateway3"
+  node_usage  = "satellite"
+  gateway     = data.smc_sub_href.internal_gateway["fw3"].id
+  parent_node = smc_gateway_node.tf_sample_satellite_gateway2.id
 }
 
 resource "smc_internal_endpoint" "ep_fw1" {

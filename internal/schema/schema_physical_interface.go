@@ -21,35 +21,33 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/float64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/terraform-providers/terraform-provider-smc/internal/smcvalidator"
 	"regexp"
 
 	"github.com/terraform-providers/terraform-provider-smc/internal/common"
+	"github.com/terraform-providers/terraform-provider-smc/internal/config"
 	"github.com/terraform-providers/terraform-provider-smc/internal/customfield"
 )
 
 // to avoid import errors if unused
 var _ = types.String{}
-var _ = (*planmodifier.Bool)(nil)
 var _ = (*customfield.NestedObjectType[struct{}])(nil)
-var _ = stringplanmodifier.UseStateForUnknown()
-var _ = boolplanmodifier.UseStateForUnknown()
-var _ = int64planmodifier.UseStateForUnknown()
-var _ = float64planmodifier.UseStateForUnknown()
-var _ = listplanmodifier.UseStateForUnknown()
 var _ = listdefault.StaticValue
 
 func GetPhysicalInterfaceSchemaAttributes(ctx context.Context) map[string]schema.Attribute {
 	useHcl2 := common.UseHCL2(ctx)
+	// driftDetectionEnabled gates every UseStateForUnknown plan
+	// modifier below: that modifier promises the prior state's value
+	// for a readOnly attribute is still accurate, which is only true
+	// once Read() actually refreshes it (see abstract_resource.go's
+	// Read, gated by the same "drift_detection" config key). When
+	// disabled, these attributes go back to being planned Unknown on
+	// every update, exactly as before drift detection existed.
+	driftDetectionEnabled, _ := config.IsDriftDetectionEnabled(common.PROVIDER_TYPE_NAME + "_" + "physical_interface")
+	_ = driftDetectionEnabled // in case this schema has no readOnly attributes
 
 	attrs := map[string]schema.Attribute{"aggregate_mode": schema.StringAttribute{
 		Optional:    true,
@@ -86,17 +84,19 @@ func GetPhysicalInterfaceSchemaAttributes(ctx context.Context) map[string]schema
 			Description: "The Interface ID automatically maps to a physical network port of the same number during the initial configuration of the engine, but the mapping can be changed as necessary through the engine's command line interface. In case of VLAN Physical Interface, enter the VLAN ID (1-4094). The VLAN IDs you add must be the same as the VLAN IDs that are used in the switch at the other end of the VLAN trunk. Each VLAN Interface is identified as Interface-ID.VLAN-ID, for example 2.100 for Interface ID 2 and VLAN ID 100.",
 		},
 		"key": schema.Int64Attribute{
-			Computed:    true,
-			Description: "The unique identifier for the element. This field is required for updates but not for creation.",
+			Computed:      true,
+			Description:   "The unique identifier for the element. This field is required for updates but not for creation.",
+			PlanModifiers: common.Int64PlanModifiers(driftDetectionEnabled),
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
 		},
 		"link": schema.MapAttribute{
-			Computed:    true,
-			Description: "provides additional actions or resources.",
-			ElementType: types.StringType,
-			CustomType:  customfield.NewMapType[types.String](ctx),
+			Computed:      true,
+			Description:   "provides additional actions or resources.",
+			PlanModifiers: common.MapPlanModifiers(driftDetectionEnabled),
+			ElementType:   types.StringType,
+			CustomType:    customfield.NewMapType[types.String](ctx),
 		},
 		"lldp_mode": schema.StringAttribute{
 			Optional:    true,

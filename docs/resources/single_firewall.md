@@ -11,8 +11,8 @@ This represents a single Firewall device in the Stonesoft Management Center. It 
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/getting_started) for a complete minimal example
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/engines/single_fw) for the list of examples related to single firewall
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/getting_started) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/engines/single_fw) for the list of examples related to single firewall
 
 This example creates a single firewall with two interfaces.  The first
 interface will be used to contact the smc (there must be exactly one
@@ -77,7 +77,7 @@ resource "smc_single_fw" "tf_single_fw" {
 - `connection_limit` (Number) Sets a limit for connections from a single source and/or destination IP address. When the set number of connections is reached, the next connection attempts are blocked by the engine until a previously open connection is closed.
 - `connection_sync_group` (String) This represents a Connection Sync Group, which is used for external high availability in single Engines. It includes attributes for monitoring and a list of elements that are part of the group.
 - `connection_sync_mode` (String) The Connection Synchronization mode for External High Availability, which can be either disabled or enabled. When enabled, it allows synchronization of connection states between firewalls.
-- `contact_timeout` (Number) Used when opening any kind of communication between the Management Server and the engines. A consistently slow network connection may require increasing this value. The default value is 60 seconds.
+- `contact_timeout` (Number) Used when opening any kind of communication between the Management Server and the engines. A consistently slow network connection may require increasing this value. Expressed in milliseconds and must be a whole number of seconds (a multiple of 1000). The default value is 120000 (120 seconds).
 - `control_plane_mode` (String) The control plane mode of the Master Engine, which determines the allocation of CPU resources for control plane operations. Options include 'not_reserved' for no dedicated CPU allocation, 'one_cpu' for 1 CPU allocated, 'two_cpus' for 2 CPUs allocated, 'three_cpus' for 3 CPUs allocated, and 'four_cpus' for 4 CPUs allocated.
 - `custom_properties_profile` (List of String) URI of the custom properties profile.
 - `default_nat` (String) Indicates whether the Default NAT Address is used for Traffic from Internal Networks. It can be set to 'true', 'false', or 'automatic'.
@@ -96,7 +96,7 @@ resource "smc_single_fw" "tf_single_fw" {
 - `geolocation_ref` (String) This represents the definition of a geolocation. A Geolocation object keeps a list of Network Elements belonging to the same geolocation.
 - `granted_policy_ref` (List of String) URI of the granted policies.
 - `ha_backup_unit_mode` (String) The High-Availability mode for a single IP, which can be either disabled or enabled. When enabled, it may require a proof of serial for pairing.
-- `ha_connection_sync_interface` (String) The interface for Unicast State Sync, specified by its ID, when the Connection Synchronization for External High Availability mode is enabled. This interface is used for synchronizing connection states between firewalls.
+- `ha_connection_sync_interface` (String) The interface for Unicast State Sync, specified by its ID, when the Connection Synchronization for External High Availability mode is enabled. This interface is used for synchronizing connection states between firewalls. It must be a Layer 3 Physical Interface without VLAN and with a static IPv4 address.
 - `ha_pos_for_backup_unit` (String) The proof of serial for pairing when the High-Availability mode is enabled. This is required to establish a connection between the primary and backup units.
 - `half_open_connections` (Number) The number of Half Open Connections allowed. If not specified, it defaults to 125.
 - `icap_dlp_server_ref` (List of String) URI of the ICAP Server.
@@ -133,8 +133,8 @@ resource "smc_single_fw" "tf_single_fw" {
 - `reporting_email_addresses` (String) The contact email address for reporting per sender.
 - `rollback_timeout` (Number) The time the engine waits for a management connection before it rolls back to the previously installed policy when the Policy Handshake option is active. The default value is 60 seconds.
 - `routing_node_ref` (String) This represents a Routing Node in the Security Management Client, which is used to configure routing for network traffic on firewalls.
+- `saml_application_access_clock_skew` (Number) The clock skew for SAML Application Access authentication in seconds. It defines the allowed time difference between the SAML assertion and the system time.
 - `saml_bba_clock_skew` (Number) The clock skew for SAML BBA authentication in seconds. It defines the allowed time difference between the SAML assertion and the system time.
-- `saml_ssl_vpn_clock_skew` (Number) The clock skew for SAML Application Access authentication in seconds. It defines the allowed time difference between the SAML assertion and the system time.
 - `sandbox_type` (String) The Sandbox service selection.
 - `send_reset_for_out_of_state_tcp_packets` (String) The engine refuses TCP connections if the TCP connection does not start with a SYN packet, even if the TCP connection matches an Access rule with the Allow action.
 - `server_credential` (List of String) URI of the TLS Server Credentials.

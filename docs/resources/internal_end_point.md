@@ -11,7 +11,7 @@ This represents an internal endpoint for VPN connections, supporting both tunnel
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/sdwan/policy_based_vpn/central_gateway_node/main.tf) for a minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/sdwan/policy_based_vpn/central_gateway_node/main.tf) for a minimal example
 
 This example creates an internal endpoint (used for VPN or routing) tied to a single firewall.
 
@@ -23,6 +23,48 @@ resource "smc_internal_endpoint" "ep_212_20_1_1" {
   ipsec_vpn = true
 }
 ```
+
+### Disabling all VPN endpoints of an engine
+
+SMC creates a VPN internal endpoint for every VPN-eligible interface and enables
+it by default. To disable them all while keeping the Terraform state consistent,
+declare one `smc_internal_endpoint` per interface with `enabled = false`. Using
+`for_each` avoids repeating the resource block:
+
+```hcl
+locals {
+  # Static interfaces: key = IP address (SMC names the endpoint after the IP).
+  static_interfaces = {
+    "192.168.1.1" = { interface_id = 1, nicid = 1, network = "192.168.1.0/24" }
+  }
+  # Dynamic (DHCP) interfaces: key = physical_interface name (SMC names the
+  # endpoint after the interface). The name set on the physical_interface block
+  # must match this key exactly.
+  dynamic_interfaces = {
+    "First DHCP Interface"  = { interface_id = 2, nicid = 2, dynamic_index = 1 }
+    "Second DHCP Interface" = { interface_id = 3, nicid = 3, dynamic_index = 2 }
+  }
+}
+
+resource "smc_internal_endpoint" "disabled" {
+  for_each = toset(concat(keys(local.static_interfaces), keys(local.dynamic_interfaces)))
+
+  id        = format("%s#*/internal_endpoint/%s", smc_single_fw.tf_single_fw.link.internal_gateway, each.key)
+  enabled   = false
+  ipsec_vpn = true
+}
+```
+
+This is the idiomatic Terraform approach: the desired state (`enabled = false`) is
+declared once and Terraform enforces it on every subsequent apply, so no manual
+re-disabling is needed if another attribute changes later.
+
+For dynamic interfaces, the endpoint name in SMC is derived from the
+`physical_interface.name` attribute. If the name format differs on your SMC
+version (e.g. `"Interface 2 (DHCP)"`), check with a direct API call:
+`GET <smc>/internal_gateway/<id>/internal_endpoint` and inspect the `name` field.
+
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/sdwan/internal_endpoint_all_disabled/main.tf) for a full example.
 
 
 ## Simple Attributes
@@ -37,12 +79,12 @@ resource "smc_internal_endpoint" "ep_212_20_1_1" {
 - `force_nat_t` (Boolean) Indicates whether the endpoint forces NAT Traversal (NAT_T) for VPN connections.
 - `ike_phase1_id_type` (String) The type of Phase-1 ID used for the endpoint, represented as a single digit. '0' for DNS_NAME, '1' for EMAIL, '2' for DISTINGUISHED_NAME, and '3' for IP_ADDRESS.
 - `ike_phase1_id_value` (String) The value of the Phase-1 ID for the endpoint, which must match the specified Phase-1 ID type.
-- `ipsec_vpn` (Boolean) 
+- `ipsec_vpn` (Boolean) Indicates whether the endpoint supports IPSec VPN type.
 - `name` (String) Name of the object.
 - `nat_t` (Boolean) Indicates whether the endpoint supports NAT Traversal (NAT_T) for VPN connections.
 - `physical_interface` (String) This represents the abstract physical interface used in the engine cluster, which includes various settings and configurations for network interfaces.
-- `ssl_vpn_portal` (Boolean) 
-- `ssl_vpn_tunnel` (Boolean) 
+- `ssl_vpn_portal` (Boolean) Indicates whether the endpoint supports VPN portal type using Reverse Proxy.
+- `ssl_vpn_tunnel` (Boolean) Indicates whether the endpoint supports VPN tunnel type using Tunneling.
 - `udp_encapsulation` (Boolean) Indicates whether the endpoint supports UDP encapsulation for VPN tunnels.
 
 

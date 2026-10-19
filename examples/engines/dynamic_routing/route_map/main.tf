@@ -44,11 +44,11 @@ resource "smc_route_map_rule" "rule_1" {
   is_disabled = false
   match_condition {
     metric = 10
-    rank   = 1
+    rank   = 1.0
     type   = "metric"
   }
   name = "route_map_rule_1"
-  rank = 1.0
+  rank = 3.0
   route_entry_settings {
     as_path_type                  = "dont_modify"
     community_type                = "dont_modify"
@@ -68,7 +68,7 @@ resource "smc_route_map_rule" "rule_1" {
 }
 
 resource "smc_route_map_rule" "rule_2" {
-  from_ref    = smc_route_map_rule.rule_1.link.add_after
+  from_ref    = smc_route_map.route_map.link.route_map_rules
   action      = "deny"
   finish      = true
   is_disabled = false

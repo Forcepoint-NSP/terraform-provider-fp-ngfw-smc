@@ -11,7 +11,7 @@ This represents an External DNS (Domain Name Service) Server, which is used for 
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/network_elements/servers/external_dns_server) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/network_elements/servers/external_dns_server) for a complete minimal example
 
 This example creates a DNS server object in SMC with TTL and update interval specified.
 
@@ -28,7 +28,7 @@ resource "smc_dns_server" "tf_dns_server" {
 
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
-- `address` (String) The primary IPv4 address of the server. Must be a valid IPv4 address.
+- `address` (String) The primary IPv4 address or FQDN of the server.
 - `comment` (String) An optional comment for the element. This field is not required.
 - `ipv6_address` (String) The primary IPv6 address of the server. Must be a valid IPv6 address.
 - `location_ref` (String) This represents the definition of a Location, which keeps a list of Network Elements belonging to the same location.

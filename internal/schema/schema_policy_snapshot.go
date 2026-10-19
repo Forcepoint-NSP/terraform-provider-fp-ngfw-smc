@@ -21,54 +21,55 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/float64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"regexp"
 
 	"github.com/terraform-providers/terraform-provider-smc/internal/common"
+	"github.com/terraform-providers/terraform-provider-smc/internal/config"
 	"github.com/terraform-providers/terraform-provider-smc/internal/customfield"
 )
 
 // to avoid import errors if unused
 var _ = types.String{}
-var _ = (*planmodifier.Bool)(nil)
 var _ = (*customfield.NestedObjectType[struct{}])(nil)
-var _ = stringplanmodifier.UseStateForUnknown()
-var _ = boolplanmodifier.UseStateForUnknown()
-var _ = int64planmodifier.UseStateForUnknown()
-var _ = float64planmodifier.UseStateForUnknown()
-var _ = listplanmodifier.UseStateForUnknown()
 var _ = listdefault.StaticValue
 
 func GetPolicySnapshotSchemaAttributes(ctx context.Context) map[string]schema.Attribute {
 	useHcl2 := common.UseHCL2(ctx)
+	// driftDetectionEnabled gates every UseStateForUnknown plan
+	// modifier below: that modifier promises the prior state's value
+	// for a readOnly attribute is still accurate, which is only true
+	// once Read() actually refreshes it (see abstract_resource.go's
+	// Read, gated by the same "drift_detection" config key). When
+	// disabled, these attributes go back to being planned Unknown on
+	// every update, exactly as before drift detection existed.
+	driftDetectionEnabled, _ := config.IsDriftDetectionEnabled(common.PROVIDER_TYPE_NAME + "_" + "snapshot")
+	_ = driftDetectionEnabled // in case this schema has no readOnly attributes
 
 	attrs := map[string]schema.Attribute{
 		"id": schema.StringAttribute{
-			Optional:    true,
-			Computed:    true,
-			Description: "this attribute is the identifier of terraform resource",
+			Optional:      true,
+			Computed:      true,
+			Description:   "this attribute is the identifier of terraform resource",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 		},
 		"from_ref": schema.StringAttribute{
 			Optional:    true,
 			Description: "parent href of this sub-resource",
 		}, "admin_domain": schema.StringAttribute{
-			Computed:    true,
-			Description: "This represents a Domain. Domains are administrative boundaries that allow you to separate the configuration details and other information in the system for the purpose of limiting administrator access.",
+			Computed:      true,
+			Description:   "This represents a Domain. Domains are administrative boundaries that allow you to separate the configuration details and other information in the system for the purpose of limiting administrator access.",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 			Validators: []validator.String{
 				stringvalidator.RegexMatches(regexp.MustCompile(`^https?://`), "must be an http or https URL"),
 			},
 		},
 		"alternative_slot": schema.Int64Attribute{
-			Computed:    true,
-			Description: "The alternative slot number if the policy was uploaded as an alternative policy, indicating which slot it occupies.",
+			Computed:      true,
+			Description:   "The alternative slot number if the policy was uploaded as an alternative policy, indicating which slot it occupies.",
+			PlanModifiers: common.Int64PlanModifiers(driftDetectionEnabled),
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
@@ -78,32 +79,37 @@ func GetPolicySnapshotSchemaAttributes(ctx context.Context) map[string]schema.At
 			Description: "An optional comment for the element. This field is not required.",
 		},
 		"config_id": schema.Int64Attribute{
-			Computed:    true,
-			Description: "The configuration ID associated with this policy snapshot, used for dynamic uploads.",
+			Computed:      true,
+			Description:   "The configuration ID associated with this policy snapshot, used for dynamic uploads.",
+			PlanModifiers: common.Int64PlanModifiers(driftDetectionEnabled),
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
 		},
 		"etag": schema.StringAttribute{
-			Computed:    true,
-			Description: "The ETag of the element, used for versioning. This field is not required.",
+			Computed:      true,
+			Description:   "The ETag of the element, used for versioning. This field is not required.",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 		},
 		"key": schema.Int64Attribute{
-			Computed:    true,
-			Description: "The unique identifier for the element. This field is required for updates but not for creation.",
+			Computed:      true,
+			Description:   "The unique identifier for the element. This field is required for updates but not for creation.",
+			PlanModifiers: common.Int64PlanModifiers(driftDetectionEnabled),
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
 		},
 		"link": schema.MapAttribute{
-			Computed:    true,
-			Description: "provides additional actions or resources.",
-			ElementType: types.StringType,
-			CustomType:  customfield.NewMapType[types.String](ctx),
+			Computed:      true,
+			Description:   "provides additional actions or resources.",
+			PlanModifiers: common.MapPlanModifiers(driftDetectionEnabled),
+			ElementType:   types.StringType,
+			CustomType:    customfield.NewMapType[types.String](ctx),
 		},
 		"locked": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is locked. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is locked. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
 		},
 		"name": schema.StringAttribute{
 			Optional:    true,
@@ -113,64 +119,76 @@ func GetPolicySnapshotSchemaAttributes(ctx context.Context) map[string]schema.At
 			},
 		},
 		"package_id": schema.Int64Attribute{
-			Computed:    true,
-			Description: "The ID of the update package associated with this policy snapshot, indicating which package was activated when the policy was uploaded.",
+			Computed:      true,
+			Description:   "The ID of the update package associated with this policy snapshot, indicating which package was activated when the policy was uploaded.",
+			PlanModifiers: common.Int64PlanModifiers(driftDetectionEnabled),
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
 		},
 		"policy_name": schema.StringAttribute{
-			Computed:    true,
-			Description: "The name of the policy associated with this snapshot, if the policy does not exist.",
+			Computed:      true,
+			Description:   "The name of the policy associated with this snapshot, if the policy does not exist.",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 		},
 		"policy_ref": schema.StringAttribute{
-			Computed:    true,
-			Description: "This represents a policy that can be applied to various elements in the system, such as network elements, inspection rules, etc.",
+			Computed:      true,
+			Description:   "This represents a policy that can be applied to various elements in the system, such as network elements, inspection rules, etc.",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 			Validators: []validator.String{
 				stringvalidator.RegexMatches(regexp.MustCompile(`^https?://`), "must be an http or https URL"),
 			},
 		},
 		"read_only": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is read-only. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is read-only. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
 		},
 		"system": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is a System element. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is a System element. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
 		},
 		"system_key": schema.Int64Attribute{
-			Computed:    true,
-			Description: "The system key of the System element. This field is not required.",
+			Computed:      true,
+			Description:   "The system key of the System element. This field is not required.",
+			PlanModifiers: common.Int64PlanModifiers(driftDetectionEnabled),
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
 		},
 		"target": schema.StringAttribute{
-			Computed:    true,
-			Description: "This is the base class for all storable elements.",
+			Computed:      true,
+			Description:   "This is the base class for all storable elements.",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 			Validators: []validator.String{
 				stringvalidator.RegexMatches(regexp.MustCompile(`^https?://`), "must be an http or https URL"),
 			},
 		},
 		"target_name": schema.StringAttribute{
-			Computed:    true,
-			Description: "The name of the target (Cluster/...) associated with this snapshot, if the target does not exist.",
+			Computed:      true,
+			Description:   "The name of the target (Cluster/...) associated with this snapshot, if the target does not exist.",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 		},
 		"trashed": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is trashed. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is trashed. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
 		},
 		"upload_time": schema.Int64Attribute{
-			Computed:    true,
-			Description: "The date and time when the policy was uploaded, represented as a Unix timestamp in milliseconds.",
+			Computed:      true,
+			Description:   "The date and time when the policy was uploaded, represented as a Unix timestamp in milliseconds.",
+			PlanModifiers: common.Int64PlanModifiers(driftDetectionEnabled),
 		},
 		"uploaded_rule_tags": schema.StringAttribute{
-			Computed:    true,
-			Description: "A comma-separated list of rule tags that were uploaded with this policy snapshot, used for tracking rule counters.",
+			Computed:      true,
+			Description:   "A comma-separated list of rule tags that were uploaded with this policy snapshot, used for tracking rule counters.",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 		},
 		"uploader": schema.StringAttribute{
-			Computed:    true,
-			Description: "The name of the person who started the upload, such as an administrator.",
+			Computed:      true,
+			Description:   "The name of the person who started the upload, such as an administrator.",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 		},
 	}
 	if !useHcl2 {

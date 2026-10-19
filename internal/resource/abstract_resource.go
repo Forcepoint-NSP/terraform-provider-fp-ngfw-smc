@@ -16,10 +16,15 @@ package resource
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/terraform-providers/terraform-provider-smc/internal/apijson"
+	"github.com/terraform-providers/terraform-provider-smc/internal/common"
+	"github.com/terraform-providers/terraform-provider-smc/internal/config"
 
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/terraform-providers/terraform-provider-smc/internal/smc"
@@ -47,6 +52,21 @@ func (r *ResourceBase[T]) Configure(
 	}
 }
 
+// requireConfig reports a diagnostics error and returns false if the
+// resource was never configured with a client (see SMC-67412).
+func (r *ResourceBase[T]) requireConfig(diag *diag.Diagnostics) bool {
+	if r.Config == nil || r.Config.Client == nil {
+		diag.AddError(
+			"SMC Provider Never Configured",
+			fmt.Sprintf("Could not perform this operation on %s: the smc provider was never configured "+
+				"(one of its arguments, e.g. url or api_key, was still unknown). Add an explicit "+
+				"depends_on, or set the argument from a variable/data source.", r.ResourceType),
+		)
+		return false
+	}
+	return true
+}
+
 // Metadata returns the resource type name.
 func (r *ResourceBase[T]) Metadata(
 	_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -58,6 +78,11 @@ func (r *ResourceBase[T]) Create(ctx context.Context,
 	req resource.CreateRequest, resp *resource.CreateResponse) {
 
 	tflog.Debug(ctx, fmt.Sprintf("Beginning Create of resource %s", r.ResourceType))
+
+	if !r.requireConfig(&resp.Diagnostics) {
+		tflog.Error(ctx, fmt.Sprintf("Create aborted for resource %s: provider not configured", r.ResourceType))
+		return
+	}
 
 	var data T
 	// Read Terraform plan data into the model
@@ -132,6 +157,11 @@ func (r *ResourceBase[T]) Create(ctx context.Context,
 func (r *ResourceBase[T]) Delete(
 	ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 
+	if !r.requireConfig(&resp.Diagnostics) {
+		tflog.Error(ctx, fmt.Sprintf("Delete aborted for resource %s: provider not configured", r.ResourceType))
+		return
+	}
+
 	var data T
 
 	// Read Terraform prior state data into the model
@@ -182,6 +212,11 @@ func (r *ResourceBase[T]) Delete(
 func (r *ResourceBase[T]) Update(ctx context.Context, req resource.UpdateRequest,
 	resp *resource.UpdateResponse) {
 
+	if !r.requireConfig(&resp.Diagnostics) {
+		tflog.Error(ctx, fmt.Sprintf("Update aborted for resource %s: provider not configured", r.ResourceType))
+		return
+	}
+
 	var data T
 	var stateData T
 
@@ -227,6 +262,11 @@ func (r *ResourceBase[T]) ImportState(ctx context.Context, req resource.ImportSt
 	tflog.Info(ctx, fmt.Sprintf("Importing state for resource %s: id = %s", r.ResourceType, req.ID))
 	// resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
+	if !r.requireConfig(&resp.Diagnostics) {
+		tflog.Error(ctx, fmt.Sprintf("Import aborted for resource %s: provider not configured", r.ResourceType))
+		return
+	}
+
 	var stateData T
 	readResp, err := r.Config.ReadResourceByHref(req.ID)
 	if err != nil {
@@ -258,10 +298,113 @@ func (r *ResourceBase[T]) ImportState(ctx context.Context, req resource.ImportSt
 }
 
 func (r *ResourceBase[T]) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	// Reading the resource state from the SMC is not supported because
-	// the returned object differs significantly from the Terraform object
-	// due to default values. This causes frequent false-positive change
-	// detections.
 	tflog.Debug(ctx, fmt.Sprintf("Beginning Read of %s", r.ResourceType))
 
+	// Drift detection is opt-in per resource type via the
+	// "drift_detection" key in tfsmc.conf.json: the SMC API can return
+	// default values, normalized values, and reordered lists that
+	// differ from Terraform state, which would otherwise cause
+	// false-positive diffs. See MergeResourceDrift for how those are
+	// reconciled. It also gates whether "id"/"link" (and other readOnly
+	// attributes) get a UseStateForUnknown plan modifier at all (see
+	// schema_objects.j2) - when disabled, Read is a complete no-op, same
+	// as before drift detection existed.
+	enabled, err := config.IsDriftDetectionEnabled(common.PROVIDER_TYPE_NAME + "_" + r.ResourceType)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error reading provider configuration",
+			fmt.Sprintf("Could not determine if refresh is enabled for %s: %s", r.ResourceType, err.Error()),
+		)
+		return
+	}
+	if !enabled {
+		return
+	}
+
+	if !r.requireConfig(&resp.Diagnostics) {
+		tflog.Error(ctx, fmt.Sprintf("Read aborted for resource %s: provider not configured", r.ResourceType))
+		return
+	}
+
+	var state T
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	id, err := getId(state)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error getting resource ID",
+			fmt.Sprintf("Could not get resource ID: %s", err.Error()),
+		)
+		return
+	}
+	if id == "" {
+		return
+	}
+
+	normalizedId, err := r.Config.Client.NormalizeHref(id)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error normalizing resource href",
+			fmt.Sprintf("Could not normalize href '%s': %s", id, err.Error()),
+		)
+		return
+	}
+	id = normalizedId
+
+	readResp, err := r.Config.ReadResourceByHref(id)
+	if err != nil {
+		var statusErr *smc.StatusError
+		if errors.As(err, &statusErr) && statusErr.Code == http.StatusNotFound {
+			tflog.Debug(ctx, fmt.Sprintf("Resource %s no longer exists (%s), removing from state", r.ResourceType, id))
+			resp.State.RemoveResource(ctx)
+			return
+		}
+		resp.Diagnostics.AddError(
+			"Error reading resource",
+			fmt.Sprintf("Could not read %s: %s", r.ResourceType, err.Error()),
+		)
+		return
+	}
+
+	var apiData T
+	if err := apijson.UnmarshalRoot(readResp.Body, &apiData); err != nil {
+		resp.Diagnostics.AddError(
+			"Error parsing resource",
+			fmt.Sprintf("Could not parse %s: %s", r.ResourceType, err.Error()),
+		)
+		return
+	}
+
+	if err := MergeResourceDrift(ctx, &apiData, &state); err != nil {
+		resp.Diagnostics.AddError(
+			"Error reconciling resource drift",
+			fmt.Sprintf("Could not reconcile %s: %s", r.ResourceType, err.Error()),
+		)
+		return
+	}
+	setId(&state, id)
+
+	// MergeResourceDrift deliberately never refreshes "id"/"link" (Lk)
+	// from apiData (see copyDriftField), so a scheme/host/port/version
+	// baked into a stale href (e.g. from before an SMC http->https
+	// switch, SMC-64735/66510) survives the merge above untouched at
+	// every nesting level. Since those attributes carry a
+	// UseStateForUnknown plan modifier whenever drift detection is
+	// enabled, state must be normalized here or the next plan carries
+	// the stale value forward and mismatches what Update's own
+	// (unconditional) normalization actually produces - "Provider
+	// produced inconsistent result after apply". Pure string rewrite,
+	// no extra API call.
+	if _, err := normalizeStateHrefs(ctx, r.Config.Client, &state); err != nil {
+		resp.Diagnostics.AddError(
+			"Error normalizing resource hrefs",
+			fmt.Sprintf("Could not normalize hrefs for %s: %s", r.ResourceType, err.Error()),
+		)
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }

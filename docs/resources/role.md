@@ -16,8 +16,34 @@ This represents an Administration Role. Roles are administrative privileges that
 
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
+- `admin_mgmt` (Boolean) 
+- `alert_mgmt` (Boolean) 
+- `approve_changes` (Boolean) 
+- `archive_log_mgmt` (Boolean) 
+- `backup_mgmt` (Boolean) 
+- `bookmark_manage` (Boolean) 
 - `comment` (String) An optional comment for the element. This field is not required.
+- `delete_log_mgmt` (Boolean) 
+- `element_create` (Boolean) 
+- `element_delete` (Boolean) 
+- `element_edit` (Boolean) 
+- `element_view_content` (Boolean) 
+- `export_log_mgmt` (Boolean) 
+- `internal_user_mgmt` (Boolean) 
+- `license_mgmt` (Boolean) 
+- `log_pruning_mgmt` (Boolean) 
 - `name` (String) Name of the object.
+- `overview_manage` (Boolean) 
+- `refresh_policy` (Boolean) 
+- `send_advanced_commands` (Boolean) 
+- `send_commands` (Boolean) 
+- `updates_and_upgrades_mgmt` (Boolean) 
+- `upload_policy` (Boolean) 
+- `view_audit` (Boolean) 
+- `view_edit_report` (Boolean) 
+- `view_logs` (Boolean) 
+- `view_system_alerts` (Boolean) 
+- `vpn_mgmt` (Boolean) 
 
 
 ## Readonly Attributes

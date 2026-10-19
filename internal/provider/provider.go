@@ -29,6 +29,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/terraform-providers/terraform-provider-smc/internal/common"
+	"github.com/terraform-providers/terraform-provider-smc/internal/config"
 	smcResource "github.com/terraform-providers/terraform-provider-smc/internal/resource"
 	smcSchema "github.com/terraform-providers/terraform-provider-smc/internal/schema"
 	"github.com/terraform-providers/terraform-provider-smc/internal/smc"
@@ -104,6 +105,11 @@ func (p *SmcProvider) Configure(ctx context.Context, req provider.ConfigureReque
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
 	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if err := config.ValidateParallelModeEnv(); err != nil {
+		resp.Diagnostics.AddError("Invalid parallel mode setting", err.Error())
 		return
 	}
 
@@ -210,6 +216,11 @@ func (p *SmcProvider) Actions(_ context.Context) []func() action.Action {
 	return []func() action.Action{
 		NewInitialContactAction,
 		NewSmcGenericAction,
+		NewSmcCustomPropertiesProfileUploadScriptAction,
+		NewEngineUploadPolicyAction,
+		NewEngineRefreshPolicyAction,
+		NewGenerateVpnCertificateAction,
+		NewImportVpnCertificateAction,
 	}
 }
 

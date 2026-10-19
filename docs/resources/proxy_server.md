@@ -11,7 +11,7 @@ This represents a Proxy Server, which is a server that performs detailed examina
 
 ## Examples
 
-- [Proxy Server Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/network_elements/servers/proxy_server/main.tf)
+- [Proxy Server Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/network_elements/servers/proxy_server/main.tf)
 
 Creates an HTTP proxy server configuration, supporting a variety of modes and service inspection types.
 
@@ -43,7 +43,7 @@ resource "smc_proxy_server" "generic_proxy" {
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
 - `add_x_forwarded_for` (Boolean) Indicates whether the Proxy Server adds the 'X-Forwarded-For' header in HTTP(S) requests. This is used to preserve the original client's IP address when requests are forwarded.
-- `address` (String) The primary IPv4 address of the device, which is used for network communication.
+- `address` (String) The primary IPv4 address or FQDN of the device, which is used for network communication.
 - `balancing_mode` (String) The balancing mode for the Proxy Server. It can be one of the following: 'ha', 'src', 'dst', or 'srcdst'.
 - `comment` (String) An optional comment for the element. This field is not required.
 - `fp_proxy_key` (String) The password of the Customer ID used in HTTP/HTTPS properties for the Proxy Server. This is required at creation in clear text, and if not set during a modification, it keeps the current password.

@@ -21,34 +21,32 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/float64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"regexp"
 
 	"github.com/terraform-providers/terraform-provider-smc/internal/common"
+	"github.com/terraform-providers/terraform-provider-smc/internal/config"
 	"github.com/terraform-providers/terraform-provider-smc/internal/customfield"
 )
 
 // to avoid import errors if unused
 var _ = types.String{}
-var _ = (*planmodifier.Bool)(nil)
 var _ = (*customfield.NestedObjectType[struct{}])(nil)
-var _ = stringplanmodifier.UseStateForUnknown()
-var _ = boolplanmodifier.UseStateForUnknown()
-var _ = int64planmodifier.UseStateForUnknown()
-var _ = float64planmodifier.UseStateForUnknown()
-var _ = listplanmodifier.UseStateForUnknown()
 var _ = listdefault.StaticValue
 
 func GetAuthenticationMethodContainerForStorageSchemaAttributes(ctx context.Context) map[string]schema.Attribute {
 	useHcl2 := common.UseHCL2(ctx)
+	// driftDetectionEnabled gates every UseStateForUnknown plan
+	// modifier below: that modifier promises the prior state's value
+	// for a readOnly attribute is still accurate, which is only true
+	// once Read() actually refreshes it (see abstract_resource.go's
+	// Read, gated by the same "drift_detection" config key). When
+	// disabled, these attributes go back to being planned Unknown on
+	// every update, exactly as before drift detection existed.
+	driftDetectionEnabled, _ := config.IsDriftDetectionEnabled(common.PROVIDER_TYPE_NAME + "_" + "authentication_server")
+	_ = driftDetectionEnabled // in case this schema has no readOnly attributes
 
 	attrs := map[string]schema.Attribute{"auth_server_ref": schema.StringAttribute{
 		Optional:    true,

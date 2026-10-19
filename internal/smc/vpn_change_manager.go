@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"regexp"
+	"strings"
 	"sync"
 )
 
@@ -81,7 +82,7 @@ func OpenVpnForEdit(smcClient *SmcClient, opts *Options) error {
 		Context: opts.Context,
 	}
 	// call unsafeRequest directly because we already have the lock
-	resp, err := smcClient.unsafeRequest(&editOpts)
+	resp, err := smcClient.unsafeRequest(&editOpts, smcClient.currentAuth())
 	if err != nil {
 		return err
 	}
@@ -99,7 +100,7 @@ func SendVpnCommand(smcClient *SmcClient, vpnUrl string, command string) error {
 		Headers: smcClient.GetAuthHeaders(),
 	}
 	// call unsafeRequest directly because we already have the lock
-	resp, err := smcClient.unsafeRequest(&cmdOpts)
+	resp, err := smcClient.unsafeRequest(&cmdOpts, smcClient.currentAuth())
 	if err != nil {
 		return err
 	}
@@ -112,17 +113,49 @@ func SendVpnCommand(smcClient *SmcClient, vpnUrl string, command string) error {
 
 }
 
-func SaveAndCloseVpns(ctx context.Context) {
-	mgr := GetVpnEditStateManager()
-	mgr.VpnEditStates.Range(func(vpnUrl, value any) bool {
-		for _, op := range []string{"save", "close"} {
-			vpnState := value.(*VpnEditState)
-			err := SendVpnCommand(vpnState.SmcClient, vpnUrl.(string), op)
-			if err != nil {
-				tflog.Error(ctx, fmt.Sprintf("Failed to save vpn %s: %s",
-					vpnUrl.(string), err.Error()))
-			}
-		}
+// trackedUrls returns the vpnUrl of every currently-tracked VPN edit state.
+func (mgr *VpnEditStateManager) trackedUrls() []string {
+	var urls []string
+	mgr.VpnEditStates.Range(func(vpnUrl, _ any) bool {
+		urls = append(urls, vpnUrl.(string))
 		return true
 	})
+	return urls
+}
+
+// sendVpnCommand is a variable so tests can stub the SMC calls.
+var sendVpnCommand = SendVpnCommand
+
+// SaveAndCloseVpns is not reentrant with DoRequest: same per-host lock. Returns any save/close failures.
+// A VPN whose save fails is not closed (closing would discard its edits). Its tracked state is
+// dropped in every case, so a failure cannot block later uploads/refreshes.
+func SaveAndCloseVpns(ctx context.Context) error {
+	mgr := GetVpnEditStateManager()
+	var errs []string
+	for _, vpnUrl := range mgr.trackedUrls() {
+		lockId := GetLockId(vpnUrl)
+		GetLockRequests().Enter(lockId)
+
+		// Locked, so a second caller sees the state already gone.
+		value, ok := mgr.VpnEditStates.Load(vpnUrl)
+		if ok {
+			vpnState := value.(*VpnEditState)
+			for _, op := range []string{"save", "close"} {
+				err := sendVpnCommand(vpnState.SmcClient, vpnUrl, op)
+				if err == nil {
+					continue
+				}
+				tflog.Error(ctx, fmt.Sprintf("Failed to %s vpn %s: %s", op, vpnUrl, err.Error()))
+				errs = append(errs, fmt.Sprintf("%s vpn %s: %s", op, vpnUrl, err.Error()))
+				break
+			}
+			mgr.VpnEditStates.Delete(vpnUrl)
+		}
+
+		GetLockRequests().Leave(lockId)
+	}
+	if len(errs) > 0 {
+		return fmt.Errorf("failed to save/close %d vpn(s): %s", len(errs), strings.Join(errs, "; "))
+	}
+	return nil
 }

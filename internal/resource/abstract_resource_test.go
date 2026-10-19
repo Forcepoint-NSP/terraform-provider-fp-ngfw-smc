@@ -15,12 +15,159 @@
 package resource
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/types"
+	"context"
+	"errors"
+	"fmt"
+	"net/http"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/terraform-providers/terraform-provider-smc/internal/customfield"
+	"github.com/terraform-providers/terraform-provider-smc/internal/smc"
 )
 
 type HostResourceModel struct {
 	ID types.String `tfsdk:"id"`
+}
+
+type linkedResourceModel struct {
+	ID types.String                  `tfsdk:"id"`
+	Lk customfield.Map[types.String] `tfsdk:"link" json:"-"`
+}
+
+// Regression test for a scheme-switch bug (fb1769e): the "id" and "link"
+// schema attributes carry a UseStateForUnknown plan modifier, so a stale
+// http:// href left in state after an SMC http->https switch gets carried
+// forward as the planned value; Update then normalizes it for real and
+// produces "Provider produced inconsistent result after apply". Read must
+// normalize both, regardless of whether drift detection is enabled, since
+// normalizeStateHrefs is called unconditionally in abstract_resource.go's
+// Read() before the drift_detection opt-in check.
+func TestNormalizeStateHrefs_RewritesSchemeUnconditionally(t *testing.T) {
+	ctx := context.Background()
+	client := &smc.SmcClient{BaseUrl: "https://smc:8443", APIVersion: "7.5"}
+
+	links, diags := customfield.NewMap[types.String](ctx, map[string]types.String{
+		"add_route": types.StringValue("http://smc:8082/7.4/elements/single_fw/4820/add_route"),
+	})
+	if diags.HasError() {
+		t.Fatalf("failed to build test link map: %v", diags)
+	}
+
+	state := &linkedResourceModel{
+		ID: types.StringValue("http://smc:8082/7.4/elements/single_fw/4820"),
+		Lk: links,
+	}
+
+	changed, err := normalizeStateHrefs(ctx, client, state)
+	if err != nil {
+		t.Fatalf("normalizeStateHrefs returned an error: %v", err)
+	}
+	if !changed {
+		t.Fatal("expected normalizeStateHrefs to report a change")
+	}
+
+	if got, want := state.ID.ValueString(), "https://smc:8443/7.5/elements/single_fw/4820"; got != want {
+		t.Errorf("id: got %q, want %q", got, want)
+	}
+
+	values, diags := state.Lk.Value(ctx)
+	if diags.HasError() {
+		t.Fatalf("failed to read link map: %v", diags)
+	}
+	if got, want := values["add_route"].ValueString(), "https://smc:8443/7.5/elements/single_fw/4820/add_route"; got != want {
+		t.Errorf("link[add_route]: got %q, want %q", got, want)
+	}
+}
+
+type nestedLinkedModel struct {
+	ID   types.String                  `tfsdk:"id"`
+	Lk   customfield.Map[types.String] `tfsdk:"link" json:"-"`
+	Name types.String                  `tfsdk:"name"`
+}
+
+func (n nestedLinkedModel) GetSliceIds(ctx context.Context) []string {
+	return []string{n.Name.ValueString()}
+}
+
+type parentWithNestedLinksModel struct {
+	ID         types.String                  `tfsdk:"id"`
+	Lk         customfield.Map[types.String] `tfsdk:"link" json:"-"`
+	Interfaces *[]nestedLinkedModel          `tfsdk:"interfaces"`
+}
+
+// Regression test: nested blocks (e.g. physical_interface under
+// smc_single_fw) have their own "id"/"link" attributes, populated the
+// same way as the top-level resource. normalizeStateHrefs must reach
+// them too, not just the top-level struct.
+func TestNormalizeStateHrefs_RewritesNestedBlocks(t *testing.T) {
+	ctx := context.Background()
+	client := &smc.SmcClient{BaseUrl: "https://smc:8443", APIVersion: "7.5"}
+
+	nestedLinks, diags := customfield.NewMap[types.String](ctx, map[string]types.String{
+		"self": types.StringValue("http://smc:8082/7.4/elements/single_fw/4820/interfaces/0"),
+	})
+	if diags.HasError() {
+		t.Fatalf("failed to build nested test link map: %v", diags)
+	}
+
+	interfaces := []nestedLinkedModel{
+		{
+			ID:   types.StringValue("http://smc:8082/7.4/elements/single_fw/4820/interfaces/0"),
+			Lk:   nestedLinks,
+			Name: types.StringValue("eth0"),
+		},
+	}
+
+	state := &parentWithNestedLinksModel{
+		ID:         types.StringValue("http://smc:8082/7.4/elements/single_fw/4820"),
+		Interfaces: &interfaces,
+	}
+
+	changed, err := normalizeStateHrefs(ctx, client, state)
+	if err != nil {
+		t.Fatalf("normalizeStateHrefs returned an error: %v", err)
+	}
+	if !changed {
+		t.Fatal("expected normalizeStateHrefs to report a change")
+	}
+
+	if got, want := (*state.Interfaces)[0].ID.ValueString(), "https://smc:8443/7.5/elements/single_fw/4820/interfaces/0"; got != want {
+		t.Errorf("interfaces[0].id: got %q, want %q", got, want)
+	}
+
+	values, diags := (*state.Interfaces)[0].Lk.Value(ctx)
+	if diags.HasError() {
+		t.Fatalf("failed to read nested link map: %v", diags)
+	}
+	if got, want := values["self"].ValueString(), "https://smc:8443/7.5/elements/single_fw/4820/interfaces/0"; got != want {
+		t.Errorf("interfaces[0].link[self]: got %q, want %q", got, want)
+	}
+}
+
+func TestNormalizeStateHrefs_NoopWhenAlreadyNormalized(t *testing.T) {
+	ctx := context.Background()
+	client := &smc.SmcClient{BaseUrl: "https://smc:8443", APIVersion: "7.5"}
+
+	links, diags := customfield.NewMap[types.String](ctx, map[string]types.String{
+		"add_route": types.StringValue("https://smc:8443/7.5/elements/single_fw/4820/add_route"),
+	})
+	if diags.HasError() {
+		t.Fatalf("failed to build test link map: %v", diags)
+	}
+
+	state := &linkedResourceModel{
+		ID: types.StringValue("https://smc:8443/7.5/elements/single_fw/4820"),
+		Lk: links,
+	}
+
+	changed, err := normalizeStateHrefs(ctx, client, state)
+	if err != nil {
+		t.Fatalf("normalizeStateHrefs returned an error: %v", err)
+	}
+	if changed {
+		t.Fatal("expected normalizeStateHrefs to report no change when state is already normalized")
+	}
 }
 
 func TestGetId(t *testing.T) {
@@ -94,5 +241,25 @@ func TestSetId(t *testing.T) {
 	err = setId(wrongTypeModel, newID)
 	if err == nil {
 		t.Error("expected error for wrong field type")
+	}
+}
+
+func TestIsConflict(t *testing.T) {
+	conflictErr := fmt.Errorf("create host failed: %w", smc.NewStatusError(http.StatusConflict, "conflict"))
+	if !isConflict(conflictErr) {
+		t.Error("expected a wrapped 409 StatusError to be detected as a conflict")
+	}
+
+	notFoundErr := fmt.Errorf("read host failed: %w", smc.NewStatusError(http.StatusNotFound, "not found"))
+	if isConflict(notFoundErr) {
+		t.Error("expected a 404 StatusError not to be detected as a conflict")
+	}
+
+	if isConflict(errors.New("some other error")) {
+		t.Error("expected a non-StatusError not to be detected as a conflict")
+	}
+
+	if isConflict(nil) {
+		t.Error("expected a nil error not to be detected as a conflict")
 	}
 }

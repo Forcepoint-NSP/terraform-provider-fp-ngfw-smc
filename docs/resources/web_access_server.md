@@ -16,7 +16,7 @@ This represents a Web Access Server, which is used to provide web-based access t
 
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
-- `address` (String) The primary IPv4 address of the server. Must be a valid IPv4 address.
+- `address` (String) The primary IPv4 address or FQDN of the server.
 - `alert_server` (String) This represents a Log Server, which is a component of the Management Center responsible for storing and managing log (and alert) data, and analyzing and correlating events detected by multiple NGFW Engines.
 - `comment` (String) An optional comment for the element. This field is not required.
 - `ipv6_address` (String) The primary IPv6 address of the server. Must be a valid IPv6 address.

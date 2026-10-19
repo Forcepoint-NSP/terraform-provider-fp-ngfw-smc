@@ -228,6 +228,22 @@ func TestNormalizeHref(t *testing.T) {
 			href:       "https://smc.example.com:8082/7.6/elements/host/1",
 			want:       "https://smc.example.com:8082/7.6/elements/host/1",
 		},
+		{
+			// SMC-66923: raw space in search-fragment must not be encoded to %20
+			name:       "raw space in fragment preserved (SMC-66923)",
+			baseURL:    "https://smc.example.com:8082",
+			apiVersion: "7.5",
+			href:       "http://smc.example.com:8082/7.4/elements/single_fw/1454/internal_gateway#*/internal_endpoint/First DHCP*",
+			want:       "https://smc.example.com:8082/7.5/elements/single_fw/1454/internal_gateway#*/internal_endpoint/First DHCP*",
+		},
+		{
+			// SMC-66923: user-written %20 must not be decoded to a raw space
+			name:       "percent-encoded space in fragment preserved (SMC-66923)",
+			baseURL:    "https://smc.example.com:8082",
+			apiVersion: "7.5",
+			href:       "http://smc.example.com:8082/7.4/elements/single_fw/1454/internal_gateway#*/internal_endpoint/First%20DHCP*",
+			want:       "https://smc.example.com:8082/7.5/elements/single_fw/1454/internal_gateway#*/internal_endpoint/First%20DHCP*",
+		},
 	}
 
 	for _, tt := range tests {

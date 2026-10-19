@@ -21,7 +21,7 @@ This represents a Virtual Layer 2 Firewall, a logically-separate engine that run
 - `antispoofing_node_ref` (String) This represents an Antispoofing Node in the Security Management Client, which is used to protect against malicious packages with altered IP header information.
 - `auto_reboot_timeout` (Number) The length of time after which an error situation is considered non-recoverable and the engine automatically reboots. The default value is 10 seconds.
 - `comment` (String) An optional comment for the element. This field is not required.
-- `contact_timeout` (Number) Used when opening any kind of communication between the Management Server and the engines. A consistently slow network connection may require increasing this value. The default value is 60 seconds.
+- `contact_timeout` (Number) Used when opening any kind of communication between the Management Server and the engines. A consistently slow network connection may require increasing this value. Expressed in milliseconds and must be a whole number of seconds (a multiple of 1000). The default value is 120000 (120 seconds).
 - `custom_properties_profile` (List of String) URI of the custom properties profile.
 - `destination_server_certificate_cache_timeout` (Number) The timeout value for certificate entries in the cache in minutes.
 - `discard_quic_if_cant_inspect` (Boolean) Indicates whether QUIC traffic should be discarded when inspection is not possible.
@@ -100,7 +100,7 @@ This represents a Virtual Layer 2 Firewall, a logically-separate engine that run
 - `key` (Number) The unique identifier for the element. This field is required for updates but not for creation.
 - `link` (List of Blocks, see [here](attr_api_link.md)) The API's links of the element, providing additional actions or resources.
 - `locked` (Boolean) Indicates if the element is locked. This field is not required.
-- `master_ref` (String) This represents a physical engine device that provides resources for Virtual Security Engines. One physical Master NGFW Engine can support multiple Virtual NGFW Engines.
+- `master_ref` (String) This represents a physical engine device that provides resources for Virtual Security Engines. One physical Master NGFW Engine can support multiple Virtual NGFW Engines. If no Log Server is specified, one is automatically attached.
 - `read_only` (Boolean) Indicates if the element is read-only. This field is not required.
 - `system` (Boolean) Indicates if the element is a System element. This field is not required.
 - `system_key` (Number) The system key of the System element. This field is not required.

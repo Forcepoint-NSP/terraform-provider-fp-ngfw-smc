@@ -129,9 +129,9 @@ type MasterEngineResourceModel struct {
 	ReportingEmailAddresses                  types.String                                       `tfsdk:"reporting_email_addresses" json:"reporting_email_addresses,optional,omitempty" `
 	RollbackTimeout                          types.Int64                                        `tfsdk:"rollback_timeout" json:"rollback_timeout,optional,omitempty" `
 	RoutingNodeRef                           types.String                                       `tfsdk:"routing_node_ref" json:"routing_node_ref,optional,omitempty" `
+	SamlApplicationAccessClockSkew           types.Int64                                        `tfsdk:"saml_application_access_clock_skew" json:"saml_application_access_clock_skew,optional,omitempty" `
 	SamlBbaClockSkew                         types.Int64                                        `tfsdk:"saml_bba_clock_skew" json:"saml_bba_clock_skew,optional,omitempty" `
 	SamlSettings                             *[]SamlSettingsResourceModel                       `tfsdk:"saml_settings" json:"saml_settings,optional,omitempty" `
-	SamlSslVpnClockSkew                      types.Int64                                        `tfsdk:"saml_application_access_clock_skew" json:"saml_application_access_clock_skew,optional,omitempty" `
 	SandboxSettings                          *SandboxSettingsResourceModel                      `tfsdk:"sandbox_settings" json:"sandbox_settings,optional,omitempty" `
 	SandboxType                              types.String                                       `tfsdk:"sandbox_type" json:"sandbox_type,optional,omitempty" `
 	ScanDetection                            *ScanDetectionSettingsResourceModel                `tfsdk:"scan_detection" json:"scan_detection,optional,omitempty" `

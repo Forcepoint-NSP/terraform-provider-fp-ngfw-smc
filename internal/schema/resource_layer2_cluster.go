@@ -51,7 +51,7 @@ func (r *Layer2ClusterResource) Schema(ctx context.Context, _ resource.SchemaReq
 
 	ctx = context.WithValue(ctx, "use_hcl2", use_hcl2)
 	resp.Schema = schema.Schema{
-		Description: "This represents a group of two or more layer 2 firewall devices in the Stonesoft Management Center. A Layer 2 Firewall is a basic Stonesoft Management Center component that provides access control and deep inspection of traffic.",
+		Description: "This represents a group of two or more layer 2 firewall devices in the Stonesoft Management Center. A Layer 2 Firewall is a basic Stonesoft Management Center component that provides access control and deep inspection of traffic. If no Log Server is specified, one is automatically attached.",
 		Attributes:  GetLayer2ClusterSchemaAttributes(ctx),
 		Blocks:      GetLayer2ClusterSchemaBlocks(ctx),
 	} // schema

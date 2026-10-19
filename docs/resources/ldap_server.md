@@ -11,7 +11,7 @@ This represents a LDAP Server, which is used to configure access to any LDAP ser
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/network_elements/servers/ldap_server) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/network_elements/servers/ldap_server) for a complete minimal example
 
 This example creates an LDAP server object in SMC.
 
@@ -49,7 +49,7 @@ resource "smc_ldap_server" "ldap" {
 
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
-- `address` (String) The primary IPv4 address of the device, which is used for network communication.
+- `address` (String) The primary IPv4 address or FQDN of the device, which is used for network communication.
 - `base_dn` (String) The base distinguished name (DN) for the LDAP server, which defines the starting point for user searches.
 - `bind_password` (String) The password for the user ID used for binding to the LDAP server.
 - `bind_user_id` (String) The distinguished name (DN) of the user ID used for binding to the LDAP server.

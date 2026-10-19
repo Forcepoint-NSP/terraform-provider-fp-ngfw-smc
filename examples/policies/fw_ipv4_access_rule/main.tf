@@ -44,7 +44,7 @@ resource "smc_fw_ipv4_access_rule" "allow_ssh" {
   name     = "allow-ssh-from-any-to-tuvalu"
   sources { any = true }
   destinations {
-    dst = [ data.smc_href.tuvalu.id ]
+    dst = [data.smc_href.tuvalu.id]
   }
   services {
     service = [data.smc_href.ssh_service.id]
@@ -62,7 +62,7 @@ resource "smc_fw_ipv4_access_rule" "allow_gambling" {
   }
   action { action = ["allow"] }
   comment = "Allow traffic to gambling sites"
-  rank = 2
+  rank    = 2
 }
 
 resource "smc_fw_ipv4_access_rule" "allow_tiktok" {
@@ -75,7 +75,7 @@ resource "smc_fw_ipv4_access_rule" "allow_tiktok" {
   }
   action { action = ["allow"] }
   comment = "Allow tiktok"
-  rank = 1
+  rank    = 1
 }
 
 

@@ -17,4 +17,4 @@
 package schema
 
 const DefaultAPIVersion = "7.5"
-const ProviderVersion = "1.750.0"
+const ProviderVersion = "1.751.0"

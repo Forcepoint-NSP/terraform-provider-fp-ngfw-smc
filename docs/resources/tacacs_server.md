@@ -11,7 +11,7 @@ This represents a TACACS Server, which is an external authentication server that
 
 ## Examples
 
-- [TACACS Server Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/network_elements/servers/tacacs_server/main.tf)
+- [TACACS Server Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/network_elements/servers/tacacs_server/main.tf)
 
 Defines a TACACS server for authentication services.
 
@@ -32,7 +32,7 @@ resource "smc_tacacs_server" "tacacs" {
 
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
-- `address` (String) The primary IPv4 address of the server. Must be a valid IPv4 address.
+- `address` (String) The primary IPv4 address or FQDN of the server.
 - `clear_text` (Boolean) Indicates whether the TACACS+ server accepts unencrypted replies. If true, the Firewall will accept clear text replies from the TACACS+ authentication server.
 - `comment` (String) An optional comment for the element. This field is not required.
 - `ipv6_address` (String) The primary IPv6 address of the server. Must be a valid IPv6 address.

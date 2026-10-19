@@ -21,40 +21,39 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/float64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"regexp"
 
 	"github.com/terraform-providers/terraform-provider-smc/internal/common"
+	"github.com/terraform-providers/terraform-provider-smc/internal/config"
 	"github.com/terraform-providers/terraform-provider-smc/internal/customfield"
 )
 
 // to avoid import errors if unused
 var _ = types.String{}
-var _ = (*planmodifier.Bool)(nil)
 var _ = (*customfield.NestedObjectType[struct{}])(nil)
-var _ = stringplanmodifier.UseStateForUnknown()
-var _ = boolplanmodifier.UseStateForUnknown()
-var _ = int64planmodifier.UseStateForUnknown()
-var _ = float64planmodifier.UseStateForUnknown()
-var _ = listplanmodifier.UseStateForUnknown()
 var _ = listdefault.StaticValue
 
 func GetFloatSituationParameterValueSchemaAttributes(ctx context.Context) map[string]schema.Attribute {
 	useHcl2 := common.UseHCL2(ctx)
+	// driftDetectionEnabled gates every UseStateForUnknown plan
+	// modifier below: that modifier promises the prior state's value
+	// for a readOnly attribute is still accurate, which is only true
+	// once Read() actually refreshes it (see abstract_resource.go's
+	// Read, gated by the same "drift_detection" config key). When
+	// disabled, these attributes go back to being planned Unknown on
+	// every update, exactly as before drift detection existed.
+	driftDetectionEnabled, _ := config.IsDriftDetectionEnabled(common.PROVIDER_TYPE_NAME + "_" + "float_situation_parameter_value")
+	_ = driftDetectionEnabled // in case this schema has no readOnly attributes
 
 	attrs := map[string]schema.Attribute{
 		"id": schema.StringAttribute{
-			Optional:    true,
-			Computed:    true,
-			Description: "this attribute is the identifier of terraform resource",
+			Optional:      true,
+			Computed:      true,
+			Description:   "this attribute is the identifier of terraform resource",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 		},
 		"from_ref": schema.StringAttribute{
 			Optional:    true,
@@ -64,17 +63,19 @@ func GetFloatSituationParameterValueSchemaAttributes(ctx context.Context) map[st
 			Description: "An optional comment for the element. This field is not required.",
 		},
 		"key": schema.Int64Attribute{
-			Computed:    true,
-			Description: "The unique identifier for the element. This field is required for updates but not for creation.",
+			Computed:      true,
+			Description:   "The unique identifier for the element. This field is required for updates but not for creation.",
+			PlanModifiers: common.Int64PlanModifiers(driftDetectionEnabled),
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
 		},
 		"link": schema.MapAttribute{
-			Computed:    true,
-			Description: "provides additional actions or resources.",
-			ElementType: types.StringType,
-			CustomType:  customfield.NewMapType[types.String](ctx),
+			Computed:      true,
+			Description:   "provides additional actions or resources.",
+			PlanModifiers: common.MapPlanModifiers(driftDetectionEnabled),
+			ElementType:   types.StringType,
+			CustomType:    customfield.NewMapType[types.String](ctx),
 		},
 		"name": schema.StringAttribute{
 			Optional:    true,

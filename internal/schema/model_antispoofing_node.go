@@ -44,6 +44,7 @@ type AntispoofingNodeResourceModel struct {
 	Link               customfield.NestedObjectList[ApiLinkResourceModel] `tfsdk:"-" json:"link,optional,omitempty" fpro:"link"`
 	Lk                 customfield.Map[types.String]                      `tfsdk:"link" json:"-" `
 	Name               types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
+	NbReferences       types.Int64                                        `tfsdk:"nb_references" json:"nb_references,optional,omitempty" fpro:"nb_references"`
 	NicId              types.String                                       `tfsdk:"nic_id" json:"nic_id,optional,omitempty" `
 	ReadOnly           types.Bool                                         `tfsdk:"read_only" json:"read_only,optional,omitempty" fpro:"read_only"`
 	RelatedElementType types.String                                       `tfsdk:"related_element_type" json:"related_element_type,optional,omitempty" `

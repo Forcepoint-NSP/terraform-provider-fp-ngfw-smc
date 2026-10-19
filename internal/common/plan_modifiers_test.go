@@ -12,23 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package schema
+package common
 
-import (
-	"context"
+import "testing"
 
-	"github.com/hashicorp/terraform-plugin-framework-validators/resourcevalidator"
-	"github.com/hashicorp/terraform-plugin-framework/path"
+func TestStringPlanModifiers(t *testing.T) {
+	if got := StringPlanModifiers(false); got != nil {
+		t.Errorf("expected nil when disabled, got %v", got)
+	}
+	if got := StringPlanModifiers(true); len(got) != 1 {
+		t.Errorf("expected one modifier when enabled, got %v", got)
+	}
+}
 
-	"github.com/hashicorp/terraform-plugin-framework/resource"
-)
-
-func (r *InternalEndpointResource) ConfigValidators(ctx context.Context) []resource.ConfigValidator {
-	return []resource.ConfigValidator{
-		resourcevalidator.AtLeastOneOf(
-			path.MatchRoot("ssl_vpn_portal"),
-			path.MatchRoot("ssl_vpn_tunnel"),
-			path.MatchRoot("ipsec_vpn"),
-		),
+func TestMapPlanModifiers(t *testing.T) {
+	if got := MapPlanModifiers(false); got != nil {
+		t.Errorf("expected nil when disabled, got %v", got)
+	}
+	if got := MapPlanModifiers(true); len(got) != 1 {
+		t.Errorf("expected one modifier when enabled, got %v", got)
 	}
 }

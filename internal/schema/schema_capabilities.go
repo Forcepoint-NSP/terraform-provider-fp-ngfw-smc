@@ -20,47 +20,305 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/float64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/terraform-providers/terraform-provider-smc/internal/common"
+	"github.com/terraform-providers/terraform-provider-smc/internal/config"
 	"github.com/terraform-providers/terraform-provider-smc/internal/customfield"
 )
 
 // to avoid import errors if unused
 var _ = types.String{}
-var _ = (*planmodifier.Bool)(nil)
 var _ = (*customfield.NestedObjectType[struct{}])(nil)
-var _ = stringplanmodifier.UseStateForUnknown()
-var _ = boolplanmodifier.UseStateForUnknown()
-var _ = int64planmodifier.UseStateForUnknown()
-var _ = float64planmodifier.UseStateForUnknown()
-var _ = listplanmodifier.UseStateForUnknown()
 var _ = listdefault.StaticValue
 
 func GetCapabilitiesSchemaAttributes(ctx context.Context) map[string]schema.Attribute {
 	useHcl2 := common.UseHCL2(ctx)
+	// driftDetectionEnabled gates every UseStateForUnknown plan
+	// modifier below: that modifier promises the prior state's value
+	// for a readOnly attribute is still accurate, which is only true
+	// once Read() actually refreshes it (see abstract_resource.go's
+	// Read, gated by the same "drift_detection" config key). When
+	// disabled, these attributes go back to being planned Unknown on
+	// every update, exactly as before drift detection existed.
+	driftDetectionEnabled, _ := config.IsDriftDetectionEnabled(common.PROVIDER_TYPE_NAME + "_" + "capabilities")
+	_ = driftDetectionEnabled // in case this schema has no readOnly attributes
 
-	attrs := map[string]schema.Attribute{"sha2_ike_hash_length": schema.Int64Attribute{
+	attrs := map[string]schema.Attribute{"aes128_for_ike": schema.BoolAttribute{
 		Optional:    true,
-		Description: "The SHA2 hash length used for IKE (Internet Key Exchange).",
-		Validators: []validator.Int64{
-			int64validator.Between(-2147483648, 2147483647),
-		},
+		Description: "",
 	},
+		"aes128_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"aes256_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"aes256_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"aes_gcm_256_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"aes_gcm_256_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"aes_gcm_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"aes_xcbc_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"aggressive_mode": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"ah_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"blowfish_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"blowfish_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"des_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"des_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"dh_group_14_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"dh_group_15_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"dh_group_16_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"dh_group_17_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"dh_group_18_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"dh_group_19_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"dh_group_1_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"dh_group_20_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"dh_group_21_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"dh_group_2_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"dh_group_5_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"dss_signature_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"ecdsa_signature_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"esp_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"external_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"forward_client_vpn": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"forward_gw_to_gw_vpn": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"ike_v1": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"ike_v2": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"ipcomp_deflate_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"main_mode": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"md5_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"md5_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"null_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"pfs_dh_group_14_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"pfs_dh_group_15_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"pfs_dh_group_16_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"pfs_dh_group_17_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"pfs_dh_group_18_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"pfs_dh_group_19_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"pfs_dh_group_1_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"pfs_dh_group_20_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"pfs_dh_group_21_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"pfs_dh_group_2_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"pfs_dh_group_5_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"pfs_same_as_in_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"pre_shared_key_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"rsa_signature_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"sa_per_host": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"sa_per_net": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"sha1_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"sha1_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"sha2_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"sha2_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"sha2_ike_hash_length": schema.Int64Attribute{
+			Optional:    true,
+			Description: "The SHA2 hash length used for IKE (Internet Key Exchange).",
+			Validators: []validator.Int64{
+				int64validator.Between(-2147483648, 2147483647),
+			},
+		},
 		"sha2_ipsec_hash_length": schema.Int64Attribute{
 			Optional:    true,
 			Description: "The SHA2 hash length used for IPsec (Internet Protocol Security).",
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
+		},
+		"triple_des_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"triple_des_for_ipsec": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"vpn_client_dss_signature_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"vpn_client_ecdsa_signature_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"vpn_client_rsa_signature_for_ike": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"vpn_client_sa_per_host": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"vpn_client_sa_per_net": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
 		},
 	}
 	if !useHcl2 {

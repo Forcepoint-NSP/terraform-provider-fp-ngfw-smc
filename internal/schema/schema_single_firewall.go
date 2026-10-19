@@ -21,40 +21,39 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/float64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"regexp"
 
 	"github.com/terraform-providers/terraform-provider-smc/internal/common"
+	"github.com/terraform-providers/terraform-provider-smc/internal/config"
 	"github.com/terraform-providers/terraform-provider-smc/internal/customfield"
 )
 
 // to avoid import errors if unused
 var _ = types.String{}
-var _ = (*planmodifier.Bool)(nil)
 var _ = (*customfield.NestedObjectType[struct{}])(nil)
-var _ = stringplanmodifier.UseStateForUnknown()
-var _ = boolplanmodifier.UseStateForUnknown()
-var _ = int64planmodifier.UseStateForUnknown()
-var _ = float64planmodifier.UseStateForUnknown()
-var _ = listplanmodifier.UseStateForUnknown()
 var _ = listdefault.StaticValue
 
 func GetSingleFirewallSchemaAttributes(ctx context.Context) map[string]schema.Attribute {
 	useHcl2 := common.UseHCL2(ctx)
+	// driftDetectionEnabled gates every UseStateForUnknown plan
+	// modifier below: that modifier promises the prior state's value
+	// for a readOnly attribute is still accurate, which is only true
+	// once Read() actually refreshes it (see abstract_resource.go's
+	// Read, gated by the same "drift_detection" config key). When
+	// disabled, these attributes go back to being planned Unknown on
+	// every update, exactly as before drift detection existed.
+	driftDetectionEnabled, _ := config.IsDriftDetectionEnabled(common.PROVIDER_TYPE_NAME + "_" + "single_fw")
+	_ = driftDetectionEnabled // in case this schema has no readOnly attributes
 
 	attrs := map[string]schema.Attribute{
 		"id": schema.StringAttribute{
-			Optional:    true,
-			Computed:    true,
-			Description: "this attribute is the identifier of terraform resource",
+			Optional:      true,
+			Computed:      true,
+			Description:   "this attribute is the identifier of terraform resource",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 		}, "active_server_certificate_probing": schema.BoolAttribute{
 			Optional:    true,
 			Description: "Flag for enabling/disabling TLS probe connections.",
@@ -74,8 +73,9 @@ func GetSingleFirewallSchemaAttributes(ctx context.Context) map[string]schema.At
 			},
 		},
 		"admin_domain": schema.StringAttribute{
-			Computed:    true,
-			Description: "This represents a Domain. Domains are administrative boundaries that allow you to separate the configuration details and other information in the system for the purpose of limiting administrator access.",
+			Computed:      true,
+			Description:   "This represents a Domain. Domains are administrative boundaries that allow you to separate the configuration details and other information in the system for the purpose of limiting administrator access.",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 			Validators: []validator.String{
 				stringvalidator.RegexMatches(regexp.MustCompile(`^https?://`), "must be an http or https URL"),
 			},
@@ -143,7 +143,7 @@ func GetSingleFirewallSchemaAttributes(ctx context.Context) map[string]schema.At
 		},
 		"contact_timeout": schema.Int64Attribute{
 			Optional:    true,
-			Description: "Used when opening any kind of communication between the Management Server and the engines. A consistently slow network connection may require increasing this value. The default value is 60 seconds.",
+			Description: "Used when opening any kind of communication between the Management Server and the engines. A consistently slow network connection may require increasing this value. Expressed in milliseconds and must be a whole number of seconds (a multiple of 1000). The default value is 120000 (120 seconds).",
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
@@ -216,8 +216,9 @@ func GetSingleFirewallSchemaAttributes(ctx context.Context) map[string]schema.At
 			Description: "The version of the engine that this cluster is running.",
 		},
 		"etag": schema.StringAttribute{
-			Computed:    true,
-			Description: "The ETag of the element, used for versioning. This field is not required.",
+			Computed:      true,
+			Description:   "The ETag of the element, used for versioning. This field is not required.",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 		},
 		"excluded_interface": schema.Int64Attribute{
 			Optional:    true,
@@ -259,7 +260,7 @@ func GetSingleFirewallSchemaAttributes(ctx context.Context) map[string]schema.At
 		},
 		"ha_connection_sync_interface": schema.StringAttribute{
 			Optional:    true,
-			Description: "The interface for Unicast State Sync, specified by its ID, when the Connection Synchronization for External High Availability mode is enabled. This interface is used for synchronizing connection states between firewalls.",
+			Description: "The interface for Unicast State Sync, specified by its ID, when the Connection Synchronization for External High Availability mode is enabled. This interface is used for synchronizing connection states between firewalls. It must be a Layer 3 Physical Interface without VLAN and with a static IPv4 address.",
 		},
 		"ha_pos_for_backup_unit": schema.StringAttribute{
 			Optional:    true,
@@ -341,8 +342,9 @@ func GetSingleFirewallSchemaAttributes(ctx context.Context) map[string]schema.At
 			Description: "When the engine receives fragmented packets, it defragments the packets for inspection. This setting defines how the fragmented packets are sent onwards after inspection if the packets are allowed. If this option is selected, the fragmented packets are sent onwards using the same fragmentation as when they arrived at the engine. If the option is not selected, the packets are sent onwards as if they had arrived unfragmented.",
 		},
 		"key": schema.Int64Attribute{
-			Computed:    true,
-			Description: "The unique identifier for the element. This field is required for updates but not for creation.",
+			Computed:      true,
+			Description:   "The unique identifier for the element. This field is required for updates but not for creation.",
+			PlanModifiers: common.Int64PlanModifiers(driftDetectionEnabled),
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
@@ -360,10 +362,11 @@ func GetSingleFirewallSchemaAttributes(ctx context.Context) map[string]schema.At
 			},
 		},
 		"link": schema.MapAttribute{
-			Computed:    true,
-			Description: "provides additional actions or resources.",
-			ElementType: types.StringType,
-			CustomType:  customfield.NewMapType[types.String](ctx),
+			Computed:      true,
+			Description:   "provides additional actions or resources.",
+			PlanModifiers: common.MapPlanModifiers(driftDetectionEnabled),
+			ElementType:   types.StringType,
+			CustomType:    customfield.NewMapType[types.String](ctx),
 		},
 		"lldp_profile_ref": schema.StringAttribute{
 			Optional:    true,
@@ -380,8 +383,9 @@ func GetSingleFirewallSchemaAttributes(ctx context.Context) map[string]schema.At
 			},
 		},
 		"locked": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is locked. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is locked. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
 		},
 		"log_server_ref": schema.StringAttribute{
 			Optional:    true,
@@ -447,8 +451,9 @@ func GetSingleFirewallSchemaAttributes(ctx context.Context) map[string]schema.At
 			Description: "Indicates whether QUIC ports are enabled for Web Traffic. If true, QUIC protocol is allowed for web traffic.",
 		},
 		"read_only": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is read-only. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is read-only. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
 		},
 		"replica_internal_gateways": schema.ListAttribute{
 			Optional:    true,
@@ -473,16 +478,16 @@ func GetSingleFirewallSchemaAttributes(ctx context.Context) map[string]schema.At
 				stringvalidator.RegexMatches(regexp.MustCompile(`^https?://`), "must be an http or https URL"),
 			},
 		},
-		"saml_bba_clock_skew": schema.Int64Attribute{
+		"saml_application_access_clock_skew": schema.Int64Attribute{
 			Optional:    true,
-			Description: "The clock skew for SAML BBA authentication in seconds. It defines the allowed time difference between the SAML assertion and the system time.",
+			Description: "The clock skew for SAML Application Access authentication in seconds. It defines the allowed time difference between the SAML assertion and the system time.",
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
 		},
-		"saml_application_access_clock_skew": schema.Int64Attribute{
+		"saml_bba_clock_skew": schema.Int64Attribute{
 			Optional:    true,
-			Description: "The clock skew for SAML Application Access authentication in seconds. It defines the allowed time difference between the SAML assertion and the system time.",
+			Description: "The clock skew for SAML BBA authentication in seconds. It defines the allowed time difference between the SAML assertion and the system time.",
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
@@ -582,12 +587,14 @@ func GetSingleFirewallSchemaAttributes(ctx context.Context) map[string]schema.At
 			},
 		},
 		"system": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is a System element. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is a System element. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
 		},
 		"system_key": schema.Int64Attribute{
-			Computed:    true,
-			Description: "The system key of the System element. This field is not required.",
+			Computed:      true,
+			Description:   "The system key of the System element. This field is not required.",
+			PlanModifiers: common.Int64PlanModifiers(driftDetectionEnabled),
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
@@ -633,8 +640,9 @@ func GetSingleFirewallSchemaAttributes(ctx context.Context) map[string]schema.At
 			},
 		},
 		"trashed": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is trashed. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is trashed. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
 		},
 		"user_id_service_ref": schema.StringAttribute{
 			Optional:    true,

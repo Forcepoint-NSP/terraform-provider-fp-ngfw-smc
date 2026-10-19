@@ -22,14 +22,14 @@ resource "smc_admin_domain" "tf_domain" {
 }
 
 data "smc_href" "log_server" {
-  provider = smc.tfdomain
+  provider   = smc.tfdomain
   depends_on = [smc_admin_domain.tf_domain]
-  type = "log_server"
-  name = "*"
+  type       = "log_server"
+  name       = "*"
 }
 
 resource "smc_single_fw" "tf_single_fw" {
-  provider = smc.tfdomain
+  provider   = smc.tfdomain
   depends_on = [smc_admin_domain.tf_domain]
 
   name           = "tf_single_fw"

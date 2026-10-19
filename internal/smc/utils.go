@@ -46,6 +46,12 @@ func ReplaceVersionInURL(rawURL, version string) (string, error) {
 	if version == "" {
 		return rawURL, nil
 	}
+	// Preserve the raw fragment for the same reason as ReplaceInURL (SMC-66923).
+	rawFragment := ""
+	if idx := strings.Index(rawURL, "#"); idx != -1 {
+		rawFragment = rawURL[idx:]
+		rawURL = rawURL[:idx]
+	}
 	u, err := url.Parse(rawURL)
 	if err != nil {
 		return "", fmt.Errorf("invalid URL: %w", err)
@@ -53,18 +59,29 @@ func ReplaceVersionInURL(rawURL, version string) (string, error) {
 	segments := strings.SplitN(strings.TrimPrefix(u.Path, "/"), "/", 2)
 	if len(segments) == 0 || !versionSegmentRe.MatchString(segments[0]) {
 		// No recognizable version segment; leave the URL untouched.
-		return rawURL, nil
+		return rawURL + rawFragment, nil
 	}
 	segments[0] = version
 	u.Path = "/" + strings.Join(segments, "/")
 	u.RawPath = "" // force re-derivation from the updated Path
-	return u.String(), nil
+	return u.String() + rawFragment, nil
 }
 
 // ReplaceBaseInURL takes an input URL string and replaces its scheme, host, and port.
 // Pass empty values for any field you don't want to change (e.g., scheme="", host="", port="").
 // Returns the updated URL string.
 func ReplaceInURL(rawURL, scheme, host, port string) (string, error) {
+	// Strip the fragment before parsing and reattach it verbatim afterwards.
+	// url.Parse decodes percent-encoded chars in the fragment into u.Fragment,
+	// and u.String() re-encodes them (e.g. raw space → %20). Preserving the
+	// fragment as-is keeps the stored id consistent with the plan value the user
+	// wrote (SMC-66923).
+	rawFragment := ""
+	if idx := strings.Index(rawURL, "#"); idx != -1 {
+		rawFragment = rawURL[idx:]
+		rawURL = rawURL[:idx]
+	}
+
 	u, err := url.Parse(rawURL)
 	if err != nil {
 		return "", fmt.Errorf("invalid URL: %w", err)
@@ -104,7 +121,7 @@ func ReplaceInURL(rawURL, scheme, host, port string) (string, error) {
 		}
 	}
 
-	return u.String(), nil
+	return u.String() + rawFragment, nil
 }
 
 // splitHostPortSafe splits a host[:port] allowing for IPv6 literals with brackets.

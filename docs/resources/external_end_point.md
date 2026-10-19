@@ -11,7 +11,7 @@ This represents an external endpoint for VPN connections, supporting both tunnel
 
 ## Examples
 
-- [SD-WAN External Endpoint Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/sdwan/external_gateway/main.tf)
+- [SD-WAN External Endpoint Example](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/sdwan/external_gateway/main.tf)
 
 Defines an SMC External Endpoint for SD-WAN scenarios, typically to represent the far end of a VPN or GRE/IPsec connection managed by an external gateway.
 
@@ -36,11 +36,9 @@ resource "smc_external_endpoint" "ep_external" {
 - `force_nat_t` (Boolean) Indicates whether the endpoint forces NAT Traversal (NAT_T) for VPN connections.
 - `ike_phase1_id_type` (String) The type of Phase-1 ID used for the endpoint, represented as a single digit. '0' for DNS_NAME, '1' for EMAIL, '2' for DISTINGUISHED_NAME, and '3' for IP_ADDRESS.
 - `ike_phase1_id_value` (String) The value of the Phase-1 ID for the endpoint, which must match the specified Phase-1 ID type.
-- `ipsec_vpn` (Boolean) 
+- `ipsec_vpn` (Boolean) Indicates whether the endpoint supports IPSec VPN type.
 - `name` (String) Name of the object.
 - `nat_t` (Boolean) Indicates whether the endpoint supports NAT Traversal (NAT_T) for VPN connections.
-- `ssl_vpn_portal` (Boolean) 
-- `ssl_vpn_tunnel` (Boolean) 
 - `udp_encapsulation` (Boolean) Indicates whether the endpoint supports UDP encapsulation for VPN tunnels.
 
 

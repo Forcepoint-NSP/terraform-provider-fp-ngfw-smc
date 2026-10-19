@@ -1,6 +1,6 @@
 PROVIDER_NAME=fp-ngfw-smc
 PROVIDER_FULLNAME=terraform-provider-fp-ngfw-smc
-PROVIDER_VERSION=1.750.0
+PROVIDER_VERSION=1.751.0
 PROVIDER_ORGANIZATION=Forcepoint
 PLUGIN_DIR=plugins/registry.terraform.io/${PROVIDER_ORGANIZATION}/${PROVIDER_NAME}/${PROVIDER_VERSION}/linux_amd64
 RUN=./scripts/run_go
@@ -13,7 +13,7 @@ help:
 	@echo "SMC Terraform Provider Build Commands:"
 	@echo "  make build              - Build the binary"
 	@echo "  make release            - Prepare the provider release (build + goreleaser)"
-	@echo "  make release-snapshot- Build snapshot without publishing (no validation, dirty edit allowed, tag must be set on HEAD)"
+	@echo "  make release-snapshot   - Build snapshot without publishing (no validation, dirty tree allowed, no tag required)"
 	@echo "  make clean              - Clean all build artifacts"
 	@echo "  make help               - Show this help message"
 
@@ -24,8 +24,8 @@ build:
 	go build  -o $(PLUGIN_DIR)/${PROVIDER_FULLNAME} .
 
 .PHONY: release-snapshot
-go-release-snapshot: docker-build
-	goreleaser build --snapshot --clean --skip=validate
+release-snapshot:
+	PROVIDER_VERSION=${PROVIDER_VERSION} goreleaser build --snapshot --clean --skip=validate
 
 .PHONY: release
 release: build

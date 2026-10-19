@@ -27,7 +27,7 @@ This represents a Cloud Single Firewall, which is a type of firewall device desi
 - `client_cert_identity_field` (String) The Client Certificate Identity Field that defines how the client certificate identity is determined.
 - `comment` (String) An optional comment for the element. This field is not required.
 - `connection_limit` (Number) Sets a limit for connections from a single source and/or destination IP address. When the set number of connections is reached, the next connection attempts are blocked by the engine until a previously open connection is closed.
-- `contact_timeout` (Number) Used when opening any kind of communication between the Management Server and the engines. A consistently slow network connection may require increasing this value. The default value is 60 seconds.
+- `contact_timeout` (Number) Used when opening any kind of communication between the Management Server and the engines. A consistently slow network connection may require increasing this value. Expressed in milliseconds and must be a whole number of seconds (a multiple of 1000). The default value is 120000 (120 seconds).
 - `control_plane_mode` (String) The control plane mode of the Master Engine, which determines the allocation of CPU resources for control plane operations. Options include 'not_reserved' for no dedicated CPU allocation, 'one_cpu' for 1 CPU allocated, 'two_cpus' for 2 CPUs allocated, 'three_cpus' for 3 CPUs allocated, and 'four_cpus' for 4 CPUs allocated.
 - `custom_properties_profile` (List of String) URI of the custom properties profile.
 - `default_nat` (String) Indicates whether the Default NAT Address is used for Traffic from Internal Networks. It can be set to 'true', 'false', or 'automatic'.
@@ -78,8 +78,8 @@ This represents a Cloud Single Firewall, which is a type of firewall device desi
 - `reporting_email_addresses` (String) The contact email address for reporting per sender.
 - `rollback_timeout` (Number) The time the engine waits for a management connection before it rolls back to the previously installed policy when the Policy Handshake option is active. The default value is 60 seconds.
 - `routing_node_ref` (String) This represents a Routing Node in the Security Management Client, which is used to configure routing for network traffic on firewalls.
+- `saml_application_access_clock_skew` (Number) The clock skew for SAML Application Access authentication in seconds. It defines the allowed time difference between the SAML assertion and the system time.
 - `saml_bba_clock_skew` (Number) The clock skew for SAML BBA authentication in seconds. It defines the allowed time difference between the SAML assertion and the system time.
-- `saml_ssl_vpn_clock_skew` (Number) The clock skew for SAML Application Access authentication in seconds. It defines the allowed time difference between the SAML assertion and the system time.
 - `sandbox_type` (String) The Sandbox service selection.
 - `send_reset_for_out_of_state_tcp_packets` (String) The engine refuses TCP connections if the TCP connection does not start with a SYN packet, even if the TCP connection matches an Access rule with the Allow action.
 - `server_credential` (List of String) URI of the TLS Server Credentials.

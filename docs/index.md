@@ -6,7 +6,7 @@ description: Automate Forcepoint NGFW configuration deployment though SMC using 
 # Forcepoint NGFW SMC - Terraform Provider
 
 Automate Forcepoint NGFW configuration deployment though SMC using
-terraform. 
+terraform.
 
 ## Table of content
 
@@ -16,6 +16,7 @@ terraform.
 - [Representation of Nested Attributes](guides/40-nested-attributes.md)
 - [Tips for Writing Terraform Configuration](guides/50-tips-writing-terraform-smc.md)
 - [Importing Resources](guides/60-importing-resources.md)
+- [Drift Detection](guides/65-drift-detection.md)
 - [Deleting Resources](guides/70-deleting-resources.md)
 - [Troubleshooting](guides/80-troubleshooting.md)
 - [Misc](guides/90-misc.md)
@@ -30,7 +31,7 @@ terraform {
   required_providers {
     smc = {
       source  = "forcepoint-nsp/fp-ngfw-smc"
-      version = "1.750.0"
+      version = "1.751.0"
     }
   }
 
@@ -60,7 +61,7 @@ terraform {
 ## Provider version for SMC 7.3
 
 SMC 7.3 is not officially supported, but terraform provider for SMC
-7.4 works reasonbly well with it. 
+7.4 works reasonbly well with it.
 
 Use latest fp-ngfw-smc terraform version 1.74x.y **setup with SMC API 7.3**
 
@@ -73,10 +74,3 @@ api_version = "7.3"
 Use latest fp-ngfw-smc terraform version 1.74x.y
 
 > default SMC API version used by latest provider 1.74x.y is SMC API 7.4.
-
-## Provider version for SMC 7.5
-
-Use latest fp-ngfw-smc terraform version 1.75x.y
-
-> default SMC API version used by latest provider 1.75x.y is SMC API 7.5.
-

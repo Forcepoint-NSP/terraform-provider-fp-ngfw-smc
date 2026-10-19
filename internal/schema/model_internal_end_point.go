@@ -53,7 +53,7 @@ type InternalEndpointResourceModel struct {
 	NatT              types.Bool                                         `tfsdk:"nat_t" json:"nat_t,optional,omitempty" `
 	PhysicalInterface types.String                                       `tfsdk:"physical_interface" json:"physical_interface,optional,omitempty" `
 	ReadOnly          types.Bool                                         `tfsdk:"read_only" json:"read_only,optional,omitempty" fpro:"read_only"`
-	SslVpnPortal      types.Bool                                         `tfsdk:"ssl_vpn_portal" json:"ssl_vpn_portal,optional,omitempty" `
+	SslVpnPortal      types.Bool                                         `tfsdk:"application_access_portal" json:"application_access_portal,optional,omitempty" `
 	SslVpnTunnel      types.Bool                                         `tfsdk:"ssl_vpn_tunnel" json:"ssl_vpn_tunnel,optional,omitempty" `
 	System            types.Bool                                         `tfsdk:"system" json:"system,optional,omitempty" fpro:"system"`
 	SystemKey         types.Int64                                        `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`

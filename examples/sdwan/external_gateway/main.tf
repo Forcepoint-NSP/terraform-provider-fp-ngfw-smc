@@ -113,14 +113,12 @@ resource "smc_vpn" "tf_sample_vpn" {
 
 resource "smc_gateway_node" "tf_sample_central_gateway" {
   from_ref   = smc_vpn.tf_sample_vpn.link.central_gateway_node
-  name       = "tf_sample_central_gateway"
   node_usage = "central"
   gateway    = data.smc_sub_href.internal_gateway["fw1"].id
 }
 
 resource "smc_gateway_node" "tf_sample_satellite_gateway2" {
   from_ref   = smc_vpn.tf_sample_vpn.link.satellite_gateway_node
-  name       = "tf_sample_satellite_external_gw"
   node_usage = "satellite"
   gateway    = smc_external_gateway.external_gateway.id
 }

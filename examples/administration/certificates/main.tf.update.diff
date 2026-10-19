@@ -1,0 +1,9 @@
+--- main.tf.orig
++++ main.tf
+@@ -1,5 +1,5 @@
+ variable "resource_comment" {
+   type    = string
+-  default = "Created by Terraform"
++  default = "Updated by Terraform"
+ }
+

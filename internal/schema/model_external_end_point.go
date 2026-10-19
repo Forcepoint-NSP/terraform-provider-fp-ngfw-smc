@@ -51,8 +51,6 @@ type ExternalEndpointResourceModel struct {
 	Name              types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
 	NatT              types.Bool                                         `tfsdk:"nat_t" json:"nat_t,optional,omitempty" `
 	ReadOnly          types.Bool                                         `tfsdk:"read_only" json:"read_only,optional,omitempty" fpro:"read_only"`
-	SslVpnPortal      types.Bool                                         `tfsdk:"ssl_vpn_portal" json:"ssl_vpn_portal,optional,omitempty" `
-	SslVpnTunnel      types.Bool                                         `tfsdk:"ssl_vpn_tunnel" json:"ssl_vpn_tunnel,optional,omitempty" `
 	System            types.Bool                                         `tfsdk:"system" json:"system,optional,omitempty" fpro:"system"`
 	SystemKey         types.Int64                                        `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`
 	Trashed           types.Bool                                         `tfsdk:"trashed" json:"trashed,optional,omitempty" fpro:"trashed"`

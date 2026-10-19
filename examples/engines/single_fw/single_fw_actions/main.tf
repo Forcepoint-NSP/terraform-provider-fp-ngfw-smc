@@ -65,8 +65,6 @@ resource "smc_single_fw" "tf_single_fw" {
       events = [after_create]
       actions = [
         action.smc_command.bind_license.id,
-        action.smc_initial_contact.tf_single_fw_contact.id,
-        action.smc_command.upload.id
       ]
     }
   }
@@ -95,6 +93,55 @@ action "smc_initial_contact" "tf_single_fw_contact" {
     export_to_base64     = false
     output_file          = "/tmp/tf_single_fw_initial_contact.txt"
   }
+}
+
+# initial_contact and upload both hang off this one proxy resource instead
+# of smc_single_fw.tf_single_fw's after_create, to restore the original
+# bind_license -> initial_contact -> upload order (stonemind review comment
+# on an earlier patch set: moving initial_contact alone to before_create
+# silently reversed it to bind_license -> upload -> initial_contact).
+#
+# Splitting the two across this resource's before_create/after_create keeps
+# that relative order *and* fixes the ordering bug this pattern exists for:
+# actions have no depends_on, so anything that only depended on the engine
+# (not the action) could run before the action actually finished writing
+# the file. before_create/after_create on a resource that other resources
+# reference by attribute (data.local_file below, via .output) forces the
+# correct ordering instead - Terraform can't expose that attribute before
+# this resource's own apply, both actions included, has completed. And
+# because before_create and after_create are two stages of this same
+# resource's own apply, initial_contact is guaranteed to finish before
+# upload starts.
+#
+# bind_license -> initial_contact isn't given that same hard guarantee
+# (this resource only depends_on the engine existing, not on the engine's
+# own after_create finishing) - harmless here since license binding and
+# initial contact don't interact, but worth knowing if that ever changes.
+resource "terraform_data" "tf_single_fw_contact_ready" {
+  input = "/tmp/tf_single_fw_initial_contact.txt"
+  triggers_replace = [
+    smc_single_fw.tf_single_fw.nodes[0].firewall_node.link.initial_contact,
+  ]
+  depends_on = [smc_single_fw.tf_single_fw]
+
+  lifecycle {
+    action_trigger {
+      events  = [before_create]
+      actions = [action.smc_initial_contact.tf_single_fw_contact.id]
+    }
+    action_trigger {
+      events  = [after_create]
+      actions = [action.smc_command.upload.id]
+    }
+  }
+}
+
+# no stale-file cleanup step here: nothing ever deletes
+# /tmp/tf_single_fw_initial_contact.txt, so this data source can't hit the
+# "file missing at destroy time" hazard that a fleet-provisioning setup
+# needs to guard against.
+data "local_file" "tf_single_fw_contact" {
+  filename = terraform_data.tf_single_fw_contact_ready.output
 }
 
 action "smc_command" "bind_license" {

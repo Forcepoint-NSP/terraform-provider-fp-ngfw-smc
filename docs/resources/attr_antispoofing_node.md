@@ -32,5 +32,6 @@ This represents an Antispoofing Node in the Security Management Client, which is
 ## Readonly Attributes
 - `key` (Number) The unique identifier for the element. This field is required for updates but not for creation.
 - `link` (List of Blocks, see [here](attr_api_link.md)) The API's links of the element, providing additional actions or resources.
+- `nb_references` (Number) The number of routing references to this antispoofing entry (read-only).
 - `read_only` (Boolean) Indicates whether the view node is read-only or not.
 - `system` (Boolean) Indicates whether the view node is a system node or not.

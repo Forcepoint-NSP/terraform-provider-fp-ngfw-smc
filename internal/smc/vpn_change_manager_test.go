@@ -15,6 +15,8 @@
 package smc
 
 import (
+	"context"
+	"fmt"
 	"testing"
 )
 
@@ -28,5 +30,60 @@ func TestIsVpnUrl(t *testing.T) {
 	prefix = isVpnUrl("http://localhost:8082/7.4/elements/single_fw/268571118")
 	if prefix != "" {
 		t.Errorf("expected empty string for non-vpn url, got: %s", prefix)
+	}
+}
+
+func TestSaveAndCloseVpnsSkipsCloseAfterSaveFailure(t *testing.T) {
+	const vpnUrl = "http://localhost:8082/7.4/elements/vpn/1"
+	mgr := GetVpnEditStateManager()
+	mgr.VpnEditStates.Store(vpnUrl, &VpnEditState{})
+
+	var ops []string
+	orig := sendVpnCommand
+	defer func() { sendVpnCommand = orig }()
+	sendVpnCommand = func(_ *SmcClient, _ string, command string) error {
+		ops = append(ops, command)
+		if command == "save" {
+			return fmt.Errorf("save failed")
+		}
+		return nil
+	}
+
+	err := SaveAndCloseVpns(context.Background())
+
+	if err == nil {
+		t.Fatal("expected an error when save fails")
+	}
+	if len(ops) != 1 || ops[0] != "save" {
+		t.Errorf("expected only save to be sent, got: %v", ops)
+	}
+	if _, ok := mgr.VpnEditStates.Load(vpnUrl); ok {
+		t.Error("tracked state must be dropped after a failure")
+	}
+}
+
+func TestSaveAndCloseVpnsSavesThenCloses(t *testing.T) {
+	const vpnUrl = "http://localhost:8082/7.4/elements/vpn/2"
+	mgr := GetVpnEditStateManager()
+	mgr.VpnEditStates.Store(vpnUrl, &VpnEditState{})
+
+	var ops []string
+	orig := sendVpnCommand
+	defer func() { sendVpnCommand = orig }()
+	sendVpnCommand = func(_ *SmcClient, _ string, command string) error {
+		ops = append(ops, command)
+		return nil
+	}
+
+	err := SaveAndCloseVpns(context.Background())
+
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(ops) != 2 || ops[0] != "save" || ops[1] != "close" {
+		t.Errorf("expected save then close, got: %v", ops)
+	}
+	if _, ok := mgr.VpnEditStates.Load(vpnUrl); ok {
+		t.Error("tracked state must be dropped after success")
 	}
 }

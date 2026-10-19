@@ -51,7 +51,7 @@ func (r *SingleIpsResource) Schema(ctx context.Context, _ resource.SchemaRequest
 
 	ctx = context.WithValue(ctx, "use_hcl2", use_hcl2)
 	resp.Schema = schema.Schema{
-		Description: "This represents a Single IPS device in the Stonesoft Management Center, which is a single IPS engine. It includes attributes for virtual defragmentation and connection limits.",
+		Description: "This represents a Single IPS device in the Stonesoft Management Center, which is a single IPS engine. It includes attributes for virtual defragmentation and connection limits. If no Log Server is specified, one is automatically attached.",
 		Attributes:  GetSingleIpsSchemaAttributes(ctx),
 		Blocks:      GetSingleIpsSchemaBlocks(ctx),
 	} // schema

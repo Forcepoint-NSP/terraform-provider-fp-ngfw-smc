@@ -54,6 +54,9 @@ signs:
       - "${signature}"
       - "--detach-sign"
       - "${artifact}"
+# Snapshot has no X.Y.Z tag yet: pin the version to PROVIDER_VERSION (from buildinfo).
+snapshot:
+  version_template: '{{ envOrDefault "PROVIDER_VERSION" .Version }}-SNAPSHOT-{{ .ShortCommit }}'
 release:
   extra_files:
     - glob: "terraform-registry-manifest.json"

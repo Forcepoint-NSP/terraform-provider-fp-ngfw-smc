@@ -7,8 +7,6 @@ description: |-
 
 # smc_tls_certificate_authority (Resource)
 
-
-⚠️ __Experimental feature, use with caution__. This feature is not yet fully supported and may change without deprecation in future releases.
 This represents a Trusted Certificate Authority, which is used to manage trusted certificate authorities in the system.
 
 

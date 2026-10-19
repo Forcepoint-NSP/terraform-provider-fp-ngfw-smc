@@ -11,7 +11,7 @@ This represents an external authentication method, which can be used for user au
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/network_elements/servers/tacacs_server) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/network_elements/servers/tacacs_server) for a complete minimal example
 
 This example creates an Authentication Service of type TACACS for use with authentication servers.
 
@@ -35,6 +35,7 @@ resource "smc_authentication_service" "tf_tacacs_auth" {
 - `saml_group_attr_name` (List of String) The list of group attribute names used in SAML authentication.
 - `saml_metadata_file` (String) The SAML Identity Provider Metadata XML File, which contains the metadata of the SAML Identity Provider. This can be a local file path or a remote URI.
 - `saml_tls_profile_ref` (String) This represents a TLS Profile. It contains common data for establishing a TLS connection, including TLS version, cryptography suites, and trusted certificate authorities.
+- `sso_single_logout` (Boolean) If true, logging out terminates the user's session at the identity provider, which signs the user out of every other application using the same provider. Meaningful only for OIDC and SAML methods; ignored for others. Default: false.
 - `type` (String) Type of the authentication method, which can be one of the following: user_password, ias, ipsec, preshared_key, radius, tacacs, ldap.
 
 ## Nested Attributes

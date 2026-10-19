@@ -51,7 +51,7 @@ func (r *Layer2SingleResource) Schema(ctx context.Context, _ resource.SchemaRequ
 
 	ctx = context.WithValue(ctx, "use_hcl2", use_hcl2)
 	resp.Schema = schema.Schema{
-		Description: "This represents a Layer 2 firewall device in the Stonesoft Management Center, which is a basic component that provides access control and deep inspection of traffic.",
+		Description: "This represents a Layer 2 firewall device in the Stonesoft Management Center, which is a basic component that provides access control and deep inspection of traffic. If no Log Server is specified, one is automatically attached.",
 		Attributes:  GetLayer2SingleSchemaAttributes(ctx),
 		Blocks:      GetLayer2SingleSchemaBlocks(ctx),
 	} // schema

@@ -21,40 +21,39 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/float64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"regexp"
 
 	"github.com/terraform-providers/terraform-provider-smc/internal/common"
+	"github.com/terraform-providers/terraform-provider-smc/internal/config"
 	"github.com/terraform-providers/terraform-provider-smc/internal/customfield"
 )
 
 // to avoid import errors if unused
 var _ = types.String{}
-var _ = (*planmodifier.Bool)(nil)
 var _ = (*customfield.NestedObjectType[struct{}])(nil)
-var _ = stringplanmodifier.UseStateForUnknown()
-var _ = boolplanmodifier.UseStateForUnknown()
-var _ = int64planmodifier.UseStateForUnknown()
-var _ = float64planmodifier.UseStateForUnknown()
-var _ = listplanmodifier.UseStateForUnknown()
 var _ = listdefault.StaticValue
 
 func GetIpsClusterSchemaAttributes(ctx context.Context) map[string]schema.Attribute {
 	useHcl2 := common.UseHCL2(ctx)
+	// driftDetectionEnabled gates every UseStateForUnknown plan
+	// modifier below: that modifier promises the prior state's value
+	// for a readOnly attribute is still accurate, which is only true
+	// once Read() actually refreshes it (see abstract_resource.go's
+	// Read, gated by the same "drift_detection" config key). When
+	// disabled, these attributes go back to being planned Unknown on
+	// every update, exactly as before drift detection existed.
+	driftDetectionEnabled, _ := config.IsDriftDetectionEnabled(common.PROVIDER_TYPE_NAME + "_" + "ips_cluster")
+	_ = driftDetectionEnabled // in case this schema has no readOnly attributes
 
 	attrs := map[string]schema.Attribute{
 		"id": schema.StringAttribute{
-			Optional:    true,
-			Computed:    true,
-			Description: "this attribute is the identifier of terraform resource",
+			Optional:      true,
+			Computed:      true,
+			Description:   "this attribute is the identifier of terraform resource",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 		}, "active_server_certificate_probing": schema.BoolAttribute{
 			Optional:    true,
 			Description: "Flag for enabling/disabling TLS probe connections.",
@@ -67,8 +66,9 @@ func GetIpsClusterSchemaAttributes(ctx context.Context) map[string]schema.Attrib
 			},
 		},
 		"admin_domain": schema.StringAttribute{
-			Computed:    true,
-			Description: "This represents a Domain. Domains are administrative boundaries that allow you to separate the configuration details and other information in the system for the purpose of limiting administrator access.",
+			Computed:      true,
+			Description:   "This represents a Domain. Domains are administrative boundaries that allow you to separate the configuration details and other information in the system for the purpose of limiting administrator access.",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 			Validators: []validator.String{
 				stringvalidator.RegexMatches(regexp.MustCompile(`^https?://`), "must be an http or https URL"),
 			},
@@ -107,7 +107,7 @@ func GetIpsClusterSchemaAttributes(ctx context.Context) map[string]schema.Attrib
 		},
 		"contact_timeout": schema.Int64Attribute{
 			Optional:    true,
-			Description: "Used when opening any kind of communication between the Management Server and the engines. A consistently slow network connection may require increasing this value. The default value is 60 seconds.",
+			Description: "Used when opening any kind of communication between the Management Server and the engines. A consistently slow network connection may require increasing this value. Expressed in milliseconds and must be a whole number of seconds (a multiple of 1000). The default value is 120000 (120 seconds).",
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
@@ -140,8 +140,9 @@ func GetIpsClusterSchemaAttributes(ctx context.Context) map[string]schema.Attrib
 			Description: "The version of the engine that this cluster is running.",
 		},
 		"etag": schema.StringAttribute{
-			Computed:    true,
-			Description: "The ETag of the element, used for versioning. This field is not required.",
+			Computed:      true,
+			Description:   "The ETag of the element, used for versioning. This field is not required.",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 		},
 		"filter_mode": schema.StringAttribute{
 			Optional:    true,
@@ -218,17 +219,19 @@ func GetIpsClusterSchemaAttributes(ctx context.Context) map[string]schema.Attrib
 			Description: "Enables a procedure in which incoming packet fragments are collected, defragmented for processing by the engine, and refragmented before transmission. This is useful for handling fragmented packets in the network.",
 		},
 		"key": schema.Int64Attribute{
-			Computed:    true,
-			Description: "The unique identifier for the element. This field is required for updates but not for creation.",
+			Computed:      true,
+			Description:   "The unique identifier for the element. This field is required for updates but not for creation.",
+			PlanModifiers: common.Int64PlanModifiers(driftDetectionEnabled),
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
 		},
 		"link": schema.MapAttribute{
-			Computed:    true,
-			Description: "provides additional actions or resources.",
-			ElementType: types.StringType,
-			CustomType:  customfield.NewMapType[types.String](ctx),
+			Computed:      true,
+			Description:   "provides additional actions or resources.",
+			PlanModifiers: common.MapPlanModifiers(driftDetectionEnabled),
+			ElementType:   types.StringType,
+			CustomType:    customfield.NewMapType[types.String](ctx),
 		},
 		"lldp_profile_ref": schema.StringAttribute{
 			Optional:    true,
@@ -245,8 +248,9 @@ func GetIpsClusterSchemaAttributes(ctx context.Context) map[string]schema.Attrib
 			},
 		},
 		"locked": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is locked. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is locked. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
 		},
 		"log_buffer_size": schema.Int64Attribute{
 			Optional:    true,
@@ -316,8 +320,9 @@ func GetIpsClusterSchemaAttributes(ctx context.Context) map[string]schema.Attrib
 			Description: "Indicates whether the Passive Discard Mode is enabled. If true, it does not stop matching connections but creates a special log entry Terminate (passive) for testing purposes.",
 		},
 		"read_only": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is read-only. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is read-only. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
 		},
 		"reporting_email_addresses": schema.StringAttribute{
 			Optional:    true,
@@ -414,12 +419,14 @@ func GetIpsClusterSchemaAttributes(ctx context.Context) map[string]schema.Attrib
 			},
 		},
 		"system": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is a System element. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is a System element. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
 		},
 		"system_key": schema.Int64Attribute{
-			Computed:    true,
-			Description: "The system key of the System element. This field is not required.",
+			Computed:      true,
+			Description:   "The system key of the System element. This field is not required.",
+			PlanModifiers: common.Int64PlanModifiers(driftDetectionEnabled),
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
@@ -465,8 +472,9 @@ func GetIpsClusterSchemaAttributes(ctx context.Context) map[string]schema.Attrib
 			},
 		},
 		"trashed": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is trashed. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is trashed. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
 		},
 		"user_id_service_ref": schema.StringAttribute{
 			Optional:    true,

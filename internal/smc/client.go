@@ -21,12 +21,15 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -59,6 +62,13 @@ type SmcClient struct {
 
 	BeforeRequestHooks []func(client *SmcClient, opts *Options) error // Hooks to modify request options before sending
 
+	// loginMutex protects concurrent access to login-related fields (Token,
+	// SessionCookie, UseAuthHeader, LoginConfirmed). Required because the client
+	// is a per-URL singleton and login is lazy (triggered on first request).
+	// Without this, concurrent parallel requests can race to login and create
+	// multiple sessions, invalidating tokens (401 errors).
+	loginMutex sync.Mutex
+
 	// todo currently not used: a client is created per request
 	HTTPClient *http.Client
 }
@@ -71,6 +81,11 @@ type Options struct {
 	Body    []byte
 	Timeout time.Duration
 	Context context.Context
+	// CanParallelize reports whether this request may bypass the global
+	// per-host lock (see parallel.go). Callers that know about SMC
+	// resource types provide this (e.g. GenericCRUDConfig.canParallelize);
+	// nil or false means the request stays serialized.
+	CanParallelize func() bool
 }
 
 // ResponseData contains only the body, headers, and status code
@@ -145,9 +160,31 @@ func (c *SmcClient) NormalizeHref(href string) (string, error) {
 	return ReplaceVersionInURL(normalized, c.APIVersion)
 }
 
+// authSnapshot is a point-in-time copy of the auth fields needed to send a
+// request, taken under loginMutex so it can be read outside the lock.
+type authSnapshot struct {
+	useAuthHeader bool
+	token         string
+	sessionCookie string
+}
+
+// currentAuth reads the client's auth fields under loginMutex. Must not be
+// called by anything already holding loginMutex (e.g. the login flow) since
+// sync.Mutex is not reentrant; those callers already have exclusive access
+// and should read the fields directly instead.
+func (c *SmcClient) currentAuth() authSnapshot {
+	c.loginMutex.Lock()
+	defer c.loginMutex.Unlock()
+	return authSnapshot{
+		useAuthHeader: c.UseAuthHeader,
+		token:         c.Token,
+		sessionCookie: c.SessionCookie,
+	}
+}
+
 // unsafeRequest performs the actual HTTP request without
 // locking. Should not be called directly, use DoRequest instead.
-func (c *SmcClient) unsafeRequest(opts *Options) (*ResponseData, error) {
+func (c *SmcClient) unsafeRequest(opts *Options, auth authSnapshot) (*ResponseData, error) {
 	ctx := opts.Context
 	if ctx == nil {
 		ctx = context.Background()
@@ -188,20 +225,24 @@ func (c *SmcClient) unsafeRequest(opts *Options) (*ResponseData, error) {
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	if c.UseAuthHeader {
-		req.Header.Set("Authorization", c.Token)
-		if c.SessionCookie != "" {
-			req.Header.Set("Cookie", fmt.Sprintf("JSESSIONID=%s", c.SessionCookie))
+	useAuthHeader := auth.useAuthHeader
+	token := auth.token
+	sessionCookie := auth.sessionCookie
+
+	if useAuthHeader {
+		req.Header.Set("Authorization", token)
+		if sessionCookie != "" {
+			req.Header.Set("Cookie", fmt.Sprintf("JSESSIONID=%s", sessionCookie))
 		}
 		c.SmcContext.Debug(fmt.Sprintf(
 			"Sending %s %s with Authorization header: token=%q jsessionid=%q",
-			opts.Method, newUrl, c.Token[:min(len(c.Token), 60)], c.SessionCookie,
+			opts.Method, newUrl, token[:min(len(token), 60)], sessionCookie,
 		))
 	} else {
-		req.Header.Set("Cookie", fmt.Sprintf("JSESSIONID=%s", c.Token))
+		req.Header.Set("Cookie", fmt.Sprintf("JSESSIONID=%s", token))
 		c.SmcContext.Debug(fmt.Sprintf(
 			"Sending %s %s with JSESSIONID cookie: token=%q",
-			opts.Method, newUrl, c.Token[:min(len(c.Token), 60)],
+			opts.Method, newUrl, token[:min(len(token), 60)],
 		))
 	}
 
@@ -282,14 +323,19 @@ func (c *SmcClient) ping(ctx context.Context) bool {
 // GetJSONHeaders returns standard headers for JSON API requests with
 // authentication
 func (c *SmcClient) GetJSONHeaders() map[string]string {
+	c.loginMutex.Lock()
+	useAuthHeader := c.UseAuthHeader
+	token := c.Token
+	c.loginMutex.Unlock()
+
 	headers := map[string]string{
 		"Content-Type": "application/json",
 	}
 
-	if c.UseAuthHeader {
-		headers["Authorization"] = c.Token
+	if useAuthHeader {
+		headers["Authorization"] = token
 	} else {
-		headers["Cookie"] = fmt.Sprintf("JSESSIONID=%s", c.Token)
+		headers["Cookie"] = fmt.Sprintf("JSESSIONID=%s", token)
 	}
 
 	return headers
@@ -297,13 +343,18 @@ func (c *SmcClient) GetJSONHeaders() map[string]string {
 
 // GetAuthHeaders returns headers for authenticated requests (no Content-Type)
 func (c *SmcClient) GetAuthHeaders() map[string]string {
-	if c.UseAuthHeader {
+	c.loginMutex.Lock()
+	useAuthHeader := c.UseAuthHeader
+	token := c.Token
+	c.loginMutex.Unlock()
+
+	if useAuthHeader {
 		return map[string]string{
-			"Authorization": c.Token,
+			"Authorization": token,
 		}
 	}
 	return map[string]string{
-		"Cookie": fmt.Sprintf("JSESSIONID=%s", c.Token),
+		"Cookie": fmt.Sprintf("JSESSIONID=%s", token),
 	}
 }
 
@@ -408,7 +459,36 @@ func NewClient(ctx context.Context,
 	return c, nil
 }
 
-// Login Login authenticates with the SMC API using the provided API key
+const loginMaxAttempts = 5
+
+// loginRetryBaseDelay is the initial backoff between login attempts,
+// doubled after each retry. A var so tests can shorten it.
+var loginRetryBaseDelay = 1 * time.Second
+
+// isTransientNetworkError reports whether a transport-level error is worth
+// retrying. Certificate verification and DNS not-found failures are permanent;
+// connection refused/reset, EOF, proxy and timeout errors are transient
+// (the SMC or an intermediate may just not be ready yet).
+func isTransientNetworkError(err error) bool {
+	var urlErr *url.Error
+	if !errors.As(err, &urlErr) {
+		return false
+	}
+	var certErr *tls.CertificateVerificationError
+	if errors.As(err, &certErr) {
+		return false
+	}
+	var dnsErr *net.DNSError
+	if errors.As(err, &dnsErr) && dnsErr.IsNotFound {
+		return false
+	}
+	return true
+}
+
+// Login authenticates with the SMC API using the provided API key.
+// Transient failures (HTTP 5xx, connection refused/reset, EOF, timeouts)
+// are retried with exponential backoff: the SMC login endpoint is known to
+// fail sporadically while the server is busy or still warming up (SMC-66463).
 func (c *SmcClient) Login(ctx context.Context) error {
 	if c.LoginConfirmed {
 		c.SmcContext.Debug("Already logged to SMC API", map[string]any{
@@ -416,7 +496,38 @@ func (c *SmcClient) Login(ctx context.Context) error {
 		})
 		return nil
 	}
+	if ctx == nil {
+		ctx = context.Background()
+	}
 
+	delay := loginRetryBaseDelay
+	for attempt := 1; ; attempt++ {
+		retryable, err := c.loginOnce(ctx)
+		if err == nil {
+			return nil
+		}
+		if !retryable || attempt >= loginMaxAttempts {
+			return err
+		}
+		c.SmcContext.Warn("Transient login failure, retrying", map[string]any{
+			"url":     c.BaseUrl,
+			"attempt": attempt,
+			"of":      loginMaxAttempts,
+			"wait":    delay.String(),
+			"error":   err.Error(),
+		})
+		select {
+		case <-time.After(delay):
+		case <-ctx.Done():
+			return err
+		}
+		delay *= 2
+	}
+}
+
+// loginOnce performs a single login attempt. It returns the error of the
+// attempt and whether that error is transient (worth retrying).
+func (c *SmcClient) loginOnce(ctx context.Context) (retryable bool, err error) {
 	c.SmcContext.Info("Attempting to login to SMC API", map[string]any{
 		"url": c.BaseUrl,
 	})
@@ -431,7 +542,7 @@ func (c *SmcClient) Login(ctx context.Context) error {
 		c.SmcContext.Error("Failed to marshal login request", map[string]any{
 			"error": err.Error(),
 		})
-		return err
+		return false, err
 	}
 
 	url := fmt.Sprintf("%s/%s/login", c.BaseUrl, c.APIVersion)
@@ -442,12 +553,21 @@ func (c *SmcClient) Login(ctx context.Context) error {
 		Body:    reqBody,
 		Context: ctx,
 	}
-	resp, err := c.unsafeRequest(&opts)
+	// loginOnce always runs either under loginMutex (via ensureLoggedIn) or
+	// single-threaded in tests calling Login directly, so a direct field
+	// read is safe here; calling currentAuth() would deadlock in the
+	// former case since sync.Mutex is not reentrant.
+	auth := authSnapshot{
+		useAuthHeader: c.UseAuthHeader,
+		token:         c.Token,
+		sessionCookie: c.SessionCookie,
+	}
+	resp, err := c.unsafeRequest(&opts, auth)
 	if err != nil {
 		c.SmcContext.Error("Login request failed", map[string]any{
 			"error": err.Error(),
 		})
-		return err
+		return isTransientNetworkError(err), err
 	}
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		c.SmcContext.Error("Login failed with non-success status", map[string]any{
@@ -456,7 +576,16 @@ func (c *SmcClient) Login(ctx context.Context) error {
 			"body":        string(resp.Body),
 			"headers":     resp.Headers,
 		})
-		return fmt.Errorf("login failed with status %d at %s: %s", resp.StatusCode, url, string(resp.Body))
+		detail := string(resp.Body)
+		if detail == "" {
+			// An empty body means the SMC authentication logic likely never
+			// answered; the headers help identify what did (Tomcat, proxy, ...).
+			detail = fmt.Sprintf("(empty body; headers: %v)", resp.Headers)
+		}
+		// 5xx responses are transient (server busy / initializing); 4xx
+		// (bad API key, forbidden) will not improve with a retry.
+		return resp.StatusCode >= http.StatusInternalServerError,
+			fmt.Errorf("login failed with status %d at %s: %s", resp.StatusCode, url, detail)
 	}
 
 	// Always extract JSESSIONID from Set-Cookie (needed alongside Authorization on HTTPS).
@@ -483,7 +612,7 @@ func (c *SmcClient) Login(ctx context.Context) error {
 			authHeader[:min(len(authHeader), 60)],
 			c.SessionCookie,
 		))
-		return nil
+		return false, nil
 	}
 
 	// Fallback: use JSESSIONID cookie only (for HTTP)
@@ -493,7 +622,7 @@ func (c *SmcClient) Login(ctx context.Context) error {
 		c.LoginConfirmed = true
 		c.SmcContext.Info(fmt.Sprintf("Login OK (JSESSIONID cookie): jsessionid=%q", c.SessionCookie))
 	}
-	return nil
+	return false, nil
 }
 
 // Logout closes the SMC API session and cleans up resources
@@ -535,9 +664,12 @@ func (c *SmcClient) Logout(ctx context.Context) error {
 		})
 	}
 
-	// Clear the authentication state
+	// Clear the authentication state under loginMutex to prevent race with
+	// concurrent requests reading Token/LoginConfirmed in GetJSONHeaders/GetAuthHeaders
+	c.loginMutex.Lock()
 	c.Token = ""
 	c.LoginConfirmed = false
+	c.loginMutex.Unlock()
 
 	return nil
 }
@@ -545,19 +677,40 @@ func (c *SmcClient) Logout(ctx context.Context) error {
 // DoRequest performs a generic HTTP request and returns ResponseData
 // or error. In case of HTTP errors (4xx, 5xx), no error is returned,
 // the caller must check the StatusCode in ResponseData.
-func (c *SmcClient) DoRequest(opts Options) (*ResponseData, error) {
-	// Lock by base URL to prevent concurrent requests
-	// Using different lock by base URL will allow
-	// processing if several SMC providers are set.
-	lockId := GetLockId(opts.URL)
-	GetLockRequests().Enter(lockId)
-	defer GetLockRequests().Leave(lockId)
+// ensureLoggedIn guards login with a mutex to prevent concurrent login races.
+// Required because the client is a per-URL singleton and login is lazy.
+// Multiple concurrent requests (especially in parallel mode) must not attempt
+// to login simultaneously, as that creates multiple sessions which invalidate
+// each other's tokens.
+func (c *SmcClient) ensureLoggedIn(ctx context.Context) error {
+	c.loginMutex.Lock()
+	defer c.loginMutex.Unlock()
+	if c.LoginConfirmed {
+		return nil
+	}
+	return c.Login(ctx)
+}
 
-	if !c.LoginConfirmed {
-		err := c.Login(opts.Context)
-		if err != nil {
-			return nil, fmt.Errorf("failed to login before request: %w", err)
-		}
+func (c *SmcClient) DoRequest(opts Options) (*ResponseData, error) {
+	// Requests the caller marked parallelizable (see parallel.go, disabled
+	// by default) skip the per-host lock below; concurrency for them is
+	// bounded by terraform apply --parallelism, not by this client.
+	// Everything else keeps today's behavior: a full per-host lock that
+	// serializes every request end-to-end.
+	canParallelize := opts.CanParallelize != nil && opts.CanParallelize()
+	if !canParallelize {
+		// Lock by base URL to prevent concurrent requests
+		// Using different lock by base URL will allow
+		// processing if several SMC providers are set.
+		lockId := GetLockId(opts.URL)
+		GetLockRequests().Enter(lockId)
+		defer GetLockRequests().Leave(lockId)
+	}
+
+	// Ensure login with mutex protection to prevent concurrent login races
+	// that would create multiple sessions and invalidate tokens (401 errors).
+	if err := c.ensureLoggedIn(opts.Context); err != nil {
+		return nil, fmt.Errorf("failed to login before request: %w", err)
 	}
 
 	for _, hook := range c.BeforeRequestHooks {
@@ -567,5 +720,5 @@ func (c *SmcClient) DoRequest(opts Options) (*ResponseData, error) {
 		}
 	}
 
-	return c.unsafeRequest(&opts)
+	return c.unsafeRequest(&opts, c.currentAuth())
 }

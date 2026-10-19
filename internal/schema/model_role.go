@@ -31,19 +31,45 @@ var _ = fmt.Sprintf
 var _ = context.Background()
 
 type RoleResourceModel struct {
-	ID          types.String                                       `tfsdk:"id"`
-	AdminDomain types.String                                       `tfsdk:"admin_domain" json:"admin_domain,optional,omitempty" fpro:"admin_domain"`
-	Comment     types.String                                       `tfsdk:"comment" json:"comment,optional,omitempty" `
-	Etag        types.String                                       `tfsdk:"etag" json:"etag,optional,omitempty" fpro:"etag"`
-	Key         types.Int64                                        `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
-	Link        customfield.NestedObjectList[ApiLinkResourceModel] `tfsdk:"-" json:"link,optional,omitempty" fpro:"link"`
-	Lk          customfield.Map[types.String]                      `tfsdk:"link" json:"-" `
-	Locked      types.Bool                                         `tfsdk:"locked" json:"locked,optional,omitempty" fpro:"locked"`
-	Name        types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
-	ReadOnly    types.Bool                                         `tfsdk:"read_only" json:"read_only,optional,omitempty" fpro:"read_only"`
-	System      types.Bool                                         `tfsdk:"system" json:"system,optional,omitempty" fpro:"system"`
-	SystemKey   types.Int64                                        `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`
-	Trashed     types.Bool                                         `tfsdk:"trashed" json:"trashed,optional,omitempty" fpro:"trashed"`
+	ID                     types.String                                       `tfsdk:"id"`
+	AdminDomain            types.String                                       `tfsdk:"admin_domain" json:"admin_domain,optional,omitempty" fpro:"admin_domain"`
+	AdminMgmt              types.Bool                                         `tfsdk:"admin_mgmt" json:"admin_mgmt,optional,omitempty" `
+	AlertMgmt              types.Bool                                         `tfsdk:"alert_mgmt" json:"alert_mgmt,optional,omitempty" `
+	ApproveChanges         types.Bool                                         `tfsdk:"approve_changes" json:"approve_changes,optional,omitempty" `
+	ArchiveLogMgmt         types.Bool                                         `tfsdk:"archive_log_mgmt" json:"archive_log_mgmt,optional,omitempty" `
+	BackupMgmt             types.Bool                                         `tfsdk:"backup_mgmt" json:"backup_mgmt,optional,omitempty" `
+	BookmarkManage         types.Bool                                         `tfsdk:"bookmark_manage" json:"bookmark_manage,optional,omitempty" `
+	Comment                types.String                                       `tfsdk:"comment" json:"comment,optional,omitempty" `
+	DeleteLogMgmt          types.Bool                                         `tfsdk:"delete_log_mgmt" json:"delete_log_mgmt,optional,omitempty" `
+	ElementCreate          types.Bool                                         `tfsdk:"element_create" json:"element_create,optional,omitempty" `
+	ElementDelete          types.Bool                                         `tfsdk:"element_delete" json:"element_delete,optional,omitempty" `
+	ElementEdit            types.Bool                                         `tfsdk:"element_edit" json:"element_edit,optional,omitempty" `
+	ElementViewContent     types.Bool                                         `tfsdk:"element_view_content" json:"element_view_content,optional,omitempty" `
+	Etag                   types.String                                       `tfsdk:"etag" json:"etag,optional,omitempty" fpro:"etag"`
+	ExportLogMgmt          types.Bool                                         `tfsdk:"export_log_mgmt" json:"export_log_mgmt,optional,omitempty" `
+	InternalUserMgmt       types.Bool                                         `tfsdk:"internal_user_mgmt" json:"internal_user_mgmt,optional,omitempty" `
+	Key                    types.Int64                                        `tfsdk:"key" json:"key,optional,omitempty" fpro:"key"`
+	LicenseMgmt            types.Bool                                         `tfsdk:"license_mgmt" json:"license_mgmt,optional,omitempty" `
+	Link                   customfield.NestedObjectList[ApiLinkResourceModel] `tfsdk:"-" json:"link,optional,omitempty" fpro:"link"`
+	Lk                     customfield.Map[types.String]                      `tfsdk:"link" json:"-" `
+	Locked                 types.Bool                                         `tfsdk:"locked" json:"locked,optional,omitempty" fpro:"locked"`
+	LogPruningMgmt         types.Bool                                         `tfsdk:"log_pruning_mgmt" json:"log_pruning_mgmt,optional,omitempty" `
+	Name                   types.String                                       `tfsdk:"name" json:"name,optional,omitempty" `
+	OverviewManage         types.Bool                                         `tfsdk:"overview_manage" json:"overview_manage,optional,omitempty" `
+	ReadOnly               types.Bool                                         `tfsdk:"read_only" json:"read_only,optional,omitempty" fpro:"read_only"`
+	RefreshPolicy          types.Bool                                         `tfsdk:"refresh_policy" json:"refresh_policy,optional,omitempty" `
+	SendAdvancedCommands   types.Bool                                         `tfsdk:"send_advanced_commands" json:"send_advanced_commands,optional,omitempty" `
+	SendCommands           types.Bool                                         `tfsdk:"send_commands" json:"send_commands,optional,omitempty" `
+	System                 types.Bool                                         `tfsdk:"system" json:"system,optional,omitempty" fpro:"system"`
+	SystemKey              types.Int64                                        `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`
+	Trashed                types.Bool                                         `tfsdk:"trashed" json:"trashed,optional,omitempty" fpro:"trashed"`
+	UpdatesAndUpgradesMgmt types.Bool                                         `tfsdk:"updates_and_upgrades_mgmt" json:"updates_and_upgrades_mgmt,optional,omitempty" `
+	UploadPolicy           types.Bool                                         `tfsdk:"upload_policy" json:"upload_policy,optional,omitempty" `
+	ViewAudit              types.Bool                                         `tfsdk:"view_audit" json:"view_audit,optional,omitempty" `
+	ViewEditReport         types.Bool                                         `tfsdk:"view_edit_report" json:"view_edit_report,optional,omitempty" `
+	ViewLogs               types.Bool                                         `tfsdk:"view_logs" json:"view_logs,optional,omitempty" `
+	ViewSystemAlerts       types.Bool                                         `tfsdk:"view_system_alerts" json:"view_system_alerts,optional,omitempty" `
+	VpnMgmt                types.Bool                                         `tfsdk:"vpn_mgmt" json:"vpn_mgmt,optional,omitempty" `
 }
 
 func (r *RoleResourceModel) GetSliceIds(ctx context.Context) []string {

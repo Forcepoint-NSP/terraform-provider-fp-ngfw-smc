@@ -26,7 +26,7 @@ A stub configuration:
 
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
-- `address` (String) The primary IPv4 address of the device, which is used for network communication.
+- `address` (String) The primary IPv4 address or FQDN of the device, which is used for network communication.
 - `comment` (String) An optional comment for the element. This field is not required.
 - `icap_include_xhdrs` (Boolean) Flag indicating if X-Headers should be included in the ICAP requests. Defaults to false.
 - `icap_path` (String) The path for the ICAP server.

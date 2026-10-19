@@ -177,14 +177,14 @@ resource "smc_vpn" "tf_sample_vpn" {
 
 resource "smc_gateway_node" "tf_sample_gateway_1_node" {
   from_ref   = smc_vpn.tf_sample_vpn.link.central_gateway_node
-  name       = "tf_sample_gateway_node_1"
+  comment    = "tf_sample_gateway_node_1"
   node_usage = "central"
   gateway    = data.smc_sub_href.internal_gateway_1_ref.id
 }
 
 resource "smc_gateway_node" "tf_sample_gateway_2_node" {
   from_ref   = smc_vpn.tf_sample_vpn.link.central_gateway_node
-  name       = "tf_sample_gateway_node_2"
+  comment    = "tf_sample_gateway_node_2"
   node_usage = "central"
   gateway    = data.smc_sub_href.internal_gateway_2_ref.id
 }

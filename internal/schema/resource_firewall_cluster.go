@@ -51,7 +51,7 @@ func (r *FirewallClusterResource) Schema(ctx context.Context, _ resource.SchemaR
 
 	ctx = context.WithValue(ctx, "use_hcl2", use_hcl2)
 	resp.Schema = schema.Schema{
-		Description: "This represents a group of two or more firewall devices in the Stonesoft Management Center. It includes attributes for virtual defragmentation, connection limits, filter modes, cluster modes, and various settings related to firewall operations.",
+		Description: "This represents a group of two or more firewall devices in the Stonesoft Management Center. It includes attributes for virtual defragmentation, connection limits, filter modes, cluster modes, and various settings related to firewall operations. If no Log Server is specified, one is automatically attached.",
 		Attributes:  GetFirewallClusterSchemaAttributes(ctx),
 		Blocks:      GetFirewallClusterSchemaBlocks(ctx),
 	} // schema

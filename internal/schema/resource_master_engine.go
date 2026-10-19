@@ -51,7 +51,7 @@ func (r *MasterEngineResource) Schema(ctx context.Context, _ resource.SchemaRequ
 
 	ctx = context.WithValue(ctx, "use_hcl2", use_hcl2)
 	resp.Schema = schema.Schema{
-		Description: "This represents a physical engine device that provides resources for Virtual Security Engines. One physical Master NGFW Engine can support multiple Virtual NGFW Engines.",
+		Description: "This represents a physical engine device that provides resources for Virtual Security Engines. One physical Master NGFW Engine can support multiple Virtual NGFW Engines. If no Log Server is specified, one is automatically attached.",
 		Attributes:  GetMasterEngineSchemaAttributes(ctx),
 		Blocks:      GetMasterEngineSchemaBlocks(ctx),
 	} // schema

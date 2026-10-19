@@ -21,71 +21,135 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/float64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"regexp"
 
 	"github.com/terraform-providers/terraform-provider-smc/internal/common"
+	"github.com/terraform-providers/terraform-provider-smc/internal/config"
 	"github.com/terraform-providers/terraform-provider-smc/internal/customfield"
 )
 
 // to avoid import errors if unused
 var _ = types.String{}
-var _ = (*planmodifier.Bool)(nil)
 var _ = (*customfield.NestedObjectType[struct{}])(nil)
-var _ = stringplanmodifier.UseStateForUnknown()
-var _ = boolplanmodifier.UseStateForUnknown()
-var _ = int64planmodifier.UseStateForUnknown()
-var _ = float64planmodifier.UseStateForUnknown()
-var _ = listplanmodifier.UseStateForUnknown()
 var _ = listdefault.StaticValue
 
 func GetRoleSchemaAttributes(ctx context.Context) map[string]schema.Attribute {
 	useHcl2 := common.UseHCL2(ctx)
+	// driftDetectionEnabled gates every UseStateForUnknown plan
+	// modifier below: that modifier promises the prior state's value
+	// for a readOnly attribute is still accurate, which is only true
+	// once Read() actually refreshes it (see abstract_resource.go's
+	// Read, gated by the same "drift_detection" config key). When
+	// disabled, these attributes go back to being planned Unknown on
+	// every update, exactly as before drift detection existed.
+	driftDetectionEnabled, _ := config.IsDriftDetectionEnabled(common.PROVIDER_TYPE_NAME + "_" + "role")
+	_ = driftDetectionEnabled // in case this schema has no readOnly attributes
 
 	attrs := map[string]schema.Attribute{
 		"id": schema.StringAttribute{
-			Optional:    true,
-			Computed:    true,
-			Description: "this attribute is the identifier of terraform resource",
+			Optional:      true,
+			Computed:      true,
+			Description:   "this attribute is the identifier of terraform resource",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 		}, "admin_domain": schema.StringAttribute{
-			Computed:    true,
-			Description: "This represents a Domain. Domains are administrative boundaries that allow you to separate the configuration details and other information in the system for the purpose of limiting administrator access.",
+			Computed:      true,
+			Description:   "This represents a Domain. Domains are administrative boundaries that allow you to separate the configuration details and other information in the system for the purpose of limiting administrator access.",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
 			Validators: []validator.String{
 				stringvalidator.RegexMatches(regexp.MustCompile(`^https?://`), "must be an http or https URL"),
 			},
+		},
+		"admin_mgmt": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"alert_mgmt": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"approve_changes": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"archive_log_mgmt": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"backup_mgmt": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"bookmark_manage": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
 		},
 		"comment": schema.StringAttribute{
 			Optional:    true,
 			Description: "An optional comment for the element. This field is not required.",
 		},
+		"delete_log_mgmt": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"element_create": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"element_delete": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"element_edit": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"element_view_content": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
 		"etag": schema.StringAttribute{
-			Computed:    true,
-			Description: "The ETag of the element, used for versioning. This field is not required.",
+			Computed:      true,
+			Description:   "The ETag of the element, used for versioning. This field is not required.",
+			PlanModifiers: common.StringPlanModifiers(driftDetectionEnabled),
+		},
+		"export_log_mgmt": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"internal_user_mgmt": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
 		},
 		"key": schema.Int64Attribute{
-			Computed:    true,
-			Description: "The unique identifier for the element. This field is required for updates but not for creation.",
+			Computed:      true,
+			Description:   "The unique identifier for the element. This field is required for updates but not for creation.",
+			PlanModifiers: common.Int64PlanModifiers(driftDetectionEnabled),
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
 		},
+		"license_mgmt": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
 		"link": schema.MapAttribute{
-			Computed:    true,
-			Description: "provides additional actions or resources.",
-			ElementType: types.StringType,
-			CustomType:  customfield.NewMapType[types.String](ctx),
+			Computed:      true,
+			Description:   "provides additional actions or resources.",
+			PlanModifiers: common.MapPlanModifiers(driftDetectionEnabled),
+			ElementType:   types.StringType,
+			CustomType:    customfield.NewMapType[types.String](ctx),
 		},
 		"locked": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is locked. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is locked. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
+		},
+		"log_pruning_mgmt": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
 		},
 		"name": schema.StringAttribute{
 			Optional:    true,
@@ -94,24 +158,72 @@ func GetRoleSchemaAttributes(ctx context.Context) map[string]schema.Attribute {
 				stringvalidator.LengthBetween(1, 254),
 			},
 		},
+		"overview_manage": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
 		"read_only": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is read-only. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is read-only. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
+		},
+		"refresh_policy": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"send_advanced_commands": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"send_commands": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
 		},
 		"system": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is a System element. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is a System element. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
 		},
 		"system_key": schema.Int64Attribute{
-			Computed:    true,
-			Description: "The system key of the System element. This field is not required.",
+			Computed:      true,
+			Description:   "The system key of the System element. This field is not required.",
+			PlanModifiers: common.Int64PlanModifiers(driftDetectionEnabled),
 			Validators: []validator.Int64{
 				int64validator.Between(-2147483648, 2147483647),
 			},
 		},
 		"trashed": schema.BoolAttribute{
-			Computed:    true,
-			Description: "Indicates if the element is trashed. This field is not required.",
+			Computed:      true,
+			Description:   "Indicates if the element is trashed. This field is not required.",
+			PlanModifiers: common.BoolPlanModifiers(driftDetectionEnabled),
+		},
+		"updates_and_upgrades_mgmt": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"upload_policy": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"view_audit": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"view_edit_report": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"view_logs": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"view_system_alerts": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
+		},
+		"vpn_mgmt": schema.BoolAttribute{
+			Optional:    true,
+			Description: "",
 		},
 	}
 	if !useHcl2 {

@@ -16,7 +16,7 @@ This represents a Management Server, which is the central component that stores 
 
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
-- `address` (String) The primary IPv4 address of the device, which is used for network communication.
+- `address` (String) The primary IPv4 address or FQDN of the device, which is used for network communication.
 - `alert_server_ref` (String) This represents a Log Server, which is a component of the Management Center responsible for storing and managing log (and alert) data, and analyzing and correlating events detected by multiple NGFW Engines.
 - `announcement_enabled` (Boolean) Indicates whether announcements are enabled for the Management Server. If enabled, announcements are shown to all users.
 - `announcement_message` (String) The announcement message for the Management Server, limited to 160 characters. You can add formatting using standard HTML tags.

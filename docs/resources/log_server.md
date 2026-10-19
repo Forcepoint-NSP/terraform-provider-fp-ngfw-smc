@@ -25,7 +25,7 @@ resource "smc_log_server" "new_log_server" {
 
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
-- `address` (String) The primary IPv4 address of the device, which is used for network communication.
+- `address` (String) The primary IPv4 address or FQDN of the device, which is used for network communication.
 - `channel_port` (Number) The TCP port number for the Log Server. We recommend using default port 3020 if possible. To use a non-standard port, manually add Access rules to allow communications using the new port from the NGFW Engines to the Log Server.
 - `comment` (String) An optional comment for the element. This field is not required.
 - `elasticsearch_indexing_active` (Boolean) Indicates whether Elasticsearch indexing is active on this server. Note: indexing also needs to be active on both the server and the Elasticsearch cluster itself.

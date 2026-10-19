@@ -11,7 +11,7 @@ This represents an Active Directory Server, which is used to store user informat
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.750.0/examples/network_elements/servers/active_directory_server) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/network_elements/servers/active_directory_server) for a complete minimal example
 
 This example creates an Active Directory server object in SMC with typical LDAP configuration attributes and associates it with an authentication service.
 
@@ -54,7 +54,7 @@ resource "smc_active_directory_server" "ad" {
 
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
-- `address` (String) The primary IPv4 address of the device, which is used for network communication.
+- `address` (String) The primary IPv4 address or FQDN of the device, which is used for network communication.
 - `auth_ipaddress` (String) The IPv4 address used for authentication on the Active Directory server. If the authentication service on the Active Directory server uses a different IP address than the server itself, enter the IPv4 address for authentication.
 - `auth_port` (Number) The port number for the Active Directory server authentication.
 - `base_dn` (String) The base distinguished name (DN) for the LDAP server, which defines the starting point for user searches.

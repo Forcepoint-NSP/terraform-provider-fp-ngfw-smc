@@ -4,7 +4,7 @@ variable "resource_comment" {
 }
 
 resource "smc_ip_access_list" "ip_access_list" {
-  name = "tf_ip_access_list"
+  name    = "tf_ip_access_list"
   comment = var.resource_comment
 
   entries {

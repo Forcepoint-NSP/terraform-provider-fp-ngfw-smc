@@ -51,7 +51,7 @@ func (r *IpsClusterResource) Schema(ctx context.Context, _ resource.SchemaReques
 
 	ctx = context.WithValue(ctx, "use_hcl2", use_hcl2)
 	resp.Schema = schema.Schema{
-		Description: "This represents a group of two or more layer 2 IPS devices in the Stonesoft Management Center. It includes attributes for virtual defragmentation, connection limits, filter modes, and cluster modes.",
+		Description: "This represents a group of two or more layer 2 IPS devices in the Stonesoft Management Center. It includes attributes for virtual defragmentation, connection limits, filter modes, and cluster modes. If no Log Server is specified, one is automatically attached.",
 		Attributes:  GetIpsClusterSchemaAttributes(ctx),
 		Blocks:      GetIpsClusterSchemaBlocks(ctx),
 	} // schema

@@ -46,6 +46,13 @@ type GenericCRUDConfig struct {
 	Client       *SmcClient
 }
 
+// canParallelize reports whether requests for this config's resource type
+// may bypass DoRequest's per-host lock. Bridges the SMC-specific
+// ResourceType to the transport-agnostic Options.CanParallelize.
+func (c *GenericCRUDConfig) canParallelize() bool {
+	return IsResourceTypeParallel(c.ResourceType)
+}
+
 type IResourceReader interface {
 	ReadResourceByHref(href string) (*ResponseData, error)
 }
@@ -114,11 +121,12 @@ func _createResourceInternal(config *GenericCRUDConfig, resource any,
 	headers := client.GetJSONHeaders()
 
 	resp, err := client.DoRequest(Options{
-		Method:  "POST",
-		URL:     finalURL,
-		Headers: headers,
-		Body:    reqBody,
-		Timeout: MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		Method:         "POST",
+		URL:            finalURL,
+		Headers:        headers,
+		Body:           reqBody,
+		Timeout:        MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		CanParallelize: config.canParallelize,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("create request failed: %w", err)
@@ -127,7 +135,8 @@ func _createResourceInternal(config *GenericCRUDConfig, resource any,
 	if resp.StatusCode != http.StatusCreated &&
 		resp.StatusCode != http.StatusOK &&
 		resp.StatusCode != http.StatusAccepted {
-		return nil, fmt.Errorf("create %s failed with status %d: %s", config.ResourceType, resp.StatusCode, string(resp.Body))
+		statusError := NewStatusError(resp.StatusCode, string(resp.Body))
+		return nil, fmt.Errorf("create %s failed: %w", config.ResourceType, statusError)
 	}
 
 	return resp, nil
@@ -141,10 +150,11 @@ func ReadResourceByName(config *GenericCRUDConfig, name string) (*ResponseData, 
 	searchURL := fmt.Sprintf("%s/%s/elements/%s?filter=%s", client.BaseUrl, client.APIVersion, config.ResourceType, encodedName)
 	headers := client.GetJSONHeaders()
 	searchResp, err := client.DoRequest(Options{
-		Method:  "GET",
-		URL:     searchURL,
-		Headers: headers,
-		Timeout: MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		Method:         "GET",
+		URL:            searchURL,
+		Headers:        headers,
+		Timeout:        MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		CanParallelize: config.canParallelize,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("search request failed: %w", err)
@@ -165,10 +175,11 @@ func ReadResourceByName(config *GenericCRUDConfig, name string) (*ResponseData, 
 
 	href := searchResponse.Result[0].Href
 	resp, err := client.DoRequest(Options{
-		Method:  "GET",
-		URL:     href,
-		Headers: client.GetAuthHeaders(),
-		Timeout: MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		Method:         "GET",
+		URL:            href,
+		Headers:        client.GetAuthHeaders(),
+		Timeout:        MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		CanParallelize: config.canParallelize,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("read failed: %w", err)
@@ -195,10 +206,11 @@ func (config *GenericCRUDConfig) ReadResourceByHref(href string) (*ResponseData,
 	}
 	client := config.Client
 	resp, err := client.DoRequest(Options{
-		Method:  "GET",
-		URL:     href,
-		Headers: client.GetAuthHeaders(),
-		Timeout: MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		Method:         "GET",
+		URL:            href,
+		Headers:        client.GetAuthHeaders(),
+		Timeout:        MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		CanParallelize: config.canParallelize,
 	})
 	if err != nil {
 		// propagate error if any
@@ -239,11 +251,12 @@ func UpdateResource(config *GenericCRUDConfig, resource any,
 	}
 	headers := client.GetJSONHeadersWithEtag(etag)
 	resp, err := client.DoRequest(Options{
-		Method:  "PUT",
-		URL:     href,
-		Headers: headers,
-		Body:    reqBody,
-		Timeout: MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		Method:         "PUT",
+		URL:            href,
+		Headers:        headers,
+		Body:           reqBody,
+		Timeout:        MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		CanParallelize: config.canParallelize,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("update request failed: %w", err)
@@ -273,10 +286,11 @@ func DeleteResource(config *GenericCRUDConfig, resourceName string) error {
 
 	headers := client.GetAuthHeadersWithEtag(resourceResp.ETag)
 	resp, err := client.DoRequest(Options{
-		Method:  "DELETE",
-		URL:     resourceResp.Location,
-		Headers: headers,
-		Timeout: MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		Method:         "DELETE",
+		URL:            resourceResp.Location,
+		Headers:        headers,
+		Timeout:        MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		CanParallelize: config.canParallelize,
 	})
 	if err != nil {
 		return fmt.Errorf("delete request failed: %w", err)
@@ -296,10 +310,11 @@ func DeleteResourceByHref(config *GenericCRUDConfig, href, etag string) error {
 	client := config.Client
 	headers := client.GetAuthHeadersWithEtag(etag)
 	resp, err := client.DoRequest(Options{
-		Method:  "DELETE",
-		URL:     href,
-		Headers: headers,
-		Timeout: MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		Method:         "DELETE",
+		URL:            href,
+		Headers:        headers,
+		Timeout:        MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		CanParallelize: config.canParallelize,
 	})
 	if err != nil {
 		return fmt.Errorf("delete request failed: %w", err)
@@ -328,10 +343,11 @@ func SearchElements(config *GenericCRUDConfig, namePattern string) ([]SearchResu
 	headers := client.GetJSONHeaders()
 
 	searchResp, err := client.DoRequest(Options{
-		Method:  "GET",
-		URL:     searchURL,
-		Headers: headers,
-		Timeout: MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		Method:         "GET",
+		URL:            searchURL,
+		Headers:        headers,
+		Timeout:        MAX_REQUEST_TIMEOUT_SEC * time.Second,
+		CanParallelize: config.canParallelize,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("search request failed: %w", err)

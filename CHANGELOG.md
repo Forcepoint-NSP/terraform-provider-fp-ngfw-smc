@@ -1,3 +1,25 @@
+## 1.751.0 (2026-10-19)
+
+**New features**
+- New `smc_engine_upload_policy` and `smc_engine_refresh_policy` actions, replacing the generic `smc_command` approach: they wait for the SMC operation to complete and display a progress bar
+- New `smc_generate_vpn_certificate` action to generate VPN certificates
+- Drift detection: : optional and experimental
+- Optional parallel SMC request mode; on parallel creates, element lock errors ("locked by") are now recognised
+
+**Bug fixes**
+- Login: transient failures (HTTP 5xx, connection refused or reset, timeouts) are now retried with backoff, and login errors carry more diagnostic detail
+- Login: improved handling of login failures returning HTTP 401
+- Fixed a provider crash on destroy; resource operations are now guarded against an unconfigured provider
+- URLs containing whitespace are now escaped consistently
+- Engines no longer end up with invalid routes after an update (timeout issue); routing diagnostics and retry validation are improved
+- VPN topology changes are now committed before a policy upload or refresh, and a failed VPN save no longer blocks policy upload
+- `smc_internal_endpoint` is no longer rejected by SMC 7.5+ because of `ssl_vpn_portal`
+- Fixed unknown computed values on `smc_expression` `sub_expression`
+
+**Documentation**
+- Policy upload/refresh actions: alternative slots and their types, the default colour progress bar and the `preserve_connection` option are now documented correctly
+- New section on the `before_create` proxy pattern for `smc_initial_contact`
+
 ## 1.750.0 (2026-06-23)
 
 Targets SMC API **7.5 / 7.5.0** (base path `/7.4/` → `/7.5/`). Main changes vs 7.4.1:

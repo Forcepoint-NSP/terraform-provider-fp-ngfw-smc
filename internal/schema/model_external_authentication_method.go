@@ -50,6 +50,7 @@ type ExternalAuthenticationMethodResourceModel struct {
 	SamlGroupAttrName    *[]types.String                                         `tfsdk:"saml_group_attr_name" json:"saml_group_attr_name,optional,omitempty" `
 	SamlMetadataFile     types.String                                            `tfsdk:"saml_metadata_file" json:"saml_metadata_file,optional,omitempty" `
 	SamlTlsProfileRef    types.String                                            `tfsdk:"saml_tls_profile_ref" json:"saml_tls_profile_ref,optional,omitempty" `
+	SsoSingleLogout      types.Bool                                              `tfsdk:"sso_single_logout" json:"sso_single_logout,optional,omitempty" `
 	System               types.Bool                                              `tfsdk:"system" json:"system,optional,omitempty" fpro:"system"`
 	SystemKey            types.Int64                                             `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`
 	Trashed              types.Bool                                              `tfsdk:"trashed" json:"trashed,optional,omitempty" fpro:"trashed"`

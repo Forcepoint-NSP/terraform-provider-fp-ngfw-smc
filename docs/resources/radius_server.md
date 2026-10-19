@@ -16,7 +16,7 @@ This represents a RADIUS Server, which is an external authentication server that
 
 ## Simple Attributes
 - `id` (String) this attribute is the identifier of terraform resource
-- `address` (String) The primary IPv4 address of the server. Must be a valid IPv4 address.
+- `address` (String) The primary IPv4 address or FQDN of the server.
 - `comment` (String) An optional comment for the element. This field is not required.
 - `ipv6_address` (String) The primary IPv6 address of the server. Must be a valid IPv6 address.
 - `location_ref` (String) This represents the definition of a Location, which keeps a list of Network Elements belonging to the same location.
