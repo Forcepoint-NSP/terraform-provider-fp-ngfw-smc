@@ -45,6 +45,23 @@ func GetVpnEditStateManager() *VpnEditStateManager {
 	return &vpnEditStateManagerInstance
 }
 
+// DropEntriesForClient removes any VPN edit-state entries bound to the given
+// client. Used when a client's session is fully replaced by a re-login
+// (the full-login fallback of recoverExpiredSession): the old
+// session's "open for edit" lock on the SMC dies with it, so OpenVpnForEdit
+// must be allowed to re-open the VPN under the new session on the next
+// request instead of short-circuiting on the now-stale "already open"
+// marker (which would otherwise let a retried write fail with 400/409, and
+// leave SaveAndCloseVpns acting on a session that never re-opened it).
+func (mgr *VpnEditStateManager) DropEntriesForClient(smcClient *SmcClient) {
+	mgr.VpnEditStates.Range(func(vpnUrl, value any) bool {
+		if state, ok := value.(*VpnEditState); ok && state.SmcClient == smcClient {
+			mgr.VpnEditStates.Delete(vpnUrl)
+		}
+		return true
+	})
+}
+
 func isVpnUrl(url string) string {
 	re := regexp.MustCompile(`^(https?://[^/]+/[0-9\.]+/elements/vpn/\d+)/`)
 	match := re.FindStringSubmatch(url)
@@ -54,6 +71,18 @@ func isVpnUrl(url string) string {
 	} else {
 		return ""
 	}
+}
+
+// HasPendingVpnEdits reports whether a VPN is currently open for edit, i.e.
+// its changes are not committed to the SMC yet.
+func HasPendingVpnEdits() bool {
+	return len(GetVpnEditStateManager().trackedUrls()) > 0
+}
+
+// IsVpnNameLookup reports whether ref is a VPN sub-element reference with a
+// "#name" fragment to resolve (e.g. ".../elements/vpn/1/tunnels#Gateway Tunnel*").
+func IsVpnNameLookup(ref string) bool {
+	return isVpnUrl(ref) != "" && strings.Contains(ref, "#")
 }
 
 func OpenVpnForEdit(smcClient *SmcClient, opts *Options) error {

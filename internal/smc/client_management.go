@@ -162,7 +162,8 @@ func (clientMgr *ClientManager) CleanupAll(ctx context.Context) {
 // GetOrCreateClient creates a new Client from an Auth struct
 func GetOrCreateClient(ctx context.Context,
 	url string, apiVersion string, apikey string,
-	verifySSL bool, trustedCert string, domain string) (*SmcClient, error) {
+	verifySSL bool, trustedCert string, domain string,
+	tokenRefreshInterval time.Duration) (*SmcClient, error) {
 
 	// todo normalize URL
 	// Check if a client session already exists for this server
@@ -175,7 +176,7 @@ func GetOrCreateClient(ctx context.Context,
 	}
 
 	client, err := NewClient(ctx, url, apiVersion, apikey,
-		verifySSL, trustedCert, domain)
+		verifySSL, trustedCert, domain, tokenRefreshInterval)
 	if err != nil {
 		return nil, err
 	}

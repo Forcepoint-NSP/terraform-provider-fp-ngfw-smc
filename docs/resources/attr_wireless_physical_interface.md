@@ -11,7 +11,7 @@ This represents a Wireless Physical Interface, which is used for connecting to w
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/engines/single_fw/single_fw_wireless_interface) for a full example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.752.0/examples/engines/single_fw/single_fw_wireless_interface) for a full example
 
 ```hcl
 wireless_interface {

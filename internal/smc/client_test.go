@@ -198,7 +198,7 @@ func TestGetOrCreateClientSuccess(t *testing.T) {
 	ctx := tflogtest.RootLogger(context.Background(), os.Stdout)
 
 	client, err := GetOrCreateClient(
-		ctx, server.URL, "v1", "test-key", false, "", "")
+		ctx, server.URL, "v1", "test-key", false, "", "", 0)
 
 	if err != nil {
 		t.Fatalf("NewClientFromAuth failed: %v", err)
@@ -225,7 +225,7 @@ func TestGetOrCreateClientSuccess(t *testing.T) {
 	}
 
 	// Test retrieving the same client again
-	_, err2 := GetOrCreateClient(ctx, server.URL, "test-key", "v1", true, "", "")
+	_, err2 := GetOrCreateClient(ctx, server.URL, "test-key", "v1", true, "", "", 0)
 
 	if err2 != nil {
 		t.Fatalf("NewClientFromAuth failed: %v", err)
@@ -248,7 +248,7 @@ func TestGetOrCreateClientFromAuth_Insecure(t *testing.T) {
 	ctx := tflogtest.RootLogger(context.Background(), os.Stdout)
 
 	client, err := GetOrCreateClient(
-		ctx, server.URL, "test-key", "v1", false, "", "")
+		ctx, server.URL, "test-key", "v1", false, "", "", 0)
 
 	if err != nil {
 		t.Fatalf("NewClientFromAuth failed: %v", err)
@@ -284,7 +284,7 @@ func TestNewClientFromAuth_InvalidTrustedCert(t *testing.T) {
 	ctx := tflogtest.RootLogger(context.Background(), os.Stdout)
 
 	_, err := GetOrCreateClient(ctx,
-		server.URL, "test-key", "v1", true, "invalid-cert-data", "")
+		server.URL, "test-key", "v1", true, "invalid-cert-data", "", 0)
 
 	if err == nil {
 		t.Error("Expected error for invalid trusted certificate")

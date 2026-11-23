@@ -33,6 +33,33 @@ func TestIsVpnUrl(t *testing.T) {
 	}
 }
 
+func TestHasPendingVpnEdits(t *testing.T) {
+	const vpnUrl = "http://localhost:8082/7.5/elements/vpn/7"
+	mgr := GetVpnEditStateManager()
+	if HasPendingVpnEdits() {
+		t.Fatal("expected no pending VPN edits at start")
+	}
+	mgr.VpnEditStates.Store(vpnUrl, &VpnEditState{})
+	defer mgr.VpnEditStates.Delete(vpnUrl)
+	if !HasPendingVpnEdits() {
+		t.Error("expected pending VPN edits once a VPN is open")
+	}
+}
+
+func TestIsVpnNameLookup(t *testing.T) {
+	cases := map[string]bool{
+		"http://h:8082/7.5/elements/vpn/1/tunnels#Gateway Tunnel *fw2 - *":       true,
+		"http://h:8082/7.5/elements/vpn/1/central_gateway_node":                  false,
+		"http://h:8082/7.5/elements/single_fw/12/internal_gateway#fw1*/vpn_site": false,
+		"http://h:8082/7.5/elements/vpn/1":                                       false,
+	}
+	for ref, want := range cases {
+		if got := IsVpnNameLookup(ref); got != want {
+			t.Errorf("IsVpnNameLookup(%q) = %v, want %v", ref, got, want)
+		}
+	}
+}
+
 func TestSaveAndCloseVpnsSkipsCloseAfterSaveFailure(t *testing.T) {
 	const vpnUrl = "http://localhost:8082/7.4/elements/vpn/1"
 	mgr := GetVpnEditStateManager()
@@ -85,5 +112,27 @@ func TestSaveAndCloseVpnsSavesThenCloses(t *testing.T) {
 	}
 	if _, ok := mgr.VpnEditStates.Load(vpnUrl); ok {
 		t.Error("tracked state must be dropped after success")
+	}
+}
+
+// After a full re-login the old session's
+// "open for edit" lock is gone server-side, so DropEntriesForClient must
+// clear only the entries bound to that client, letting OpenVpnForEdit
+// re-open them under the new session instead of short-circuiting.
+func TestVpnEditStateManager_DropEntriesForClient(t *testing.T) {
+	mgr := GetVpnEditStateManager()
+	clientA := &SmcClient{BaseUrl: "http://a"}
+	clientB := &SmcClient{BaseUrl: "http://b"}
+	mgr.VpnEditStates.Store("http://a/7.4/elements/vpn/1", &VpnEditState{SmcClient: clientA})
+	mgr.VpnEditStates.Store("http://b/7.4/elements/vpn/2", &VpnEditState{SmcClient: clientB})
+	defer mgr.DropEntriesForClient(clientB)
+
+	mgr.DropEntriesForClient(clientA)
+
+	if _, ok := mgr.VpnEditStates.Load("http://a/7.4/elements/vpn/1"); ok {
+		t.Error("expected clientA's VPN edit-state entry to be dropped")
+	}
+	if _, ok := mgr.VpnEditStates.Load("http://b/7.4/elements/vpn/2"); !ok {
+		t.Error("expected clientB's VPN edit-state entry to be left untouched")
 	}
 }

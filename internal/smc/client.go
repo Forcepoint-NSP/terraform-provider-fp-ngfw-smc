@@ -60,13 +60,27 @@ type SmcClient struct {
 	SmcContext     *LogContext // Context for structured logging
 	OriginalCtx    *context.Context
 
+	// TokenRefreshInterval, when > 0, makes DoRequest proactively refresh the
+	// SMC API session token once this much time has elapsed
+	// since it was last issued, instead of waiting for the SMC to reject a
+	// request with 401. Set it comfortably below the server's configured
+	// SMC_API_TOKEN_VALIDITY so a long-running apply keeps refreshing ahead
+	// of expiry and never actually hits a 401 in normal use.
+	TokenRefreshInterval time.Duration
+	// TokenIssuedAt is when Token was last obtained via Login or RefreshToken.
+	TokenIssuedAt time.Time
+	// lastRefreshAttempt is when a proactive refresh last failed; it makes the
+	// next attempt wait a full TokenRefreshInterval.
+	lastRefreshAttempt time.Time
+
 	BeforeRequestHooks []func(client *SmcClient, opts *Options) error // Hooks to modify request options before sending
 
 	// loginMutex protects concurrent access to login-related fields (Token,
-	// SessionCookie, UseAuthHeader, LoginConfirmed). Required because the client
-	// is a per-URL singleton and login is lazy (triggered on first request).
-	// Without this, concurrent parallel requests can race to login and create
-	// multiple sessions, invalidating tokens (401 errors).
+	// SessionCookie, UseAuthHeader, LoginConfirmed, TokenIssuedAt). Required
+	// because the client is a per-URL singleton and login is lazy (triggered
+	// on first request). Without this, concurrent parallel requests can race
+	// to login or refresh and create multiple sessions, invalidating tokens
+	// (401 errors).
 	loginMutex sync.Mutex
 
 	// todo currently not used: a client is created per request
@@ -86,6 +100,12 @@ type Options struct {
 	// resource types provide this (e.g. GenericCRUDConfig.canParallelize);
 	// nil or false means the request stays serialized.
 	CanParallelize func() bool
+	// SkipAuthRetry disables the automatic session-recovery retry on a 401
+	// response and the proactive token refresh (see DoRequest). Used by
+	// Logout, where refreshing or re-authenticating just to immediately log
+	// out again would be pointless, and by ping, which must return quickly
+	// and let the caller (GetClient) decide how to recover.
+	SkipAuthRetry bool
 }
 
 // ResponseData contains only the body, headers, and status code
@@ -169,9 +189,9 @@ type authSnapshot struct {
 }
 
 // currentAuth reads the client's auth fields under loginMutex. Must not be
-// called by anything already holding loginMutex (e.g. the login flow) since
-// sync.Mutex is not reentrant; those callers already have exclusive access
-// and should read the fields directly instead.
+// called by anything already holding loginMutex (e.g. the login/refresh
+// flows) since sync.Mutex is not reentrant; those callers already have
+// exclusive access and should read the fields directly instead.
 func (c *SmcClient) currentAuth() authSnapshot {
 	c.loginMutex.Lock()
 	defer c.loginMutex.Unlock()
@@ -304,20 +324,32 @@ func (c *SmcClient) unsafeRequest(opts *Options, auth authSnapshot) (*ResponseDa
 }
 
 // ping checks connectivity to the SMC API by sending a GET request to
-// the login endpoint and returns true if successful.
+// the login endpoint and returns true if the session is still usable.
+//
+// It sets SkipAuthRetry: ping runs while GetClient holds the ClientManager's
+// RWMutex (client_management.go), and the 401 recovery/proactive-refresh
+// machinery can take up to ~31s (login retries) -- doing that here would
+// block every other reader/writer of the ClientManager for that whole time.
+// A definitive 401 is reported as "not usable" so the caller replaces the
+// client and lets the normal lazy Login() on the next real request
+// re-authenticate, outside this lock. Any other non-200 status (5xx, etc.)
+// is inconclusive about session validity, so it does not tear down a
+// possibly-still-good session over a transient server-side hiccup on the
+// ping endpoint itself.
 func (c *SmcClient) ping(ctx context.Context) bool {
 	url := fmt.Sprintf("%s/%s/%s", c.BaseUrl, c.APIVersion, PingEntryPoint)
 	opts := Options{
-		Method:  "GET",
-		URL:     url,
-		Headers: map[string]string{"Content-Type": "application/json"},
-		Context: ctx,
+		Method:        "GET",
+		URL:           url,
+		Headers:       map[string]string{"Content-Type": "application/json"},
+		Context:       ctx,
+		SkipAuthRetry: true,
 	}
-	_, err := c.DoRequest(opts)
+	resp, err := c.DoRequest(opts)
 	if err != nil {
 		return false
 	}
-	return true
+	return resp.StatusCode != http.StatusUnauthorized
 }
 
 // GetJSONHeaders returns standard headers for JSON API requests with
@@ -413,7 +445,7 @@ func ResolveCertificate(certInput string) (string, error) {
 // use GetOrCreateClientFromAuth if you need to reuse sessions
 func NewClient(ctx context.Context,
 	url string, apiVersion string, apikey string, verifySSL bool,
-	trustedCert string, domain string) (*SmcClient, error) {
+	trustedCert string, domain string, tokenRefreshInterval time.Duration) (*SmcClient, error) {
 
 	// Create the initial log context.
 	logCtx := NewLogContext(ctx, url)
@@ -446,15 +478,16 @@ func NewClient(ctx context.Context,
 	httpClient := &http.Client{Transport: tr}
 
 	c := &SmcClient{
-		BaseUrl:     url,
-		APIKey:      apikey,
-		VerifySSL:   verifySSL,
-		HTTPClient:  httpClient, // todo not used
-		APIVersion:  apiVersion,
-		TrustedCert: trustedCert,
-		Domain:      domain,
-		SmcContext:  logCtx,
-		OriginalCtx: &ctx,
+		BaseUrl:              url,
+		APIKey:               apikey,
+		VerifySSL:            verifySSL,
+		HTTPClient:           httpClient, // todo not used
+		APIVersion:           apiVersion,
+		TrustedCert:          trustedCert,
+		Domain:               domain,
+		SmcContext:           logCtx,
+		OriginalCtx:          &ctx,
+		TokenRefreshInterval: tokenRefreshInterval,
 	}
 	return c, nil
 }
@@ -553,10 +586,10 @@ func (c *SmcClient) loginOnce(ctx context.Context) (retryable bool, err error) {
 		Body:    reqBody,
 		Context: ctx,
 	}
-	// loginOnce always runs either under loginMutex (via ensureLoggedIn) or
-	// single-threaded in tests calling Login directly, so a direct field
-	// read is safe here; calling currentAuth() would deadlock in the
-	// former case since sync.Mutex is not reentrant.
+	// loginOnce always runs either under loginMutex (via ensureLoggedIn or
+	// recoverExpiredSession) or single-threaded in tests calling Login
+	// directly, so a direct field read is safe here; calling currentAuth()
+	// would deadlock in the former case since sync.Mutex is not reentrant.
 	auth := authSnapshot{
 		useAuthHeader: c.UseAuthHeader,
 		token:         c.Token,
@@ -607,6 +640,7 @@ func (c *SmcClient) loginOnce(ctx context.Context) (retryable bool, err error) {
 		c.Token = authHeader
 		c.UseAuthHeader = true
 		c.LoginConfirmed = true
+		c.TokenIssuedAt = time.Now()
 		c.SmcContext.Debug(fmt.Sprintf(
 			"Login OK (Authorization header): token=%q jsessionid=%q",
 			authHeader[:min(len(authHeader), 60)],
@@ -644,6 +678,9 @@ func (c *SmcClient) Logout(ctx context.Context) error {
 		URL:     url,
 		Headers: c.GetAuthHeaders(),
 		Context: ctx,
+		// Re-authenticating just to immediately log out again would be
+		// pointless (and would leave a fresh, now-orphaned session open).
+		SkipAuthRetry: true,
 	}
 
 	resp, err := c.DoRequest(opts)
@@ -674,9 +711,6 @@ func (c *SmcClient) Logout(ctx context.Context) error {
 	return nil
 }
 
-// DoRequest performs a generic HTTP request and returns ResponseData
-// or error. In case of HTTP errors (4xx, 5xx), no error is returned,
-// the caller must check the StatusCode in ResponseData.
 // ensureLoggedIn guards login with a mutex to prevent concurrent login races.
 // Required because the client is a per-URL singleton and login is lazy.
 // Multiple concurrent requests (especially in parallel mode) must not attempt
@@ -691,6 +725,14 @@ func (c *SmcClient) ensureLoggedIn(ctx context.Context) error {
 	return c.Login(ctx)
 }
 
+// DoRequest performs a generic HTTP request and returns ResponseData
+// or error. In case of HTTP errors (4xx, 5xx), no error is returned,
+// the caller must check the StatusCode in ResponseData.
+//
+// If the SMC rejects the request with 401 (the session token expired or
+// was killed server-side), the session is transparently
+// recovered and the request is retried once, unless opts.SkipAuthRetry
+// is set.
 func (c *SmcClient) DoRequest(opts Options) (*ResponseData, error) {
 	// Requests the caller marked parallelizable (see parallel.go, disabled
 	// by default) skip the per-host lock below; concurrency for them is
@@ -713,6 +755,10 @@ func (c *SmcClient) DoRequest(opts Options) (*ResponseData, error) {
 		return nil, fmt.Errorf("failed to login before request: %w", err)
 	}
 
+	if !opts.SkipAuthRetry {
+		c.maybeProactivelyRefreshToken(opts.Context)
+	}
+
 	for _, hook := range c.BeforeRequestHooks {
 		err := hook(c, &opts)
 		if err != nil {
@@ -720,5 +766,183 @@ func (c *SmcClient) DoRequest(opts Options) (*ResponseData, error) {
 		}
 	}
 
+	auth := c.currentAuth()
+	resp, err := c.unsafeRequest(&opts, auth)
+	if err != nil || resp.StatusCode != http.StatusUnauthorized || opts.SkipAuthRetry {
+		return resp, err
+	}
+
+	ctx := opts.Context
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	c.SmcContext.Debug("Received HTTP 401, session token likely expired; attempting recovery", map[string]any{
+		"url": opts.URL,
+	})
+	if recoverErr := c.recoverExpiredSession(ctx, auth.token); recoverErr != nil {
+		c.SmcContext.Error("Failed to recover SMC API session after token expiry", map[string]any{
+			"url":   opts.URL,
+			"error": recoverErr.Error(),
+		})
+		return resp, nil
+	}
+
+	// Re-run hooks before the retried request too: a hook may need to
+	// re-establish per-session state (e.g. OpenVpnForEdit) under the new
+	// token/session obtained by recoverExpiredSession.
+	for _, hook := range c.BeforeRequestHooks {
+		if err := hook(c, &opts); err != nil {
+			return nil, err
+		}
+	}
+
 	return c.unsafeRequest(&opts, c.currentAuth())
+}
+
+// recoverExpiredSession attempts to restore a usable SMC API session after
+// a request was rejected with 401 (session tokens now expire
+// server-side, default after 30 min). It first tries the lightweight
+// refresh_token service, which mints a new token bound to the same session
+// without a full re-authentication. If that is unavailable (older SMC
+// without the endpoint) or fails for any other reason, it falls back to a
+// full Login.
+//
+// Holds loginMutex for its whole duration, like ensureLoggedIn: in parallel
+// mode, multiple concurrent requests can hit a 401 for the same expired
+// token around the same time. failedToken is the token the failing request
+// was sent with (from the auth snapshot DoRequest took before sending it);
+// if c.Token no longer matches it once the lock is acquired, a concurrent
+// request already recovered the session, and refreshing or re-logging in
+// again here would invalidate that other goroutine's still-fresh token out
+// from under its own in-flight retry.
+func (c *SmcClient) recoverExpiredSession(ctx context.Context, failedToken string) error {
+	c.loginMutex.Lock()
+	defer c.loginMutex.Unlock()
+
+	if c.Token != failedToken {
+		c.SmcContext.Debug("Session already recovered by a concurrent request, skipping", map[string]any{
+			"url": c.BaseUrl,
+		})
+		return nil
+	}
+
+	if c.UseAuthHeader {
+		refreshErr := c.refreshTokenLocked(ctx)
+		if refreshErr == nil {
+			c.SmcContext.Info("SMC API session token refreshed via refresh_token endpoint", map[string]any{
+				"url": c.BaseUrl,
+			})
+			return nil
+		}
+		c.SmcContext.Warn("SMC API token refresh failed, falling back to full re-login", map[string]any{
+			"url":   c.BaseUrl,
+			"error": refreshErr.Error(),
+		})
+	}
+
+	c.LoginConfirmed = false
+	if err := c.Login(ctx); err != nil {
+		return fmt.Errorf("failed to re-authenticate after session expiry: %w", err)
+	}
+	// A full re-login replaces the session entirely: any VPN this client had
+	// open for edit under the old (now-dead) session no longer is, on the
+	// server. Drop those markers so the hooks DoRequest re-runs after this
+	// returns will genuinely re-open the VPN under the new session instead
+	// of short-circuiting on a stale "already open" entry.
+	GetVpnEditStateManager().DropEntriesForClient(c)
+	c.SmcContext.Info("SMC API session re-authenticated via full login after token expiry", map[string]any{
+		"url": c.BaseUrl,
+	})
+	return nil
+}
+
+// maybeProactivelyRefreshToken refreshes the SMC API session token before it
+// expires, if the caller configured TokenRefreshInterval. This
+// keeps a long-running apply (many resources over the SMC's configured
+// SMC_API_TOKEN_VALIDITY) refreshing ahead of expiry so it never actually
+// hits a 401 in normal use, rather than relying solely on the reactive
+// recovery in DoRequest. Best-effort: a failure here is logged and
+// swallowed, since the reactive 401 path still covers it on the next
+// request. Holds loginMutex for the same reason as recoverExpiredSession.
+func (c *SmcClient) maybeProactivelyRefreshToken(ctx context.Context) {
+	c.loginMutex.Lock()
+	defer c.loginMutex.Unlock()
+
+	if !c.UseAuthHeader || c.TokenRefreshInterval <= 0 || !c.LoginConfirmed {
+		return
+	}
+	lastActivity := c.TokenIssuedAt
+	if c.lastRefreshAttempt.After(lastActivity) {
+		lastActivity = c.lastRefreshAttempt
+	}
+	if time.Since(lastActivity) < c.TokenRefreshInterval {
+		return
+	}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if err := c.refreshTokenLocked(ctx); err != nil {
+		c.lastRefreshAttempt = time.Now()
+		c.SmcContext.Warn("Proactive SMC API token refresh failed, will rely on reactive recovery on the next 401", map[string]any{
+			"url":   c.BaseUrl,
+			"error": err.Error(),
+		})
+		return
+	}
+	c.SmcContext.Info("SMC API session token proactively refreshed via refresh_token endpoint", map[string]any{
+		"url": c.BaseUrl,
+	})
+}
+
+// RefreshToken requests a new SMC API session token bound to the current
+// session and replaces the stored one. The SMC invalidates the
+// previous token, so every subsequent request transparently uses the new
+// one. This targets the POST /<version>/system/refresh_token service,
+// available on SMC >= 7.6.0 (and its 7.5.1/7.4.2/7.3.5 backports). It only
+// applies to the Authorization-header auth mode: JSESSIONID-cookie-only
+// sessions (HTTP, "Use SSL for session ID" disabled) fall back to a full
+// re-login in recoverExpiredSession.
+func (c *SmcClient) RefreshToken(ctx context.Context) error {
+	c.loginMutex.Lock()
+	defer c.loginMutex.Unlock()
+	return c.refreshTokenLocked(ctx)
+}
+
+// refreshTokenLocked is RefreshToken's implementation. Callers must already
+// hold loginMutex (recoverExpiredSession, maybeProactivelyRefreshToken); like
+// loginOnce, it reads/writes the client's auth fields directly rather than
+// through currentAuth()/RefreshToken(), since sync.Mutex is not reentrant.
+func (c *SmcClient) refreshTokenLocked(ctx context.Context) error {
+	if !c.LoginConfirmed {
+		return fmt.Errorf("no active SMC API session to refresh the token for")
+	}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
+	url := fmt.Sprintf("%s/%s/system/refresh_token", c.BaseUrl, c.APIVersion)
+	opts := Options{
+		Method:  "POST",
+		URL:     url,
+		Context: ctx,
+	}
+	auth := authSnapshot{
+		useAuthHeader: c.UseAuthHeader,
+		token:         c.Token,
+		sessionCookie: c.SessionCookie,
+	}
+	resp, err := c.unsafeRequest(&opts, auth)
+	if err != nil {
+		return fmt.Errorf("token refresh request failed: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("token refresh failed with status %d at %s: %s", resp.StatusCode, url, string(resp.Body))
+	}
+	newToken := resp.Headers.Get("Authorization")
+	if newToken == "" {
+		return fmt.Errorf("token refresh response did not contain a new Authorization token")
+	}
+	c.Token = newToken
+	c.TokenIssuedAt = time.Now()
+	return nil
 }

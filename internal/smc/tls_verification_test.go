@@ -82,7 +82,7 @@ func newTLSSMC(t *testing.T) *httptest.Server {
 }
 
 func newTLSTestClient(baseURL, trustedCert string, verifySSL bool) *SmcClient {
-	c, err := NewClient(context.Background(), baseURL, "7.6", "test-key", verifySSL, trustedCert, "")
+	c, err := NewClient(context.Background(), baseURL, "7.6", "test-key", verifySSL, trustedCert, "", 0)
 	if err != nil {
 		// NewClient only errors on an invalid/unresolvable cert; callers that
 		// expect that should construct the client directly.

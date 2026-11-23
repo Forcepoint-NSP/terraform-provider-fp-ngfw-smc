@@ -11,7 +11,7 @@ This represents an internal endpoint for VPN connections, supporting both tunnel
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/sdwan/policy_based_vpn/central_gateway_node/main.tf) for a minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.752.0/examples/sdwan/policy_based_vpn/central_gateway_node/main.tf) for a minimal example
 
 This example creates an internal endpoint (used for VPN or routing) tied to a single firewall.
 
@@ -64,7 +64,7 @@ For dynamic interfaces, the endpoint name in SMC is derived from the
 version (e.g. `"Interface 2 (DHCP)"`), check with a direct API call:
 `GET <smc>/internal_gateway/<id>/internal_endpoint` and inspect the `name` field.
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/sdwan/internal_endpoint_all_disabled/main.tf) for a full example.
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.752.0/examples/sdwan/internal_endpoint_all_disabled/main.tf) for a full example.
 
 
 ## Simple Attributes

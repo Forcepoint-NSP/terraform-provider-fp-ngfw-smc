@@ -11,7 +11,7 @@ This represents a Modem Interface, which is used for defining the settings of 4G
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/engines/single_fw/single_fw_modem_interfaces) for a full example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.752.0/examples/engines/single_fw/single_fw_modem_interfaces) for a full example
 
 for Ipv4
 

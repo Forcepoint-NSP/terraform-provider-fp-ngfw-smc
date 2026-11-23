@@ -1,3 +1,18 @@
+## 1.752.0 (2026-11-23)
+
+**New features**
+- New `smc_replica_internal_gateway`, `smc_replica_internal_endpoint` and `smc_connection_sync_group` resources (previously experimental), for Security Engine HA with a policy-based VPN in a cloud provider
+
+**Bug fixes**
+- Login: long runs no longer fail when the SMC API session token expires: the token is refreshed every 15 minutes, and a request rejected for an expired session is retried after re-authenticating
+- VPN: an `smc_gateway_tunnel` identified by a `#name` pattern no longer fails on a fresh deployment with a misleading "jmespath search failed: SyntaxError"; the pending VPN topology is now saved first, so the SMC has generated its tunnels
+- VPN: on destroy, engines and networks still referenced by a removed `smc_gateway_node` or `smc_vpn_site` are no longer deferred with "Resource has dependencies"; their delete is retried once the VPN topology is saved
+
+**Documentation**
+- Policy-based VPN example: the gateway tunnel pre-shared key is now set from a variable, and the README explains which keys the engine rejects (a key starting with `0x` is read as hexadecimal, `0s` as Base64) and shows a `random_password` key that avoids both
+
+---
+
 ## 1.751.0 (2026-10-19)
 
 **New features**

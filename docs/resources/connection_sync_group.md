@@ -7,8 +7,6 @@ description: |-
 
 # smc_connection_sync_group (Resource)
 
-
-⚠️ __Experimental feature, use with caution__. This feature is not yet fully supported and may change without deprecation in future releases.
 This represents a Connection Sync Group, which is used for external high availability in single Engines. It includes attributes for monitoring and a list of elements that are part of the group.
 
 

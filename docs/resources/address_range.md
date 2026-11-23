@@ -11,7 +11,7 @@ This represents an Address Range, which is a Network Element that defines a rang
 
 ## Examples
 
-- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.751.0/examples/network_elements/address_range) for a complete minimal example
+- see [here](https://github.com/Forcepoint-NSP/terraform-provider-fp-ngfw-smc/blob/release/1.752.0/examples/network_elements/address_range) for a complete minimal example
 
 This example creates an Address Range object for defining an IP range in SMC.
 

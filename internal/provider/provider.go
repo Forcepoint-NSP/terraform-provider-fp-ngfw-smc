@@ -20,6 +20,8 @@ package provider
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 
@@ -51,13 +53,18 @@ type SmcProvider struct {
 // SmcProviderModel describes the provider data model.
 type SmcProviderModel struct {
 	// Endpoint types.String `tfsdk:"endpoint"`
-	URL         types.String `tfsdk:"url"`
-	APIKey      types.String `tfsdk:"api_key"`
-	VerifySSL   types.Bool   `tfsdk:"verify_ssl"`
-	APIVersion  types.String `tfsdk:"api_version"`
-	TrustedCert types.String `tfsdk:"trusted_cert"`
-	Domain      types.String `tfsdk:"domain"`
+	URL                      types.String `tfsdk:"url"`
+	APIKey                   types.String `tfsdk:"api_key"`
+	VerifySSL                types.Bool   `tfsdk:"verify_ssl"`
+	APIVersion               types.String `tfsdk:"api_version"`
+	TrustedCert              types.String `tfsdk:"trusted_cert"`
+	Domain                   types.String `tfsdk:"domain"`
+	TokenRefreshIntervalSecs types.Int64  `tfsdk:"token_refresh_interval_seconds"`
 }
+
+// defaultTokenRefreshInterval is how long a session token is used before
+// being proactively refreshed.
+const defaultTokenRefreshInterval = 15 * time.Minute
 
 // Metadata returns the provider type name and version.
 func (p *SmcProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -93,6 +100,12 @@ func (p *SmcProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *
 			"domain": schema.StringAttribute{
 				MarkdownDescription: "The SMC domain to use for operations",
 				Optional:            true,
+			},
+			"token_refresh_interval_seconds": schema.Int64Attribute{
+				MarkdownDescription: "Seconds after which the SMC API session token is " +
+					"proactively refreshed. Defaults to 900 (15 minutes); 0 disables " +
+					"proactive refresh. Intended for testing.",
+				Optional: true,
 			},
 		},
 	}
@@ -133,7 +146,8 @@ func (p *SmcProvider) Configure(ctx context.Context, req provider.ConfigureReque
 		data.VerifySSL.IsUnknown() ||
 		data.APIVersion.IsUnknown() ||
 		data.TrustedCert.IsUnknown() ||
-		data.Domain.IsUnknown() {
+		data.Domain.IsUnknown() ||
+		data.TokenRefreshIntervalSecs.IsUnknown() {
 		if req.ClientCapabilities.DeferralAllowed {
 			resp.Deferred = &provider.Deferred{
 				Reason: provider.DeferredReasonProviderConfigUnknown,
@@ -165,6 +179,11 @@ func (p *SmcProvider) Configure(ctx context.Context, req provider.ConfigureReque
 		trustedCert = data.TrustedCert.ValueString()
 	}
 
+	tokenRefreshInterval := defaultTokenRefreshInterval
+	if !data.TokenRefreshIntervalSecs.IsNull() {
+		tokenRefreshInterval = time.Duration(data.TokenRefreshIntervalSecs.ValueInt64()) * time.Second
+	}
+
 	// todo use explicit ValidateConfig function (see
 	// ProviderWithValidateConfig)
 	isHttps, err := smc.ValidateBaseUrl(url)
@@ -187,7 +206,7 @@ func (p *SmcProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 	// Create an SMC client
 	client, err := smc.GetOrCreateClient(
-		ctx, url, apiVersion, apikey, verifySSL, trustedCert, domain)
+		ctx, url, apiVersion, apikey, verifySSL, trustedCert, domain, tokenRefreshInterval)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error while creating SMC client",

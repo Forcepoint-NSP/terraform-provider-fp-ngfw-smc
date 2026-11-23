@@ -189,13 +189,35 @@ resource "smc_gateway_node" "tf_sample_gateway_2_node" {
   gateway    = data.smc_sub_href.internal_gateway_2_ref.id
 }
 
-# resource "smc_gateway_tunnel" "tf_sample_tunnel" {
-#   depends_on = [smc_internal_endpoint.ep_212_20_1_1, smc_internal_endpoint.ep_212_20_1_1]
-#   # todo: problem: the generated name is either
-#   # - Gateway Tunnel tf_single_fw1 - Primary-tf_single_fw2 - Primary
-#   # - Gateway Tunnel tf_single_fw2 - Primary-tf_single_fw1 - Primary
-#   id      = "${smc_vpn.tf_sample_vpn.link.gateway_tunnel}#Gateway Tunnel*"
-#   name    = "tf_sample_tunnel"
-#   enabled = false
-#   preshared_key = "TheSuperPreShareKey00!"
-# }
+# Pre-shared key on the tunnel between the two gateways.
+#
+# The SMC generates the logical tunnel itself once both gateways are in the
+# VPN topology; smc_gateway_tunnel adopts it by name and sets its key. The
+# generated name is "Gateway Tunnel <gw A> - Primary-<gw B> - Primary" and the
+# order of A and B is not stable, so match on one gateway with a wildcard
+# instead of spelling out both names. If nothing matches, the error is a
+# misleading "jmespath search failed: SyntaxError".
+#
+# The VPN profile referenced by smc_vpn must have pre_shared_key_for_ike = true;
+# the built-in Suite-B-GCM-128 used here does. The key is kept in the state:
+# use a local state or a protected backend.
+variable "preshared_key" {
+  type      = string
+  sensitive = true
+  # Example value only: override it (TF_VAR_preshared_key). The engine reads a
+  # key starting with 0x as hexadecimal and 0s as Base64, so a random text key
+  # must not start with either (see README.md).
+  default = "TheSuperPreShareKey00!"
+}
+
+resource "smc_gateway_tunnel" "tf_sample_tunnel" {
+  depends_on = [
+    smc_gateway_node.tf_sample_gateway_1_node,
+    smc_gateway_node.tf_sample_gateway_2_node,
+    smc_internal_endpoint.ep_212_20_1_1,
+    smc_internal_endpoint.ep_212_20_30_1,
+  ]
+  id            = "${smc_vpn.tf_sample_vpn.link.gateway_tunnel}#Gateway Tunnel *tf_single_fw2 - *"
+  enabled       = true
+  preshared_key = var.preshared_key
+}

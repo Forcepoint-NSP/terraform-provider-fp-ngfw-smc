@@ -7,8 +7,6 @@ description: |-
 
 # smc_replica_internal_gateway (Sub-resource)
 
-
-⚠️ __Experimental feature, use with caution__. This feature is not yet fully supported and may change without deprecation in future releases.
 Lightweight internal gateway that references an existing Internal Gateway to mimic its settings in VPN configuration
 
 

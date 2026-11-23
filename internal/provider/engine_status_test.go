@@ -79,7 +79,7 @@ func newTestClientWithStatusServer(t *testing.T, statusFn func() engineNodeStatu
 	}))
 	smc.GetClientManager().CleanupAll(context.Background())
 	ctx := tflogtest.RootLogger(context.Background(), os.Stdout)
-	client, err := smc.GetOrCreateClient(ctx, server.URL, "7.6", "test-key", false, "", "")
+	client, err := smc.GetOrCreateClient(ctx, server.URL, "7.6", "test-key", false, "", "", 0)
 	if err != nil {
 		t.Fatalf("GetOrCreateClient: %v", err)
 	}
@@ -148,7 +148,7 @@ func newTestClientWithFlakyStatusServer(t *testing.T, statusFn func() (int, engi
 	}))
 	smc.GetClientManager().CleanupAll(context.Background())
 	ctx := tflogtest.RootLogger(context.Background(), os.Stdout)
-	client, err := smc.GetOrCreateClient(ctx, server.URL, "7.6", "test-key", false, "", "")
+	client, err := smc.GetOrCreateClient(ctx, server.URL, "7.6", "test-key", false, "", "", 0)
 	if err != nil {
 		t.Fatalf("GetOrCreateClient: %v", err)
 	}

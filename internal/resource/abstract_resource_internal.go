@@ -164,6 +164,15 @@ func (r *ResourceBase[T]) smcUpdateResource(
 	// we should have a mechanism to get the etag without having to
 	// reload the whole object).
 	// for the "fake" create we also need the json payload to get the "key" fields.
+	// The SMC generates VPN sub-elements (e.g. gateway tunnels) when the topology
+	// is saved: commit pending edits so the name lookup can see them. The VPN is
+	// reopened on the next request.
+	if smc.IsVpnNameLookup(id) {
+		if err := smc.SaveAndCloseVpns(ctx); err != nil {
+			diag.AddError("Failed to commit VPN topology edits", err.Error())
+			return nil, err
+		}
+	}
 	resolved_id, err := common.ResolveRef(ctx, r.Config, id)
 	if err != nil {
 		diag.AddError(
@@ -613,6 +622,10 @@ func (r *ResourceBase[T]) smcDeleteResource(
 	// and save vpn
 	r.Dispatch.BeforeDelete(ctx, nil, href)
 
+	// Deleting a VPN gateway_node/vpn_site only edits the open topology: the SMC
+	// still sees the reference until it is saved (see the dependency case below).
+	vpnsSaved := false
+
 	for range MAX_RETRY {
 		// Read the resource to get the ETag for deletion.
 
@@ -663,6 +676,16 @@ func (r *ResourceBase[T]) smcDeleteResource(
 			case http.StatusBadRequest:
 				// got a 400 Bad Request - likely due to dependencies
 				if strings.Contains(statusErr.Message, "Impossible to delete the element") {
+					// The blocking reference may be an unsaved VPN topology edit:
+					// commit it and retry once before deferring the delete.
+					if !vpnsSaved && smc.HasPendingVpnEdits() {
+						vpnsSaved = true
+						if err := smc.SaveAndCloseVpns(ctx); err != nil {
+							diag.AddError("Failed to commit VPN topology edits", err.Error())
+							return
+						}
+						continue
+					}
 					diag.AddWarning("Resource has dependencies",
 						fmt.Sprintf("Resource '%s' has dependencies and cannot be deleted now: %s",
 							href, statusErr.Message))

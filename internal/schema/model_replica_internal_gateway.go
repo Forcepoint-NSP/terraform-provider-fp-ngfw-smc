@@ -50,3 +50,10 @@ type ReplicaInternalGatewayResourceModel struct {
 	SystemKey        types.Int64                                        `tfsdk:"system_key" json:"system_key,optional,omitempty" fpro:"system_key"`
 	Trashed          types.Bool                                         `tfsdk:"trashed" json:"trashed,optional,omitempty" fpro:"trashed"`
 }
+
+func (r *ReplicaInternalGatewayResourceModel) GetSliceIds(ctx context.Context) []string {
+	if r.Name.IsNull() || r.Name.IsUnknown() {
+		return nil
+	}
+	return []string{r.Name.ValueString()}
+}
